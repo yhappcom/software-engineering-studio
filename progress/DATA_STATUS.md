@@ -23,32 +23,34 @@ Established state/persistence/durability/authority distinctions and SQLite rollb
 Canonical: `research/data/D002_representation_files_database_indexes_transactions.md`  
 Fixtures: `research/data/fixtures/D002_representation_transaction_index.py`, `research/data/fixtures/D002_journal_mode_process_exit.py`
 
-Established:
-- serialization, publication, transaction, journal/recovery mechanism, durability policy and index are distinct;
-- destructive interrupted JSON publication can corrupt representation; staged construction before publication preserves the old file in the bounded process model;
-- SQLite transaction rollback preserved committed baseline;
-- index creation changed access plan while preserving semantic result;
-- new process-exit comparison used real SQLite `DELETE` rollback-journal and `WAL`, `synchronous=FULL`;
-- abrupt child exit after uncommitted INSERT recovered only baseline A in both modes;
-- COMMIT before the same abrupt exit recovered A+B in both modes; `PRAGMA integrity_check` was `ok` in all four cases;
-- therefore the tested semantic boundary was COMMIT, while journal modes remain physically different mechanisms.
+Established serialization/publication/transaction/journal/durability/index distinctions plus real SQLite DELETE-vs-WAL application-process-exit evidence. Power-loss/mobile/performance evidence remains open.
 
-Primary SQLite evidence also establishes that WAL + synchronous policy must be reasoned about separately: application crash, OS crash and power loss are not interchangeable durability scopes.
+### D003 — Schema evolution, migration, rollback and compatibility
+**IN STUDY — first integrated executable Foundation block complete.**
 
-Environment: Python 3.13.5 / SQLite 3.46.1 / Linux 6.18.44 x86_64 / glibc 2.41.
+Canonical: `research/data/D003_schema_evolution_migration_rollback_compatibility.md`  
+Fixture: `research/data/fixtures/D003_schema_migration_compatibility.py`
 
-Evidence limits: no power-loss/OS-crash/fsync/torn-write proof, Android/iOS database claim, or performance benchmark.
+Established with Python 3.13.5 / SQLite 3.46.1 / Linux evidence:
+- migration compatibility is relational across reader/writer/schema/migration state, not schema shape alone;
+- V2 expand + backfill + fallback-read + dual-write preserved the bounded old/new reader-writer contracts;
+- committing schema mutation separately from application-managed `user_version` produced a reopened mismatch: V2-shaped schema while metadata remained version 1;
+- putting schema change, backfill and `user_version` update in one explicit transaction and injecting failure before COMMIT rolled all three back to the V1 contract;
+- a V3 destructive contract removing `minutes` preserved migrated data for the new reader but caused the old reader to fail;
+- therefore migration success does not imply rollback-release/old-consumer compatibility.
+
+Primary SQLite docs checked: `ALTER TABLE`, `PRAGMA user_version`, atomic commit. Evidence does not transfer SQLite transactional-DDL semantics to other engines or Android/iOS without validation.
 
 ## Product transfer retained
 
-`yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-16`.
+`yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`.
 
-This ref establishes Flutter/Dart context but no implemented local-ledger storage choice. No database/journal PROJECT DECISION is inferred.
+Current exact-ref evidence describes configuration persistence, local ledger, Sync and Backup/Export as not implemented, so D003 is a transfer candidate rather than an existing-product migration finding. MintTap repository identity was not resolved from accessible GitHub repository search in this run; no MintTap implementation claim is made.
 
 ## Queue
 - `D001` — substantial first block complete.
-- `D002` — **IN STUDY / professional Foundation mechanism boundary materially stronger**; power-loss/mobile/performance evidence remains open.
-- `D003` — Schema evolution, migration, rollback and compatibility.
+- `D002` — two integrated Foundation mechanism blocks complete; platform/power/performance evidence OPEN.
+- `D003` — **IN STUDY / first integrated migration compatibility block complete**; downgrade, constraint/FK failure, backup/restore and mobile migration evidence OPEN.
 - `D004` — Cache semantics and offline-first data ownership.
 - `D005` — Backup/restore, import/export and data-integrity verification.
 - `D006` — Replication, synchronization, consistency, idempotency and conflicts.
@@ -56,15 +58,15 @@ This ref establishes Flutter/Dart context but no implemented local-ledger storag
 ## Gate requirement
 Foundation PASS requires executable persistence examples, corruption/interruption/failure cases where feasible, explicit durability/consistency semantics, and recovery verification rather than happy-path writes only.
 
-Data Stage 1 remains **NOT PASS**. D001/D002 now establish authority/durability plus representation/transaction/journal/index boundaries, but migration/recovery, backup/restore, mobile-relevant storage behavior and distributed-system foundations remain open.
+Data Stage 1 remains **NOT PASS**. D001-D003 now establish authority/durability, representation/transaction/journal/index, and first migration compatibility/publication boundaries, but backup/restore, mobile-relevant storage behavior and distributed-system foundations remain open.
 
 ## Dependencies / handoffs
 - **Foundations:** F001 process boundary reused; direct Dart/Flutter execution remains OPEN after 2026-09-17 environment recheck.
-- **Architecture:** A002/A003 provide ownership/invariant/compatibility constraints for transaction and schema boundaries.
-- **Mobile:** validate Android/iOS process-death/filesystem/database semantics before mobile durability claims.
-- **Quality:** distinguish application-process exit from OS/power-loss; storage claims must exercise the relevant real mechanism/failure domain.
-- **Systems:** measure journaling/synchronous/checkpoint/index costs and validate lower storage-stack durability/security assumptions.
-- **Design Studio:** later `saved`/`syncing`/`failed` states must correspond to real commit/sync contracts.
+- **Architecture:** A003 retained consumer contracts directly constrain schema evolution.
+- **Mobile:** validate Android/iOS upgrade/startup/process-death migration behavior before product claims.
+- **Quality:** migration matrices need old/new reader-writer oracles plus injected interruption and recovery.
+- **Systems:** release rollback/artifact identity determines whether an old binary can encounter a new schema.
+- **Design Studio:** future migration/recovery UI must correspond to actual recoverability states.
 
 ## Next work
-D002 should not simulate power-loss evidence. Balance Loop now favors `D003` schema evolution/migration/rollback/compatibility because A003 + D002 provide its prerequisites and migration failure has high data-loss leverage. M002 remains the strongest platform-dependent alternative when trustworthy Android/iOS execution evidence becomes available.
+Use Balance Loop. D003 should continue if downgrade/rollback-release or failed-transform evidence can close its professional boundary without simulating unavailable platform behavior. Otherwise D005 backup/restore is a strong independent prerequisite because migration safety depends on verified restoration, while M002 remains platform-dependent.
