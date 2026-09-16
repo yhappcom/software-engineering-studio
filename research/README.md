@@ -9,6 +9,11 @@ Canonical reusable research is organized by specialist ownership.
 - `research/quality/` — `Q###`
 - `research/systems/` — `S###`
 
+## Current studies
+
+### Foundations
+- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model established; first executable OS process/I/O-boundary evidence recorded; direct Dart JIT/AOT and Flutter runtime validation remain OPEN.
+
 ## Research note minimum contract
 
 A substantial note should contain, as applicable:
