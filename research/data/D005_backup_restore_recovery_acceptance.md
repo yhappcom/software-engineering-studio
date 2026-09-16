@@ -1,151 +1,130 @@
 # D005 — Backup, Restore & Recovery Acceptance
 
-Status: **IN STUDY — first integrated executable Foundation block complete**  
+Status: **IN STUDY — two integrated executable Foundation blocks complete**  
 Date: 2026-09-17  
 Lead: Data, Persistence & Distributed Systems
 
 ## Problem
-
-A backup is useful only if a declared recovery procedure can turn it into state accepted by the intended application/data contract. File existence, copy completion, database physical integrity, and application recovery are distinct claims.
+A backup is useful only if a declared recovery procedure can turn it into state accepted by the intended application/data contract without destroying the last known-good state on a failed restore. File existence, copy completion, physical integrity, application acceptance, and safe publication are distinct claims.
 
 ## SOURCE
+Primary documentation checked 2026-09-17:
+- SQLite Online Backup API: https://www.sqlite.org/backup.html and https://sqlite.org/c3ref/backup_finish.html
+- SQLite `VACUUM INTO`: https://www.sqlite.org/lang_vacuum.html
+- SQLite WAL: https://www.sqlite.org/wal.html — a WAL file can be part of persistent database state; separating a database from required WAL state can lose committed transactions or corrupt the database.
+- Python 3.13 `os.replace`: https://docs.python.org/3.13/library/os.html#os.replace — successful replacement is atomic under POSIX, but can fail across filesystems.
 
-Primary SQLite documentation checked 2026-09-17:
+## SYNTHESIS — recovery is an acceptance and publication pipeline
+`source state → backup mechanism → backup artifact → storage/retention → isolated restore candidate → physical integrity → schema/version compatibility → domain/semantic validation → publication decision → live-state replacement → application acceptance`
 
-- SQLite Online Backup API: a completed backup operation copies database content into a destination snapshot; incremental backup can reduce source lock duration, and the API has explicit BUSY/LOCKED/IO/read-only failure behavior.
-- `VACUUM INTO`: creates a consistent snapshot alternative to the backup API, but SQLite explicitly warns that interruption/power loss during generation can leave the output incomplete/corrupt; completion with appropriate synchronous settings has stronger post-completion durability semantics subject to OS/filesystem/hardware assumptions.
-
-Primary references:
-- https://www.sqlite.org/backup.html
-- https://sqlite.org/c3ref/backup_finish.html
-- https://www.sqlite.org/lang_vacuum.html
-
-## SYNTHESIS — recovery is an acceptance pipeline
-
-For a local database, distinguish:
-
-`source state → backup mechanism → backup artifact → artifact storage/retention → restore mechanism → restored physical database → integrity validation → schema/version compatibility → domain/semantic validation → application acceptance`
-
-A green result at an earlier stage does not automatically establish a later stage.
+A PASS at an earlier stage does not establish a later stage. Candidate validation should occur before destructive publication when preserving the last known-good state is a requirement.
 
 ## EXECUTABLE VALIDATION — Block 1: backup creation is not recovery proof
-
 Fixture: `research/data/fixtures/D005_backup_restore_acceptance.py`  
 Environment: Python 3.13.5 / SQLite 3.46.1 / Linux.
 
+Independent acceptance oracle requires SQLite readability, `PRAGMA integrity_check=ok`, `user_version=2`, and exact independently specified rows `[(F1,60),(F2,90)]`.
+
+Observed:
+- actual SQLite backup restored the expected state after live semantic rows were deliberately destroyed;
+- a non-empty artifact with a corrupted SQLite header existed but was rejected as `file is not a database`;
+- a structurally valid database with `integrity_check=ok` but `user_version=99` failed the application/schema contract.
+
+**CONTRADICTION:** backup-file existence, physical integrity, schema compatibility, semantic validity and application recovery are different claims.
+
+## EXECUTABLE VALIDATION — Block 2: validate-before-publish preserves last known-good state at bounded failure points
+Fixture: `research/data/fixtures/D005_restore_publication_safety.py`  
+Environment: Python 3.13.5 / SQLite 3.46.1 / Linux/POSIX model.
+
 ### Claim / oracle
+Bounded claim: if a restore candidate is validated in isolation before publication, an invalid candidate or a failure before publication need not destroy the last known-good live database. This is not a power-loss or mobile-filesystem claim.
 
-Bounded claim: a trustworthy recovery test must exercise restore and acceptance, not merely observe that a backup file exists.
+The same independent oracle requires physical integrity, `user_version=2`, and exact expected semantic rows.
 
-Independent acceptance oracle for the fixture requires all of:
-1. SQLite can open/read the restored artifact;
-2. `PRAGMA integrity_check` returns `ok`;
-3. declared schema contract `user_version=2` is present;
-4. semantic rows equal independently specified `[(F1,60),(F2,90)]`.
+### Failure case — destructive publish before validation
+An incompatible but structurally valid database (`integrity_check=ok`, `user_version=99`, wrong semantic row) was copied over the live path before validation.
 
-### Positive restore path
+Observed: subsequent acceptance failed and the prior known-good live state had already been replaced.
 
-The fixture created a V2 source database, used Python's SQLite backup binding to create a backup, then deliberately deleted the live rows. It restored from the backup into a separate path and evaluated the restored database with the acceptance oracle.
+**CONTRADICTION:** `restore copy completed` does not mean the restore was safe; validation after destructive replacement can be too late to preserve the previous accepted state.
 
-Observed: restored database passed physical integrity, schema contract, and semantic-row checks.
+### Alternative — isolated candidate validation
+The known-good live database was reset. The same incompatible artifact was restored to a separate candidate path and evaluated before publication.
 
-**VALIDATION:** within this SQLite/Python environment, the backup artifact could actually restore the declared bounded application state after the live copy had been semantically destroyed.
+Observed: candidate acceptance failed while the live database still passed the complete oracle.
 
-### Failure case A — existing/non-empty backup artifact can still be unusable
+### Injected failure after candidate acceptance but before publication
+A valid candidate passed the oracle, then the fixture deliberately raised an exception before `os.replace`.
 
-The fixture copied the valid backup and deliberately corrupted its SQLite header while retaining a real non-empty file.
+Observed: live state still passed the complete oracle.
 
-Observed: the file existed and had non-zero size, but SQLite rejected it as `file is not a database`.
+### Successful bounded publication
+A valid candidate was published with same-filesystem `os.replace`; live state then passed the complete oracle. Python documents successful POSIX replacement as atomic, while explicitly warning that cross-filesystem replacement may fail.
 
-**CONTRADICTION:** `backup file exists` and `backup file has bytes` are not recovery or integrity proofs.
-
-### Failure case B — physical integrity can pass while application compatibility fails
-
-A second copy retained valid SQLite structure/data but changed application-managed `user_version` from 2 to 99.
-
-Observed: `PRAGMA integrity_check` still returned `ok`, while the declared application-contract oracle rejected the artifact because the schema contract did not match.
-
-**CONTRADICTION:** `integrity_check=ok` does not establish application/schema compatibility or semantic recoverability.
+**VALIDATION:** within this bounded Linux/POSIX execution, validate-before-publish separates candidate acceptance from live-state replacement and preserves known-good state for invalid-candidate and pre-publication-failure cases.
 
 ## ROOT CAUSE / MODEL
+Restore has at least two independently fallible phases: candidate construction/validation and publication. Publishing first collapses them and can destroy rollback material before compatibility/semantic checks run. Separating them provides a fail-closed boundary for failures that occur before publication.
 
-These failures arise because different validators answer different questions:
+This does not prove crash/power-loss durability of the rename itself. Directory-entry persistence, fsync ordering, filesystem guarantees, open handles, SQLite journal/WAL companion state, Android/iOS file-provider semantics, and cross-filesystem moves remain outside this fixture.
 
-- filesystem existence/size: is there an artifact at this path?
-- SQLite structural/integrity validation: is the database structurally consistent under SQLite's checks?
-- schema/version contract: can the intended reader interpret this representation under its declared compatibility policy?
-- semantic/domain oracle: does the restored state preserve required business meaning/invariants?
-- application acceptance: can the intended application actually resume from the restored state?
-
-Conflating these layers creates false confidence even when every individual check is behaving correctly.
+SQLite WAL is a specific caution: SQLite documents the `-wal` file as part of persistent database state when present; moving/copying only the main DB while required WAL state exists is not assumed safe. The fixture uses closed standalone database artifacts and therefore does not validate live WAL replacement.
 
 ## ALTERNATIVES / TRADE-OFFS
+- validate isolated candidate then publish: preserves live state for invalid candidates and failures before publication, at cost of temporary storage and publication protocol complexity;
+- destructive overwrite then validate: simpler but can destroy the last accepted state before discovering incompatibility;
+- Online Backup API / `VACUUM INTO`: consistent-copy mechanisms with different locking, I/O and interruption properties; mechanism choice remains a PROJECT DECISION;
+- same-filesystem atomic rename/replace can narrow publication visibility failures under applicable filesystem guarantees, but atomic namespace replacement is not identical to power-loss durability.
 
-SQLite exposes multiple consistent-copy mechanisms. Online Backup API supports incremental copying and explicit operational error handling; `VACUUM INTO` produces a compact consistent snapshot but has different CPU/I/O and interruption properties. Mechanism choice is a PROJECT DECISION based on dataset size, concurrency, storage budget, platform APIs and recovery requirements. D005 does not choose a LogMate/MintTap implementation.
-
-A plain filesystem copy of a live database is not assumed safe here. WAL/journal side files, locks, open transactions and platform/filesystem behavior can make that a materially different protocol.
-
-## ENGINEERING JUDGMENT — minimum backup acceptance contract
-
-For user-owned durable data, a backup feature should define at minimum:
-
-`what is backed up → consistency point → artifact identity/version → completion criterion → retention/location → restore procedure → destructive-restore safeguards → integrity checks → schema compatibility → semantic invariants → success/failure UX → rollback/retry path`.
-
-Periodic restore drills or automated restore tests are stronger evidence than backup-job success counters alone.
+## ENGINEERING JUDGMENT — minimum recovery acceptance contract
+For user-owned durable data, define:
+`what is backed up → consistency point → artifact identity/version → completion criterion → retention/location → isolated restore procedure → physical/schema/domain validation → publication protocol → destructive-restore safeguard → success/failure UX → rollback/retry path`.
 
 ## INVALID SHORTCUTS
-
 - `backup command returned success` ≠ recovery proven.
-- `backup file exists` ≠ artifact is valid.
-- `non-zero file size` ≠ artifact is valid.
-- `integrity_check=ok` ≠ intended application can read the schema.
-- `schema is readable` ≠ domain semantics are correct.
-- `restore completed` ≠ application acceptance passed.
-- one Linux/Python/SQLite restore ≠ Android/iOS/filesystem/cloud-backup behavior.
+- `backup file exists/non-zero` ≠ artifact valid.
+- `integrity_check=ok` ≠ intended reader accepts the schema.
+- `restore copy completed` ≠ safe publication.
+- `atomic rename` ≠ power-loss durability.
+- `main SQLite file copied` ≠ complete WAL-mode persistent state.
+- one Linux/Python/SQLite result ≠ Android/iOS/filesystem/cloud behavior.
 
 ## TRANSFER VALIDATION — LogMate relevance
+Retained exact-ref context rechecked in the preceding D005 block: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`. Prior exact-ref inspection recorded Backup/Export and durable ledger/configuration as not implemented. Therefore D005 remains a **TRANSFER CANDIDATE**, not a product defect finding or SQLite implementation decision.
 
-Product evidence rechecked 2026-09-17:
-
-`yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 (retained prior exact-ref evidence) → evidence date 2026-09-17`.
-
-The repository head remained `b551ce434ad72b1895033e0f3617c73b026d40ea`. Prior exact-ref inspection recorded Backup/Export and durable ledger/configuration as not implemented. Therefore this study is a **TRANSFER CANDIDATE**, not a product defect finding and not an implementation decision.
-
-Reusable requirement candidate for future LogMate work: a user-facing backup feature should not be accepted from file creation alone; validation should restore into an isolated target and verify schema plus FlightRecord/domain invariants before claiming recoverability.
+Reusable requirement candidate: future LogMate recovery should validate a candidate independently before destructive live publication when feasible, and acceptance must include schema plus FlightRecord/domain invariants. Platform-specific implementation requires Mobile validation.
 
 MintTap repository identity remains unresolved; no MintTap implementation claim is made.
 
 ## RELATED DOMAIN CHECK
-
-- **Foundations:** F001 process/runtime distinction retained. Direct Dart/Flutter execution rechecked 2026-09-17; neither executable is available, so the gap remains OPEN.
-- **Architecture:** A003 compatibility model applies to restored artifact ↔ reader contract.
-- **Mobile:** actual Android/iOS sandbox, file-provider, process-death and user-file restore behavior remains a DEPENDENCY for product acceptance.
-- **Data:** D001 authority/durability, D002 transaction/journal, and D003 schema compatibility are direct prerequisites.
-- **Quality:** Q001 independent oracle and Q002 evidence-boundary rules shape restore acceptance; the test must cross the actual storage/restore mechanism when making recovery claims.
-- **Systems:** artifact integrity/authenticity/authorization/provenance are separate from recoverability. Backup confidentiality/key management and release-artifact compatibility remain future S002/S005 dependencies.
-- **Design Studio:** search found no materially applicable backup/restore canonical evidence in the checked repository; future recovery UX must reflect actual states rather than optimistic copy completion.
-- **Web Manager:** no materially applicable backup/restore evidence found for this local SQLite block.
-- **Marketing Manager:** no materially applicable backup/restore evidence found; no marketing metric changes the recovery oracle.
-- **Product:** LogMate exact head rechecked; no product repository edited.
+- **Foundations:** F001 process/runtime distinction retained. Direct Dart/Flutter execution rechecked 2026-09-17; neither executable is available, so OPEN remains.
+- **Architecture:** A003 compatibility applies to backup schema/version ↔ intended reader and to rollback expectations.
+- **Mobile:** Android/iOS sandbox, document-provider, cross-volume, open-handle, process-death and storage-full behavior remain dependencies.
+- **Data:** D001 authority/durability, D002 transaction/journal/WAL, D003 schema compatibility directly constrain restore safety.
+- **Quality:** Q001 independent oracle and Q002 evidence-boundary rules used; failure was deliberately injected before publication.
+- **Systems:** atomic namespace replacement, durability, backup authenticity/confidentiality/key lifecycle are distinct. No cryptographic claim here.
+- **Design Studio:** recovery UX must not present candidate-copy completion as recovery success; no external canonical file edited.
+- **Web Manager:** not materially relevant to this local SQLite publication fixture.
+- **Marketing Manager:** not materially relevant to the recovery oracle.
+- **Product:** retained LogMate exact-ref context only; no product repository edited.
 
 ## OPEN / VALIDATION
-
-1. Corruption detection beyond header damage: page-level corruption, truncation, missing companion state where applicable.
-2. Restore interruption and atomic publication: avoid replacing the only good live copy with an unvalidated restore.
-3. Version matrix: older/newer application artifacts against backup schema versions.
-4. Backup authenticity/confidentiality/key-loss semantics for sensitive data.
-5. Android/iOS Files/document-provider/cloud-location behavior and storage-full/permission-revocation failures.
-6. Retention/version rotation and user-error recovery semantics.
-7. No Data Foundation PASS yet.
+1. Failure during/after publication, including process crash and actual power loss.
+2. Filesystem durability/fsync and cross-filesystem publication semantics.
+3. WAL/open-database restore protocol; do not replace only the main DB while companion state is active.
+4. Corruption breadth: page corruption/truncation and storage-full failures.
+5. Version matrix: older/newer application artifacts against backup schema versions.
+6. Backup authenticity/confidentiality/key-loss semantics.
+7. Android/iOS Files/document-provider/cloud-location behavior and permission revocation.
+8. Retention/version rotation and user-error recovery semantics.
+9. No Data Foundation PASS yet.
 
 ## HANDOFFS
-
-- **TO Quality:** define recovery acceptance tests as restore-through-real-mechanism + independent physical/schema/domain oracles; backup-job success alone is insufficient.
-- **TO Architecture:** backup schema/version is an externalized compatibility contract; readers must declare accepted versions.
-- **TO Mobile:** reproduce restore interruption, permission/storage-full and file-provider behavior on exact Android/iOS stack.
-- **TO Systems:** add confidentiality/authenticity/key lifecycle and artifact identity without confusing those claims with recoverability.
-- **TO LogMate:** before implementing Backup/Export, define a recoverability acceptance contract and isolated restore validation. No product files edited.
+- **TO Quality:** recovery tests need explicit candidate-validation and publication failure points, not only restore completion.
+- **TO Architecture:** define rollback/reader compatibility before allowing destructive publication of a restored schema.
+- **TO Mobile:** reproduce publication interruption, cross-volume/document-provider, storage-full and process-death behavior on exact Android/iOS stack.
+- **TO Systems:** distinguish atomic namespace replacement from durable publication; add authenticity/confidentiality/key lifecycle separately.
+- **TO LogMate:** before Backup/Export implementation, define candidate validation and last-known-good preservation. No product files edited.
 
 ## Current judgment
-
-D005's first block establishes an important boundary with executable evidence: **backup creation, physical integrity, schema compatibility, semantic validity and application recovery are separate claims**. The next high-value D005 block is restore publication/interruption safety: prove that a failed or incompatible restore cannot destroy the last known-good local state before moving toward mobile-specific backup behavior.
+D005 now has two executable blocks. It establishes that recovery requires both acceptance and safe publication discipline, and demonstrates a bounded fail-closed validate-before-publish alternative. The professional boundary remains incomplete because crash/power-loss, WAL/open-handle and mobile storage semantics are not validated. Balance Loop should now compare whether those dependencies are obtainable; otherwise advance to the highest-value independent prerequisite rather than simulating them.
