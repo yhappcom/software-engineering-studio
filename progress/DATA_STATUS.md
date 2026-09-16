@@ -21,6 +21,21 @@ Build rigorous knowledge of data representation, integrity, persistence, transac
 
 Established: reader/writer/schema compatibility is relational; split publication can create mismatched schema/version state; transactional fail-closed handling can restore the old contract at bounded failure points; caught constraint failures can otherwise falsely publish a new version; FK enforcement and persisted-data validation are separate obligations.
 
+### D004 — Cache semantics and offline-first data ownership
+**IN STUDY — first integrated Foundation block complete.**  
+Canonical: `research/data/D004_cache_offline_first_data_ownership.md`  
+Fixture: `research/data/fixtures/D004_cache_offline_ownership.py`
+
+Established with source/model + Python 3.13.5/Linux executable evidence:
+- cache location does not by itself define semantic authority;
+- freshness, completeness, confirmation and authority are separate dimensions;
+- destructive refresh that conflates remote-confirmed base and pending local mutation reproduced loss/hiding of the local edit;
+- separating confirmed base from pending mutation preserved the local visible edit across a stale refresh in the bounded model;
+- cache absence was reproduced while the record still existed in the modeled remote authority;
+- current Firestore docs explicitly expose cache/server source distinctions and warn cache-origin data may be stale or incomplete; local write visibility and backend acknowledgement must not be conflated.
+
+Evidence limit: no Firestore/FlutterFire SDK, durable pending queue, process death, multi-device conflict, eviction, or production claim.
+
 ### D005 — Backup, restore and recovery acceptance
 **IN STUDY — two integrated executable Foundation blocks complete.**
 
@@ -39,28 +54,28 @@ Established with Python 3.13.5 / SQLite 3.46.1 / Linux evidence:
 ## Product transfer retained
 `yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`.
 
-Prior exact-ref evidence described configuration persistence, local ledger, Sync and Backup/Export as not implemented, so D005 remains a transfer candidate rather than an existing defect finding. MintTap repository identity remains unresolved; no MintTap implementation claim is made.
+Prior exact-ref evidence described configuration persistence, local ledger, Sync and Backup/Export as not implemented, so D004/D005 remain transfer candidates rather than existing defect findings. MintTap repository identity remains unresolved; no MintTap implementation claim is made.
 
 ## Queue
 - `D001` — substantial first block complete.
 - `D002` — two integrated mechanism blocks complete; platform/power/performance evidence OPEN.
 - `D003` — two integrated migration blocks complete; actual rollback-release and mobile migration evidence OPEN.
-- `D004` — Cache semantics and offline-first data ownership.
-- `D005` — **IN STUDY / two integrated backup-restore blocks complete**; crash/power-loss, WAL/open-handle, corruption breadth, version matrix and mobile behavior OPEN.
+- `D004` — **IN STUDY / first integrated cache-offline ownership block complete**; real SDK, durable pending queue, eviction/completeness and process-death evidence OPEN.
+- `D005` — two integrated backup-restore blocks complete; crash/power-loss, WAL/open-handle, corruption breadth, version matrix and mobile behavior OPEN.
 - `D006` — Replication, synchronization, consistency, idempotency and conflicts.
 
 ## Gate requirement
 Foundation PASS requires executable persistence examples, corruption/interruption/failure cases where feasible, explicit durability/consistency semantics, and recovery verification rather than happy-path writes only.
 
-Data Stage 1 remains **NOT PASS**. D001-D003 plus D005 now cover authority/durability, representation/transaction/journal/index, migration compatibility/publication/constraint failures, and restore acceptance/publication safety. Cache/offline-first, mobile storage behavior, stronger interruption/durability, and distributed-system foundations remain open.
+Data Stage 1 remains **NOT PASS**. D001-D005 now cover authority/durability, representation/transaction/journal/index, migration compatibility/publication/constraint failures, cache/offline ownership, and restore acceptance/publication safety. Real mobile storage/cache behavior, stronger interruption/durability, and distributed-system foundations remain open.
 
 ## Dependencies / handoffs
-- **Foundations:** F001 direct Dart/Flutter execution remains OPEN after environment recheck.
-- **Architecture:** restored artifact/schema version is a compatibility contract with intended reader and rollback expectations.
-- **Mobile:** validate Android/iOS restore publication, sandbox/document-provider, permission, storage-full and process-death behavior.
-- **Quality:** recovery PASS must cross candidate validation and publication failure points with independent physical/schema/domain oracles.
-- **Systems:** atomic namespace replacement is not power-loss durability; confidentiality/authenticity/key lifecycle remain separate.
-- **Design Studio:** future recovery UI must map candidate validation/publication states accurately.
+- **Foundations:** F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
+- **Architecture:** confirmed base, pending mutation and derived projection are separate semantic ownership roles even if physically colocated.
+- **Mobile:** validate Android/iOS/FlutterFire offline write, pending-state persistence, process death, reconnect and cache behavior.
+- **Quality:** distinguish local visibility from backend acknowledgement; test stale refresh, cache miss, rejection and reconnect.
+- **Systems:** persistent cache confidentiality, eviction/resource policy and durable publication are separate claims.
+- **Design Studio:** future sync/recovery UI must map confirmed/pending/failed states accurately.
 
 ## Next work
-D005's independently executable Linux boundary is now materially stronger. Do not simulate power loss or mobile filesystem semantics. Balance Loop should compare `D004` cache/offline-first ownership against `M002/M003` and Quality/System prerequisites; select D004 if no trustworthy platform execution opportunity exists because it is a Stage-1 data prerequisite with high LogMate/MintTap reuse.
+D004's first ownership failure boundary is now established. Balance Loop should compare continuation into a real SDK pending-write/cache experiment against `D006` distributed vocabulary/replication-conflict foundations, `Q003` nondeterminism, and `M002/M003`. If no trustworthy Dart/Flutter/mobile SDK environment is available, D006 is the strongest independent Data prerequisite because offline-first semantics become unsafe once multiple writers/retries/conflicts are introduced.
