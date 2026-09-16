@@ -1,7 +1,7 @@
 # Software Engineering Studio Global Status
 
 Operating state: **ACTIVE — FOUNDATION STUDY UNDERWAY**  
-Governance sync: 2026-09-16  
+Governance sync: 2026-09-17  
 Canonical curriculum: `LEARNING_ROADMAP.md`
 
 ## Specialist map
@@ -10,7 +10,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN |
 | Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial Foundation blocks complete |
 | Mobile | Stage 1 IN STUDY — M001 first integrated Foundation block complete |
-| Data | Stage 1 IN STUDY — D001 substantial + D002 first integrated mechanism block |
+| Data | Stage 1 IN STUDY — D001 substantial + D002 two integrated mechanism blocks |
 | Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first integrated block |
 | Systems | Stage 1 IN STUDY — S001 two executable trust-boundary blocks complete |
 
@@ -18,48 +18,48 @@ No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### D002 — Representation, publication, transactions and indexes
+### D002 — Journal/recovery mode versus durability scope
 Canonical: `research/data/D002_representation_files_database_indexes_transactions.md`  
-Fixture: `research/data/fixtures/D002_representation_transaction_index.py`
-
-Primary-source model separates JSON serialization, file publication, database transaction and index/access structures.
+New fixture: `research/data/fixtures/D002_journal_mode_process_exit.py`
 
 Executable bounded evidence (Python 3.13.5 / SQLite 3.46.1 / Linux):
-- interrupted destructive whole-file JSON overwrite left the canonical document syntactically invalid;
-- constructing an interrupted replacement in a separate staging file left the old canonical document intact before publication;
-- an executed SQLite insert that failed before commit and was rolled back did not enter committed state;
-- adding an index changed `EXPLAIN QUERY PLAN` from `SCAN flights` to indexed `SEARCH` while the semantic result count remained identical.
+- real SQLite `journal_mode=DELETE` and `journal_mode=WAL`, both `synchronous=FULL`;
+- child process inserted B inside `BEGIN IMMEDIATE` and terminated via `os._exit(99)` without normal connection cleanup;
+- when exit occurred before COMMIT, reopen recovered only baseline A in both modes;
+- when COMMIT completed before the same abrupt exit, reopen recovered A+B in both modes;
+- `PRAGMA integrity_check` returned `ok` in all cases.
 
-Validated conclusion: **serialization format, publication protocol, transaction boundary, durability and index are different mechanisms**. Choosing JSON does not provide atomic update; choosing a database does not prove a correct transaction boundary; adding an index does not create a new semantic source of truth.
+Root-cause boundary: the experiment supports COMMIT as the semantic committed/uncommitted boundary across this **application-process exit** failure. It does not imply DELETE and WAL use the same mechanism, nor does it establish OS-crash/power-loss/fsync durability.
 
-Evidence limits: staging-file evidence is process-level only; no filesystem/power-loss atomicity, fsync, Android/iOS, WAL, or performance benchmark claim.
+Current SQLite primary documentation reinforces that journal mode and `synchronous` policy are separate durability dimensions; WAL + NORMAL can preserve consistency while losing recently committed transactions under power/system failure. Therefore `WAL enabled` is not a complete durability specification.
 
 ## Retained evidence
-- **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN. Environment rechecked again: neither executable is available.
+- **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN. Environment rechecked 2026-09-17: neither executable is available.
 - **D001:** state/persistence/durability/authority model + SQLite application-process-kill evidence.
+- **D002 block 1:** representation/publication/transaction/index distinctions.
 - **Q001/Q002:** oracle/reproducibility plus test-level evidence boundaries.
 - **A001-A003:** information hiding/change pressure, state ownership/dependency direction, semantic contract/API compatibility.
 - **M001:** Flutter/runtime/UI/lifecycle source model + skipped-lifecycle-notification failure model.
 - **S001:** artifact identity plus integrity/authenticity/authorization/provenance separation.
 
 ## Product transfer
-`yhappcom/logmate → main b551ce434ad72b1895033e0f3617c73b026d40ea → version 1.0.0+1 → evidence date 2026-09-16` was rechecked. No implemented local-ledger storage choice is inferred. D002 supplies future constraints, not a database selection or production claim.
+Retained transfer context: `yhappcom/logmate → main b551ce434ad72b1895033e0f3617c73b026d40ea → version 1.0.0+1 → evidence date 2026-09-16`. No local-ledger storage/journal implementation is inferred and no database choice is made.
 
 ## Cross-track handoffs
-- **Architecture:** transaction boundaries should align with domain invariants and mutation authority.
-- **Mobile:** target Android/iOS file/database/process-death semantics must be validated before Linux evidence transfers.
-- **Quality:** storage claims require tests that include the real storage mechanism and relevant failure boundary.
-- **Systems:** measure journaling/fsync/index cost and security/release implications under exact platform/artifact identity.
+- **Architecture:** semantic transaction boundaries follow invariants/authority, not journal configuration.
+- **Mobile:** reproduce storage/recovery on exact Android/iOS stack before transferring Linux evidence.
+- **Quality:** classify application-process exit separately from OS/power-loss; evidence must cross the actual claimed failure domain.
+- **Systems:** measure synchronous/journaling/checkpoint costs and validate lower storage-stack durability assumptions.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and was not simulated.
 
-Current highest-value candidates:
-1. continue `D002` if trustworthy WAL interruption or measured index/transaction-cost evidence can materially deepen the same professional boundary;
-2. `D003` schema evolution/migration/rollback/compatibility, now strongly enabled by A003 compatibility contracts + D002 transaction/representation distinctions and directly relevant to durable product evolution;
-3. `M002` Android/iOS process lifecycle/storage/background semantics when trustworthy platform-level evidence can be obtained.
+D002 now has enough bounded journal-mode evidence that further progress would require trustworthy OS/power-loss/mobile execution or performance measurement. The highest-value independent prerequisite is therefore:
+1. `D003` schema evolution/migration/rollback/compatibility — high data-loss risk, enabled by A003 compatibility contracts + D002 transactions, reusable across MintTap/LogMate;
+2. `M002` Android/iOS process/storage/background semantics when trustworthy platform execution evidence becomes available;
+3. `Q002/Q003` when a stronger real-system or nondeterminism validation opportunity exists.
 
-Selection follows prerequisite severity, live-product data-loss risk, cross-track leverage and evidence opportunity rather than rotation.
+Selection remains risk/evidence/prerequisite driven rather than rotational.
 
 ## Evidence rule
 No PASS from reading alone. Expected progression where applicable:
