@@ -19,6 +19,9 @@ Canonical reusable research is organized by specialist ownership.
 - `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Authority/projection second-writer failure and materially different dependency-direction alternative comparison complete.
 - `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Semantic compatibility, pre/postcondition matrix, invariant violation and additive-breaking protocol counterexample executable-tested.
 
+### Mobile
+- `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**. Current Flutter/Dart/Android/iOS source model separates runtime/UI/lifecycle/platform boundaries; executable language-neutral lifecycle-gap model demonstrates why skipped lifecycle notifications cannot be the sole durable-commit guarantee. Real Flutter/device/process-death validation remains OPEN.
+
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model + SQLite process-kill evidence; mobile/power-loss/migration/backup/distributed evidence remain OPEN.
 
