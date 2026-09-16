@@ -1,113 +1,131 @@
 # S001 — Trust Boundaries, Artifact Identity & Build Provenance Foundations
 
-Status: **IN STUDY — first integrated source/model + executable artifact-identity failure evidence**  
+Status: **IN STUDY — two integrated executable trust-boundary blocks complete**  
 Date: 2026-09-16  
 Lead: Systems
 
 ## Problem
-A source commit, a build invocation, a produced artifact, and a deployed/running artifact are related but not identical objects. Security and release reasoning fails when trust is granted merely because two artifacts claim the same source ref, or when user-controlled build metadata is treated as self-authenticating evidence.
+A source commit, build invocation, produced artifact, checksum/provenance document, signer/verifier identity, authorization policy, deployed artifact and runtime observation are related but distinct objects. Security and release reasoning fails when one identity or trust claim is allowed to stand in for another.
 
 ## SOURCE
 ### NIST SP 800-207 — Zero Trust Architecture
-NIST states that zero trust grants no implicit trust solely from network location or asset ownership and focuses protection on resources rather than network segments. S001 transfers the underlying trust-boundary discipline cautiously: identity/location/ownership metadata is an input to authorization or verification, not proof by itself.
+NIST states that zero trust grants no implicit trust solely from network location or asset ownership. S001 transfers the general trust-boundary discipline cautiously: identity/location/ownership metadata is evidence input, not authorization or authenticity proof by itself.
 
 Primary: https://csrc.nist.gov/pubs/sp/800/207/final
 
+### NIST FIPS 186-5 — Digital Signature Standard
+FIPS 186-5 states that digital signatures are used to detect unauthorized modification and authenticate the identity of the signatory. This supports separating data integrity/origin authentication from a bare digest. It does not imply that a valid signature means the signer is authorized by a particular product policy.
+
+Primary: https://csrc.nist.gov/pubs/fips/186-5/final
+
 ### NIST SP 800-218 — Secure Software Development Framework 1.1
-The final SSDF provides secure-development practices intended to reduce released vulnerabilities and address software supply-chain risk. NIST currently also lists SP 800-218 Rev.1 / SSDF 1.2 as a 2025 public draft, so 1.1 remains the final baseline checked for this study.
+SSDF 1.1 remains the final secure-development baseline checked. NIST also lists SSDF 1.2 as a public draft; status must be rechecked before operational adoption.
 
 Primary: https://csrc.nist.gov/pubs/sp/800/218/final
 
-### SLSA v1.2 — Provenance
-Current SLSA v1.2 defines provenance as verifiable information describing where, when, and how an artifact was produced. Build provenance links output artifacts back to source/build inputs. SLSA explicitly distinguishes builder identity, build definition/parameters, resolved dependencies, and artifact subjects/digests; the trusted builder is part of the trust base.
+### SLSA v1.2
+Current SLSA v1.2 defines provenance as verifiable information about where, when and how an artifact was produced. Its verification model requires more than reading provenance: a consumer evaluates authenticated evidence and policy/trust expectations. SLSA's Verification Summary Attestation model explicitly binds verification to a verifier, artifact subject, resource/purpose and verification result; it warns that compromise of the verifier remains outside that assurance.
 
-Primary: https://slsa.dev/spec/v1.2/provenance
+Primary: https://slsa.dev/spec/v1.2/provenance  
+Primary: https://slsa.dev/spec/v1.2/verification_summary
 
 ## SYNTHESIS
-A release claim should preserve a chain such as:
+A release-evidence chain should keep these questions separate:
 
-`source ref → build definition/parameters → resolved dependencies/toolchain → builder/trust boundary → post-build transforms → artifact digest/identity → deployment target → runtime observation`
-
-The exact fields depend on risk and platform. The chain is not a demand for SLSA adoption in every yhappcom project; it is a reasoning model for avoiding identity collapse.
+`source identity → build inputs/builder → artifact identity → evidence integrity/authenticity → signer/verifier identity → authorization/trust policy → deployment identity → runtime observation`
 
 ### Distinctions
-- **source identity**: which revision was intended as input;
-- **build identity**: which build definition, parameters, dependencies, environment/builder produced output;
-- **artifact identity**: the actual output bytes, preferably bound by a cryptographic digest where practical;
-- **deployment identity**: which artifact was placed at which origin/store/device/environment;
-- **runtime evidence**: what that deployed artifact actually did in a specified environment.
+- **integrity / byte identity:** did the observed bytes match an expected digest or protected statement?
+- **authenticity / origin authentication:** can the consumer verify who authenticated the statement/artifact and that the protected statement was not altered?
+- **authorization:** is that authenticated actor permitted by this consumer's policy to make this release/build/verification claim?
+- **provenance:** what verifiable production history links the artifact to source/build inputs and builder?
+- **deployment/runtime evidence:** what concrete artifact was installed/served and what did it do in a specified environment?
 
-A source ref does not uniquely identify an artifact when build flags, dependencies, generated assets, environment, or post-build transforms can change bytes/behavior.
+A valid digest does not authenticate the party that supplied the digest. A valid authenticated statement does not by itself authorize its signer for every purpose. Authentic provenance still depends on the trusted builder/verifier/control plane not being compromised.
 
-## VALIDATION — source ref alone is a weak artifact oracle
+## VALIDATION A — source ref alone is a weak artifact oracle
 Fixture: `research/systems/fixtures/S001_artifact_identity.py`
 
+A deterministic fixture created canonical and post-build-transformed artifacts with the same declared source ref. Both passed a source-ref-only verifier while independent SHA-256 comparison distinguished the byte outputs. This falsifies `same source ref ⇒ same validated artifact`.
+
+Environment: Python 3.13.5; Linux 6.18.44 x86_64; glibc 2.41.
+
+Evidence limit: digest equality is byte-identity evidence only; it is not provenance authenticity, software safety or malicious-builder resistance.
+
+## VALIDATION B — checksum metadata is not self-authenticating
+Fixture: `research/systems/fixtures/S001_trust_metadata.py`
+
 ### Test Evidence Contract
-- **CLAIM:** equal declared source ref is insufficient to establish artifact equality when a post-build transform can change output bytes.
-- **SPEC/PROPERTY:** accepted artifact identity for this bounded test is the SHA-256 digest of the expected canonical artifact bytes.
-- **TARGET:** canonical output versus the same output after a deterministic post-build transform.
-- **INPUT/STATE:** identical declared source ref `abc123`; one artifact receives `POST_BUILD_PATCH=offline` after canonical construction.
-- **ORACLE:** independently hash observed bytes and compare to the expected canonical digest.
+- **CLAIM:** if an attacker can replace both an artifact and adjacent unsigned checksum metadata, checksum equality can still pass; independently authenticated metadata can detect metadata rewriting, while authorization remains a separate policy decision.
+- **SPEC/PROPERTY:** acceptance requires (1) artifact digest equals protected metadata digest, (2) metadata authentication succeeds under verifier-held trust material, and (3) authenticated builder identity is allowed by policy.
+- **TARGET:** canonical artifact/metadata versus attacker-rewritten artifact+metadata; separate authentic-but-unapproved builder case.
+- **INPUT/STATE:** canonical bytes `app-binary-v1`; tampered bytes `app-binary-v1+evil`; one trusted builder and one unapproved builder.
+- **ORACLE:** independent SHA-256, HMAC authentication under verifier-held key, and explicit trusted-builder allow-list.
 - **ENVIRONMENT:** Python 3.13.5; Linux 6.18.44 x86_64; glibc 2.41.
-- **OBSERVATION:** both artifacts passed the weak `source_ref == abc123` check. Canonical SHA-256 was `f8acaec1d75f06db55d7804ce24007d6829ab5cd1a3ab97af1cd89860fa74743`; transformed SHA-256 was `fb59fee4330f9c46628166ab7bb00896d5e8bd073b4b6b90bbb22fd7fbfe2aa8`.
-- **VERDICT:** weak source-ref verifier accepted two byte-distinct artifacts; digest comparison distinguished them.
-- **FAILURE MODEL:** source-equivalent but artifact-distinct build/post-build path.
-- **REPRODUCTION DATA:** fixture is deterministic and contains complete bytes and source ref.
-- **EVIDENCE LIMIT:** does not establish cryptographic authenticity, signed provenance, reproducible builds, Flutter build behavior, malicious-build resistance, or production release integrity. SHA-256 equality here is an artifact-byte identity check, not proof that the artifact is safe or correctly built.
+- **OBSERVATION:** unsigned checksum metadata rewritten to match the tampered artifact passed the weak checksum comparison. Canonical authenticated metadata passed. Rewritten metadata failed authentication when paired with the original trusted tag. A correctly authenticated statement naming an unapproved builder was detected as authentic but unauthorized.
+- **VERDICT:** integrity metadata controlled by the same untrusted party as the artifact is not sufficient authenticity evidence; authenticity and authorization are distinct checks.
+- **FAILURE MODEL:** artifact+metadata substitution and authenticated-but-unapproved identity.
+- **REPRODUCTION DATA:** deterministic fixture contains all bytes, identities and policy values.
+- **EVIDENCE LIMIT:** HMAC is a compact shared-secret demonstration, not public-key code signing, non-repudiation, certificate validation, transparency logging, SLSA conformance, key-compromise resistance, or production CI/CD evidence.
 
-## FAILURE / ROOT CAUSE
-The deliberate weak verifier collapses two identities: it assumes `same source ref ⇒ same artifact`. That implication is false in the fixture because an allowed transformation occurs after the source identity is fixed. The failure is therefore not a hash failure; it is an incomplete verification model.
+Observed digests:
+- canonical SHA-256 `5127bc22f7e4f1e964a8233b0a81ce0747203170a9cd985285c05fcbac5a33e2`
+- tampered SHA-256 `4e1a1990306c31209b449a799fa65cee3412ad27ed6ed8e1bf7c51bd980ba895`
 
-## CONTRADICTION
-Shortcut falsified:
+### FAILURE / ROOT CAUSE
+The weak verifier asks only whether artifact bytes agree with attacker-controlled metadata. The attacker can preserve that internal consistency by replacing both. The missing property is an independent trust anchor for the metadata. The second case demonstrates a different error: even authentic evidence can name an identity that policy does not authorize.
+
+## CONTRADICTIONS
+Shortcuts falsified:
 
 `same source ref = same validated artifact`
 
-A source ref is provenance input, not sufficient artifact identity.
+`artifact hash matches adjacent checksum = artifact provenance is authentic`
+
+`authenticated signer/builder = signer/builder is authorized for this purpose`
 
 ## ENGINEERING JUDGMENT
-Artifact hashes improve identity precision but do not establish provenance authenticity by themselves. If the same untrusted actor can alter both artifact and expected hash/metadata, comparison may be internally consistent while proving little. Higher-risk delivery chains therefore need a trustworthy provenance/signing/control-plane model proportionate to the threat model; SLSA explicitly models the builder as part of the trust base.
+Trust is a relation among evidence, identity, policy and a threat model. Cryptography can protect evidence, but it cannot decide business/release authorization or eliminate compromise of the trusted signer/builder/verifier. Higher-risk pipelines should minimize and protect the trusted computing base and bind acceptance to explicit identities, purposes and artifacts.
 
 ## CROSS-REPOSITORY TRANSFER
 ### Web Manager
-`yhappcom/web-manager/STATUS.md`, checked 2026-09-16, already records the operational guard `same source ref ≠ same accepted PWA artifact when build/post-build/origin differs` and leaves production/device acceptance OPEN. S001 supplies reusable engineering evidence for that guard without taking ownership of web operations.
-
-Classification: **TRANSFER VALIDATION** — the Web Manager operational concern survives a language-independent executable artifact-identity fixture.
+Current `yhappcom/web-manager/STATUS.md`, checked 2026-09-16, records `same source ref ≠ same accepted PWA artifact when build/post-build/origin differs`. Validation A independently transfer-validates that mechanism. Validation B adds a reusable warning for future web release evidence: a checksum published or mutable in the same untrusted path as the artifact is not an independent authenticity anchor. Browser/origin/service-worker acceptance remains Web Manager/product-owned.
 
 No Web Manager canonical file was edited.
 
 ### Design Studio / Marketing Manager
-Not materially relevant to this bounded artifact-identity mechanism. Design semantics and marketing measurement do not determine artifact provenance.
+Not materially relevant to this bounded trust mechanism. No files edited.
 
 ### Product repositories
-No MintTap or LogMate implementation claim was required for this generic first block. No product repository was audited; production refs remain unknown for this study.
+No MintTap or LogMate implementation claim was required. No production ref is inferred.
 
 ## RELATED DOMAIN CHECK
-- **Foundations:** F001 separates source/runtime/process layers; S001 adds build/artifact/deployment identity and must not collapse them.
-- **Architecture:** A001-A003 show semantic boundaries/contracts; artifact provenance is orthogonal and can invalidate runtime evidence even when source architecture is unchanged.
-- **Mobile:** M001 remains untouched; Android/iOS/Flutter packaging/signing/runtime transfer is OPEN.
-- **Data:** persisted data migrations/backups need artifact/version identity when recovery depends on release version.
-- **Quality:** Q001 Test Evidence Contract directly used; executable evidence must identify the target artifact/environment.
+- **Foundations:** F001 source/runtime/process distinctions retained; direct Dart/Flutter execution remains OPEN after environment recheck on 2026-09-16.
+- **Architecture:** A001-A003 semantic contracts do not establish build/artifact authenticity.
+- **Mobile:** future package/signing/store transfer remains OPEN.
+- **Data:** migration/rollback evidence should bind to authorized application/schema artifact identity.
+- **Quality:** Q001 Test Evidence Contract used; expected digest/metadata must have an independent basis proportionate to risk.
 - **Systems:** owning track.
-- **Web Manager:** exact current status checked; finding transfer-validates its artifact-provenance guard.
+- **Web Manager:** current release-provenance guard checked; no external write.
 
 ## HANDOFFS
-- **TO Mobile:** future Flutter/device validation should record source ref, canonical build target/command, toolchain/dependency lock, post-build transforms, artifact identity, install/deploy target, build mode and device/OS.
-- **TO Quality:** release/e2e evidence should reject source-ref-only target identity when materially different artifacts can be produced.
-- **TO Data:** migration/rollback evidence should bind results to the exact application/schema artifact/version under test.
-- **TO Web Manager:** existing PWA provenance guard is supported by reusable S001 executable evidence; browser/origin/service-worker acceptance remains web/product-specific.
+- **TO Quality:** release/e2e validation should record where expected artifact identity/provenance came from and whether the same actor/path can rewrite both target and oracle metadata.
+- **TO Mobile:** future Android/iOS signing work must separate package digest, signer identity, certificate/key trust, store/distribution authorization and installed artifact/runtime evidence.
+- **TO Data:** rollback/migration allow-lists should identify authorized release/schema versions, not only checksum equality.
+- **TO Web Manager:** preserve independent trust for release metadata when moving from source-ref provenance to production artifact acceptance.
 
 ## OPEN / VALIDATION
-- distinguish integrity, authenticity, authorization and provenance with executable signed/unsigned metadata examples;
-- least-privilege/trust-boundary failure case beyond artifact identity;
-- build dependency/toolchain identity and reproducibility versus provenance;
-- mobile signing/package/store delivery chain transfer;
-- CI/CD trust boundaries, secret exposure and builder isolation;
-- resource boundaries and measurement fundamentals remain separate S001/S003 work.
+- public-key signing/certificate/key-rotation and compromise/revocation evidence;
+- least-privilege failure beyond release metadata;
+- CI/CD control-plane versus user-build-step trust boundary;
+- dependency/toolchain identity and reproducibility versus provenance;
+- Android/iOS/Flutter package signing/store delivery transfer;
+- resource measurement/profiling remains separate S003 work.
 
 ## CHANGE WATCH
-- SLSA current version checked as v1.2 on 2026-09-16; recheck before operational adoption.
-- NIST lists SSDF 1.2 as a public draft while SSDF 1.1 remains final; recheck final status before policy adoption.
+- SLSA current version checked as v1.2 on 2026-09-16.
+- NIST FIPS 186-5 is final; NIST notes a future correction/revision is planned, so operational cryptographic policy should recheck current errata/revision.
+- NIST SSDF 1.1 remains final while 1.2 is listed as public draft; recheck before policy adoption.
 
 ## Current conclusion
-The first Systems Foundation rule is: **validation attaches to a concrete artifact and environment, not to source code in the abstract.** Source revision is necessary provenance, but artifact identity, build path, trust base, deployment context and runtime observation are separate claims. Trust should be earned by evidence appropriate to the resource and threat model, not inherited from location, ownership, naming, or source-ref equality alone.
+Systems Foundation now distinguishes identity, integrity, authenticity, authorization and provenance. **A checksum can identify bytes without authenticating its source; authenticated evidence can establish origin without granting authorization; provenance can describe production history without making a compromised trusted builder safe.** Release validation therefore needs a concrete artifact plus an independent, policy-appropriate trust path—not merely matching metadata.
