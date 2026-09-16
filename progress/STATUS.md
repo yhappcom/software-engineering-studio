@@ -1,6 +1,6 @@
 # Software Engineering Studio Global Status
 
-Operating state: **ACTIVE — INITIALIZED / FOUNDATION ENTRY**
+Operating state: **ACTIVE — FOUNDATION STUDY UNDERWAY**
 Governance sync: 2026-09-16
 Canonical curriculum: `LEARNING_ROADMAP.md`
 
@@ -14,7 +14,7 @@ GitHub is canonical memory; chat is temporary context.
 
 | Specialist | Canonical research | Status | Prefix | Current state |
 | --- | --- | --- | --- | --- |
-| Computer Science & Programming Foundations | `research/foundations/` | `progress/FOUNDATIONS_STATUS.md` | `F###` | Stage 1 READY |
+| Computer Science & Programming Foundations | `research/foundations/` | `progress/FOUNDATIONS_STATUS.md` | `F###` | Stage 1 IN STUDY — F001 active |
 | Software Architecture & Design | `research/architecture/` | `progress/ARCHITECTURE_STATUS.md` | `A###` | Stage 1 READY |
 | Mobile & Cross-Platform Engineering | `research/mobile/` | `progress/MOBILE_STATUS.md` | `M###` | Stage 1 READY |
 | Data, Persistence & Distributed Systems | `research/data/` | `progress/DATA_STATUS.md` | `D###` | Stage 1 READY |
@@ -25,16 +25,32 @@ No specialist has passed Foundation yet. Repository initialization is governance
 
 ## Initial integrated learning queue
 
-The first cycle is intentionally cross-specialist rather than six isolated streams.
-
-1. **F001 — Program execution from source to running process/runtime** — lead: Foundations; supporting checks: Mobile, Systems, Quality.
-2. **D001 — State, persistence, durability and source-of-truth fundamentals** — lead: Data; supporting checks: Architecture, Quality, Mobile.
-3. **M001 — Flutter/Dart runtime and mobile application lifecycle foundations** — lead: Mobile; supporting checks: Foundations, Systems.
-4. **A001 — Boundaries, state ownership, coupling/cohesion and change pressure** — lead: Architecture; supporting checks: Data, Quality, Mobile.
-5. **Q001 — Correctness, specification, test oracle and reproducibility foundations** — lead: Quality; supporting checks: all tracks.
-6. **S001 — Trust/resource/build boundaries: security, performance and delivery foundations** — lead: Systems; supporting checks: Foundations, Mobile, Quality.
+1. **F001 — Program execution from source to running process/runtime** — ACTIVE; first source/model + executable OS-boundary evidence persisted.
+2. **D001 — State, persistence, durability and source-of-truth fundamentals** — READY.
+3. **M001 — Flutter/Dart runtime and mobile application lifecycle foundations** — READY.
+4. **A001 — Boundaries, state ownership, coupling/cohesion and change pressure** — READY.
+5. **Q001 — Correctness, specification, test oracle and reproducibility foundations** — READY.
+6. **S001 — Trust/resource/build boundaries: security, performance and delivery foundations** — READY.
 
 The balance loop may reorder these when a prerequisite or live project dependency is stronger.
+
+## First learning block — F001
+
+Canonical study: `research/foundations/F001_program_execution_foundations.md`
+
+Meaningful findings:
+- Dart native development JIT, native production AOT, and Dart web JS/Wasm paths are distinct execution/toolchain modes;
+- native AOT does not eliminate runtime services;
+- Flutter execution should be reasoned about as app/framework → engine/runtime → embedder/runner → OS, not as a single framework layer;
+- build/runtime mode must be attached to technical claims and tests;
+- an executable Linux/Python fixture confirmed a real OS process and explicit I/O/exit-status boundary.
+
+OPEN:
+- direct Dart SDK JIT/AOT execution validation;
+- Flutter debug/profile/release and Android/iOS runtime validation;
+- isolate semantics as a separate topic.
+
+No PASS was awarded because required Dart/Flutter executable evidence is incomplete.
 
 ## Current product-relevance map
 
@@ -74,4 +90,4 @@ The recurring learning loop should:
 
 ## Current next action
 
-Begin **F001 — Program Execution Foundations** unless a stronger live-project dependency appears before the first scheduled run.
+On the next run, attempt to close F001's direct Dart execution gap if the environment supports Dart. If not, preserve it as OPEN and use `methods/BALANCE_LOOP.md` to select the next independent high-value prerequisite, likely `D001` or `M001`, instead of manufacturing evidence.
