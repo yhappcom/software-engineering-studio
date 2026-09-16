@@ -14,6 +14,9 @@ Canonical reusable research is organized by specialist ownership.
 ### Foundations
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model established; first executable OS process/I/O-boundary evidence recorded; direct Dart JIT/AOT and Flutter runtime validation remain OPEN.
 
+### Data
+- `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model established; executable SQLite process-kill experiment distinguishes uncommitted mutation from committed reopen-visible state; LogMate transfer checked against exact main commit. Power-loss, mobile, WAL, migration, backup and distributed-sync evidence remain OPEN.
+
 ## Research note minimum contract
 
 A substantial note should contain, as applicable:
