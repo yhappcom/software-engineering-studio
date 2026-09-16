@@ -8,7 +8,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Specialist | Current state |
 | --- | --- |
 | Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN |
-| Architecture | Stage 1 IN STUDY — A001/A002 substantial; A003 semantic-contract block underway |
+| Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial Foundation blocks complete |
 | Mobile | Stage 1 READY |
 | Data | Stage 1 IN STUDY — D001 substantial first block |
 | Quality | Stage 1 IN STUDY — Q001 substantial first block |
@@ -21,26 +21,34 @@ No specialist has passed Foundation.
 ### A003 — Interfaces, Contracts, Invariants & API Evolution
 Canonical: `research/architecture/A003_interfaces_contracts_api_evolution.md`
 
-A003 now has executable evidence that source/call-shape compatibility does not imply semantic compatibility:
-- retained consumer contract expected `total_minutes()` to mean block time; fixture total was 150;
-- a same-name/same-signature replacement silently changed meaning to airborne time and returned 125, failing the retained oracle;
-- an additive alternative preserved old block-time semantics and exposed airborne total separately;
-- a second same-signature replacement strengthened its precondition by rejecting empty input that the old contract accepted as total 0, reproducing a separate compatibility break.
+A003 professional boundary was advanced from first semantic-break evidence to a bounded provider/consumer compatibility matrix:
+- weaker precondition preserved old legal callers; stronger precondition rejected old-legal `x=0`;
+- stronger postcondition preserved the retained guarantee; weaker postcondition violated it;
+- replacement account expanded reachable state to `balance=-1`, violating the retained non-negative invariant;
+- an additive JSON `source` field broke an existing strict V1 consumer that accepted exactly `minutes`, demonstrating that additive change shape is not itself compatibility proof.
 
-Primary method evidence: current Eiffel Design by Contract documentation was checked for precondition/postcondition/invariant responsibility semantics. Studio synthesis treats an operational contract as accepted input + returned meaning + state transition + invariant + failure semantics + observable side effects where relevant.
+Primary source added: Liskov/Wing 1994 behavioral-subtyping paper, checked via CMU-hosted author copy. The result reinforces the Studio rule that compatibility is `provider evolution × retained consumer properties × compatibility dimension`.
 
-Evidence limit: Python synchronous fixture only. No ABI, Dart/Flutter, persisted schema, protocol, mobile, or production compatibility claim.
+Evidence environment: Python 3.13.5, Linux 6.18.44 x86_64/glibc 2.41. Evidence is bounded to the fixture; no Dart/Flutter, ABI, persisted-schema, protocol-standard, or production claim.
 
 ## Cross-track handoffs
-- **Data:** D003 must separate schema/representation compatibility from semantic invariants and retained reader/writer contracts.
-- **Quality:** compatibility tests should use prior consumer expectations/invariants as independent oracles; compilation success is insufficient.
-- **Mobile:** plugin/platform API evolution requires behavioral/failure-contract evidence in addition to Dart signatures.
-- **Systems:** release/versioning work must name the compatibility dimension claimed: source, binary, data/schema, protocol, or behavioral.
+- **Data:** D003 should build explicit old/new reader-writer matrices and separate schema shape from semantic invariants.
+- **Quality:** retained consumer contracts/invariants are compatibility oracles; include failure semantics, not just values.
+- **Mobile:** plugin/platform upgrades require behavioral evidence beyond Dart signatures.
+- **Systems:** release/versioning must name the compatibility dimension and rollback claim.
 
 ## Current Balance Loop
-F001 direct Dart JIT/AOT and Flutter runtime validation remains OPEN because no trustworthy execution environment has become available; no simulated evidence was substituted.
+F001 direct Dart JIT/AOT and Flutter runtime validation was rechecked in the available execution environment: neither `dart` nor `flutter` executable is available. The gap remains OPEN; no simulated evidence was substituted.
 
-A003 remains the highest-value coherent continuation because its professional boundary is incomplete and directly constrains future LogMate ledger/import/sync contracts and MintTap calculation/data boundaries. Next evidence should build a provider/consumer compatibility matrix and test invariant evolution plus an additive change that is nevertheless breaking. M001 remains high product leverage but runtime-toolchain constrained; S001 remains the strongest independent alternative if Architecture becomes blocked.
+A003 is now a substantial Foundation block and should not be extended merely for Architecture rotation. Architecture as a track remains NOT PASS because architecture-vs-design-vs-implementation and refactoring/technical-debt fundamentals remain incomplete.
+
+Next-run candidate comparison should give particular weight to:
+1. **M001** — highest live MintTap/LogMate platform leverage, but executable Flutter evidence remains toolchain-constrained; source/model work can proceed only with explicit validation limits;
+2. **S001** — independent, high cross-track leverage for trust/resource/build boundaries and not blocked by Flutter execution;
+3. **Architecture Foundation closure** — useful but lower urgency than opening Mobile/Systems unless a live architecture decision requires it;
+4. **D002/Q002** — strong correctness leverage but currently less urgent than the untouched Mobile/Systems foundations.
+
+Balance Loop must choose from actual evidence opportunity, not this ordering mechanically.
 
 ## Evidence rule
 No PASS from reading alone. Expected progression where applicable:
