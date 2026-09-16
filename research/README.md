@@ -12,41 +12,25 @@ Canonical reusable research is organized by specialist ownership.
 ## Current studies
 
 ### Foundations
-- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model established; first executable OS process/I/O-boundary evidence recorded; direct Dart JIT/AOT and Flutter runtime validation remain OPEN.
+- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN because the current environment still has no `dart`/`flutter` executable.
 
 ### Architecture
-- `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Positive change-locality and over-abstraction counterexample evidence plus exact-ref LogMate transfer are complete.
-- `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **IN STUDY**. Parnas `uses` structure is connected to explicit authority/mutation/projection ownership. Executable second-writer fixture shows a derived projection reaching 210 while authority remains 150, the unauthorized write disappearing on rebuild, and a single-authority/revision path rejecting stale state then restoring invariant-consistent 210. A materially different dependency-structure comparison remains OPEN.
+- `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Positive change-locality, over-abstraction counterexample, exact-ref LogMate transfer.
+- `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **IN STUDY / substantial ownership + alternative-structure block complete**. Second-writer fixture reproduces authority/projection divergence and stale-state handling. A second fixture compares direct mechanism dependency with a policy-owned semantic contract: replacing file/string settings with remote/boolean settings forces direct policy change but leaves the semantic policy unchanged behind a new adapter. A001 counterevidence prevents interpreting this as “always add interfaces.” A003 contract/evolution evidence remains required.
 
 ### Data
-- `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model established; executable SQLite process-kill experiment distinguishes uncommitted mutation from committed reopen-visible state; LogMate transfer checked against exact main commit. Power-loss, mobile, WAL, migration, backup and distributed-sync evidence remain OPEN.
+- `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model + SQLite process-kill evidence; mobile/power-loss/migration/backup/distributed evidence remain OPEN.
 
 ### Quality
-- `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **IN STUDY / substantial first block complete**. IEEE SWEBOK v4.0a oracle/replication/testing-limits model integrated with executable deliberate-mutant evidence: weak oracle passed defective behavior, stronger exact/invariant oracles detected it, and seeded generated cases reproduced identically. The resulting Test Evidence Contract V1 was promoted into `methods/VALIDATION_STANDARD.md`.
+- `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **IN STUDY / substantial first block complete**. Weak oracle passed a deliberate defect; stronger exact/invariant oracles detected it; seeded cases reproduced identically; Test Evidence Contract promoted Studio-wide.
 
 ## Research note minimum contract
-
-A substantial note should contain, as applicable:
-
-1. problem/question and why it matters;
-2. scope and non-goals;
-3. authoritative sources/specifications and dates/versions where volatile;
-4. first-principles mechanism;
-5. implementation or worked example;
-6. executable validation and environment;
-7. failure cases and debugging/root-cause evidence;
-8. alternatives and trade-offs;
-9. `RELATED DOMAIN CHECK`;
-10. project-transfer implications and limits;
-11. `OPEN`, `VALIDATION`, `CHANGE WATCH` items;
-12. `HANDOFFS` when another track/repository can use the result.
+A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS.
 
 Do not create files merely to count activity. Prefer coherent integrated studies.
 
 ## Product evidence
-
 When a study inspects a real product, record:
-
 `repository → exact ref/tag/branch/commit → declared version if available → evidence date`.
 
 A product observation is not automatically reusable Studio truth. State why the mechanism transfers before promoting it.
