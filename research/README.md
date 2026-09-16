@@ -13,6 +13,7 @@ Canonical reusable research is organized by specialist ownership.
 
 ### Foundations
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN. Environment rechecked 2026-09-17: no trustworthy `dart`/`flutter` executable available.
+- `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — **IN STUDY / first integrated Foundation block complete**. Barrier-controlled circular-wait precondition, global lock-order alternative, mutual-exclusion/order/progress distinction, and bounded deadlock root-cause evidence. Direct Dart isolate/runtime and broader liveness/signaling evidence OPEN.
 
 ### Architecture
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
