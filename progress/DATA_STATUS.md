@@ -11,46 +11,39 @@ Build rigorous knowledge of data representation, integrity, persistence, transac
 ## Current evidence
 
 ### D001 — State, persistence, durability, source of truth and invariants
-**IN STUDY — substantial first block complete.**
-
-Canonical: `research/data/D001_state_persistence_durability_source_of_truth.md`
-
-Established state/persistence/durability/authority distinctions and SQLite rollback-journal application-process-kill evidence. Power-loss, mobile filesystem, migration, backup and distributed-sync claims remain outside that evidence.
+**IN STUDY — substantial first block complete.** Canonical: `research/data/D001_state_persistence_durability_source_of_truth.md`.
 
 ### D002 — Representation, files, databases, indexes and transaction fundamentals
-**IN STUDY — two integrated executable Foundation blocks complete.**
-
-Canonical: `research/data/D002_representation_files_database_indexes_transactions.md`  
-Fixtures: `research/data/fixtures/D002_representation_transaction_index.py`, `research/data/fixtures/D002_journal_mode_process_exit.py`
-
-Established serialization/publication/transaction/journal/durability/index distinctions plus real SQLite DELETE-vs-WAL application-process-exit evidence. Power-loss/mobile/performance evidence remains open.
+**IN STUDY — two integrated executable Foundation blocks complete.** Canonical: `research/data/D002_representation_files_database_indexes_transactions.md`.
 
 ### D003 — Schema evolution, migration, rollback and compatibility
-**IN STUDY — first integrated executable Foundation block complete.**
+**IN STUDY — two integrated executable Foundation blocks complete.**
 
 Canonical: `research/data/D003_schema_evolution_migration_rollback_compatibility.md`  
-Fixture: `research/data/fixtures/D003_schema_migration_compatibility.py`
+Fixtures: `research/data/fixtures/D003_schema_migration_compatibility.py`, `research/data/fixtures/D003_constraint_fk_migration_failure.py`
 
 Established with Python 3.13.5 / SQLite 3.46.1 / Linux evidence:
-- migration compatibility is relational across reader/writer/schema/migration state, not schema shape alone;
-- V2 expand + backfill + fallback-read + dual-write preserved the bounded old/new reader-writer contracts;
-- committing schema mutation separately from application-managed `user_version` produced a reopened mismatch: V2-shaped schema while metadata remained version 1;
-- putting schema change, backfill and `user_version` update in one explicit transaction and injecting failure before COMMIT rolled all three back to the V1 contract;
-- a V3 destructive contract removing `minutes` preserved migrated data for the new reader but caused the old reader to fail;
-- therefore migration success does not imply rollback-release/old-consumer compatibility.
+- migration compatibility is relational across reader/writer/schema/migration state;
+- expand/backfill/fallback-read/dual-write preserved bounded old/new contracts;
+- split schema/version publication created a mismatched state, while transactional failure before COMMIT restored V1;
+- destructive retirement broke the retained old reader;
+- a new CHECK-constrained transform failed on incompatible legacy data;
+- deliberately catching that statement error and continuing allowed `user_version=2` to be committed with an empty V2 copy and incompatible old state still present;
+- fail-closed handling plus explicit rollback restored the complete V1 contract;
+- disabling FK enforcement allowed an orphan to persist, and re-enabling enforcement did not repair it; `PRAGMA foreign_key_check` detected the violation.
 
-Primary SQLite docs checked: `ALTER TABLE`, `PRAGMA user_version`, atomic commit. Evidence does not transfer SQLite transactional-DDL semantics to other engines or Android/iOS without validation.
+Root-cause boundary: statement-level failure, transaction rollback, migration success, version publication and post-migration invariant validation are distinct. A migration needs an application-level success predicate; `COMMIT succeeded` is not enough when required errors were swallowed.
 
 ## Product transfer retained
 
 `yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`.
 
-Current exact-ref evidence describes configuration persistence, local ledger, Sync and Backup/Export as not implemented, so D003 is a transfer candidate rather than an existing-product migration finding. MintTap repository identity was not resolved from accessible GitHub repository search in this run; no MintTap implementation claim is made.
+Current exact-ref evidence described configuration persistence, local ledger, Sync and Backup/Export as not implemented, so D003 remains a transfer candidate. MintTap repository identity remains unresolved; no MintTap implementation claim is made.
 
 ## Queue
 - `D001` — substantial first block complete.
-- `D002` — two integrated Foundation mechanism blocks complete; platform/power/performance evidence OPEN.
-- `D003` — **IN STUDY / first integrated migration compatibility block complete**; downgrade, constraint/FK failure, backup/restore and mobile migration evidence OPEN.
+- `D002` — two integrated mechanism blocks complete; platform/power/performance evidence OPEN.
+- `D003` — **IN STUDY / two integrated migration blocks complete**; actual rollback-release, backup/restore and mobile migration evidence OPEN.
 - `D004` — Cache semantics and offline-first data ownership.
 - `D005` — Backup/restore, import/export and data-integrity verification.
 - `D006` — Replication, synchronization, consistency, idempotency and conflicts.
@@ -58,15 +51,15 @@ Current exact-ref evidence describes configuration persistence, local ledger, Sy
 ## Gate requirement
 Foundation PASS requires executable persistence examples, corruption/interruption/failure cases where feasible, explicit durability/consistency semantics, and recovery verification rather than happy-path writes only.
 
-Data Stage 1 remains **NOT PASS**. D001-D003 now establish authority/durability, representation/transaction/journal/index, and first migration compatibility/publication boundaries, but backup/restore, mobile-relevant storage behavior and distributed-system foundations remain open.
+Data Stage 1 remains **NOT PASS**. D001-D003 now cover authority/durability, representation/transaction/journal/index, migration compatibility/publication, and constraint/FK failure handling. Backup/restore, mobile-relevant storage behavior and distributed-system foundations remain open.
 
 ## Dependencies / handoffs
-- **Foundations:** F001 process boundary reused; direct Dart/Flutter execution remains OPEN after 2026-09-17 environment recheck.
-- **Architecture:** A003 retained consumer contracts directly constrain schema evolution.
-- **Mobile:** validate Android/iOS upgrade/startup/process-death migration behavior before product claims.
-- **Quality:** migration matrices need old/new reader-writer oracles plus injected interruption and recovery.
-- **Systems:** release rollback/artifact identity determines whether an old binary can encounter a new schema.
-- **Design Studio:** future migration/recovery UI must correspond to actual recoverability states.
+- **Foundations:** F001 direct Dart/Flutter execution remains OPEN after environment recheck.
+- **Architecture:** A003 retained consumer contracts and invariants constrain schema evolution.
+- **Mobile:** validate Android/iOS upgrade/startup/process-death migration behavior.
+- **Quality:** migration PASS oracle must include all required transforms and post-migration integrity/FK checks; caught errors must not publish a new version.
+- **Systems:** rollback artifact identity determines whether an old binary can encounter a new schema.
+- **Design Studio:** repair/quarantine/recovery UI must map to actual recoverability states.
 
 ## Next work
-Use Balance Loop. D003 should continue if downgrade/rollback-release or failed-transform evidence can close its professional boundary without simulating unavailable platform behavior. Otherwise D005 backup/restore is a strong independent prerequisite because migration safety depends on verified restoration, while M002 remains platform-dependent.
+D003's constraint/FK professional boundary is now materially stronger. Use Balance Loop rather than extending arbitrary migration variants. `D005` backup/restore is now the strongest independent prerequisite: migration safety requires proving a backup can be restored and accepted by a declared application/schema contract, not merely that a backup file was created. Actual rollback-release and mobile migration remain valuable when trustworthy runtime evidence becomes available.
