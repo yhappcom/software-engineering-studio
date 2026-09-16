@@ -84,6 +84,45 @@ If the production ref is unknown, say so. Never equate default branch with produ
 
 Project-specific code changes belong in product repositories. Studio research may contain bounded experimental code or fixtures only when their purpose is reusable learning/validation.
 
+## Historical regression preflight
+
+Before changing or diagnosing a subsystem with prior POC, incident, migration, compatibility, platform, or release evidence, inspect the relevant product archive/evidence and related specialist repositories for the **same symptom or failure class**.
+
+Record the result as one of:
+- `DIRECTLY APPLICABLE` — same mechanism and materially equivalent environment/artifact;
+- `TRANSFER CANDIDATE` — prior mechanism may apply but current ref/platform/build differs;
+- `NOT APPLICABLE` — scope differs in a way that invalidates transfer;
+- `CONTRADICTION` — current observation conflicts with prior evidence and needs reproduction.
+
+Do not repeat a previously isolated failure path merely because the current source tree is newer. Prior evidence does not automatically prove the current product PASS, but it **must become an input to the diagnostic plan** before inventing a new root cause.
+
+For recurring white-screen/startup/offline/cache/build failures, compare at minimum:
+- startup ordering and pre-first-frame awaits;
+- runtime/network/CDN dependencies;
+- local asset/font availability;
+- service-worker/cache generation and scope;
+- origin freshness/stale-client state;
+- exact browser/OS/device policy;
+- exact build/deploy pipeline.
+
+## Artifact provenance gate
+
+Validation attaches to an **artifact and environment**, not to source code in the abstract.
+
+For release, preview, PWA/offline, native-device, and cross-platform acceptance evidence, capture:
+
+`source ref → build target/command → toolchain/dependency lock → post-build transforms → artifact identity/hash when practical → deployment environment/origin → runtime/device/browser → observed result`.
+
+Two artifacts built from the same source are **not validation-equivalent** when their build flags, renderer/CDN policy, asset bundling, service-worker generation/patching, configuration, post-build transforms, or deployment origin differ materially.
+
+If a product repository defines a canonical build target or release script, acceptance intended to validate that product path must use it or an explicitly proven equivalent. A direct framework build that bypasses required post-build steps is a distinct artifact and may only prove that distinct path.
+
+When a test fails after a noncanonical build/deploy path:
+1. preserve the failure as evidence for that artifact;
+2. do not assign root cause to product logic, persistence, browser support, or platform behavior until artifact provenance is checked;
+3. reproduce with the canonical pipeline on an appropriately isolated environment/origin before escalating to code changes where feasible;
+4. convert any repeated human-memory dependency into a build/CI/release guard when practical.
+
 ## Handoff record
 
 A meaningful cross-repo handoff should contain:
@@ -92,6 +131,7 @@ A meaningful cross-repo handoff should contain:
 - **decision/problem**
 - **canonical source**
 - **product/ref/version** if applicable
+- **artifact/build/deployment provenance** when validation depends on runtime behavior
 - **finding**
 - **evidence level**
 - **impact on receiver**
@@ -104,7 +144,7 @@ A meaningful cross-repo handoff should contain:
 When repositories appear to disagree:
 
 1. do not overwrite either conclusion;
-2. verify dates, versions, definitions, scope, platform and product ref;
+2. verify dates, versions, definitions, scope, platform, product ref **and artifact provenance**;
 3. distinguish semantic/design requirement from implementation observation;
 4. reproduce the disputed behavior where feasible;
 5. record `CONTRADICTION` explicitly;
