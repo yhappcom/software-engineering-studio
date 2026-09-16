@@ -12,11 +12,12 @@ Canonical reusable research is organized by specialist ownership.
 ## Current studies
 
 ### Foundations
-- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN because the current environment still has no `dart`/`flutter` executable.
+- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN because the current environment still has no trustworthy `dart`/`flutter` execution evidence.
 
 ### Architecture
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Positive change-locality, over-abstraction counterexample, exact-ref LogMate transfer.
-- `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **IN STUDY / substantial ownership + alternative-structure block complete**. Second-writer fixture reproduces authority/projection divergence and stale-state handling. A second fixture compares direct mechanism dependency with a policy-owned semantic contract: replacing file/string settings with remote/boolean settings forces direct policy change but leaves the semantic policy unchanged behind a new adapter. A001 counterevidence prevents interpreting this as “always add interfaces.” A003 contract/evolution evidence remains required.
+- `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Authority/projection second-writer failure and materially different dependency-direction alternative comparison complete.
+- `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — **IN STUDY**. Same-signature semantic-result change and strengthened-precondition failures executable-tested; additive alternative preserved the old semantic operation. Compatibility matrix, invariant evolution and additive-breaking counterexample remain OPEN.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model + SQLite process-kill evidence; mobile/power-loss/migration/backup/distributed evidence remain OPEN.
