@@ -12,7 +12,7 @@ Canonical reusable research is organized by specialist ownership.
 ## Current studies
 
 ### Foundations
-- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN. Environment rechecked 2026-09-16: no trustworthy `dart`/`flutter` executable available.
+- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN. Environment rechecked 2026-09-17: no trustworthy `dart`/`flutter` executable available.
 
 ### Architecture
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
@@ -24,7 +24,7 @@ Canonical reusable research is organized by specialist ownership.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model + SQLite process-kill evidence; mobile/power-loss/migration/backup/distributed evidence remain OPEN.
-- `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — **IN STUDY / first integrated Foundation block complete**. JSON interrupted-publication failure, staged-publication alternative, SQLite rollback evidence, and index query-plan/result separation establish representation/publication/transaction/index as distinct mechanisms.
+- `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — **IN STUDY / two integrated Foundation blocks complete**. JSON publication failure/staging alternative, transaction rollback, index plan/result separation, and real SQLite DELETE-vs-WAL abrupt application-process-exit validation now separate semantic COMMIT from journal/recovery mechanism and from power-loss durability scope.
 
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Oracle/reproducibility evidence; Test Evidence Contract promoted Studio-wide.
