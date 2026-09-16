@@ -17,6 +17,9 @@ Canonical reusable research is organized by specialist ownership.
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model established; executable SQLite process-kill experiment distinguishes uncommitted mutation from committed reopen-visible state; LogMate transfer checked against exact main commit. Power-loss, mobile, WAL, migration, backup and distributed-sync evidence remain OPEN.
 
+### Quality
+- `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **IN STUDY / substantial first block complete**. IEEE SWEBOK v4.0a oracle/replication/testing-limits model integrated with executable deliberate-mutant evidence: weak oracle passed defective behavior, stronger exact/invariant oracles detected it, and seeded generated cases reproduced identically. The resulting Test Evidence Contract V1 was promoted into `methods/VALIDATION_STANDARD.md`.
+
 ## Research note minimum contract
 
 A substantial note should contain, as applicable:
