@@ -11,51 +11,48 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial Foundation blocks complete |
 | Mobile | Stage 1 IN STUDY — M001 first integrated Foundation block complete |
 | Data | Stage 1 IN STUDY — D001 substantial first block |
-| Quality | Stage 1 IN STUDY — Q001 substantial first block |
+| Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first integrated block |
 | Systems | Stage 1 IN STUDY — S001 two executable trust-boundary blocks complete |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### M001 — Flutter runtime/UI/lifecycle/platform boundary
-Canonical: `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md`  
-Fixture: `research/mobile/fixtures/M001_lifecycle_notification_gap.py`
+### Q002 — Test levels as evidence boundaries
+Canonical: `research/quality/Q002_test_levels_evidence_boundaries.md`  
+Fixture: `research/quality/fixtures/Q002_test_level_boundary.py`
 
-Current official Flutter/Dart/Android/iOS sources establish distinct app/framework/engine/embedder/OS layers, distinct Widget/Element/State/RenderObject roles, non-1:1 Flutter/platform lifecycle naming, and the explicit Flutter warning that applications must not rely on receiving every lifecycle notification.
+SWEBOK v4 and ISTQB CTFL v4.0.1 were used to ground component/unit, integration, system and acceptance distinctions in test object, objective, interactions and environment rather than a simple confidence hierarchy.
 
-A bounded executable model then compared two persistence policies. Saving only on modeled `paused` preserved an edit during orderly backgrounding but lost it when abrupt termination skipped that callback. Committing at the semantic mutation boundary preserved the modeled value in both sequences.
+Executable bounded evidence (Python 3.13.5/Linux): the same Service semantic path passed an isolated component test using a fake repository and a concrete control, while a deliberate concrete collaborator that silently dropped writes failed the integration oracle. Root cause: the isolated fake removed the mechanism containing the defect.
 
-Evidence boundary: Python 3.13.5 / Linux 6.18.44 x86_64 / glibc 2.41. This is a model-level failure demonstration, **not** Flutter/Android/iOS runtime, filesystem durability, power-loss, database or device evidence.
+Validated bounded conclusion: **component/unit PASS does not establish integration correctness**. Conversely, broader tests are not automatically stronger for every claim; breadth does not repair an invalid oracle and can worsen localization/nondeterminism. Test selection should match the mechanism and failure class relevant to the claim.
 
-### LogMate transfer scope
-`yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → 2026-09-16`.
-
-The exact pubspec confirms Flutter and Dart SDK `^3.10.7`, establishing stack relevance only. No lifecycle/persistence defect is inferred.
+Evidence limit: no Dart/Flutter/database/network/device/system-E2E execution claimed.
 
 ## Retained evidence
-- **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN. Environment rechecked this run: neither executable is available.
+- **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN. Environment rechecked: neither executable is available.
 - **D001:** state/persistence/durability/authority model + SQLite application-process-kill evidence.
-- **Q001:** weak-oracle defect + stronger exact/invariant oracle + reproducibility evidence; Test Evidence Contract promoted.
-- **A001-A003:** change pressure/information hiding, state ownership/dependency direction, semantic contract/API compatibility with positive/counterexample fixtures and bounded product transfer.
-- **S001:** artifact identity plus integrity/authenticity/authorization/provenance separation with two executable trust-boundary blocks.
+- **Q001:** weak-oracle defect + stronger exact/invariant oracle + reproducibility; Test Evidence Contract promoted.
+- **A001-A003:** information hiding/change pressure, state ownership/dependency direction, semantic contract/API compatibility.
+- **M001:** Flutter/runtime/UI/lifecycle source model + skipped-lifecycle-notification failure model.
+- **S001:** artifact identity plus integrity/authenticity/authorization/provenance separation.
 
 ## Cross-track handoffs
-- **Data:** durable commit/recovery must not rely solely on lifecycle notification arrival; distinguish UI state from durable domain state.
-- **Quality:** lifecycle validation needs skipped-callback/process-death cases and exact platform/device/build prestate, not orderly transitions only.
-- **Architecture:** Widget/State ownership is not automatically domain/data ownership.
-- **Systems:** framework-normalized lifecycle state is not an OS/platform guarantee; runtime evidence needs exact artifact/build/platform identity.
-- **LogMate advisory:** future local-ledger persistence should not use `paused`/`detached` as the sole commit boundary for user-entered flight data.
+- **Mobile:** lifecycle/process-death claims require tests that actually cross platform/process mechanisms; widget/component tests cannot establish OS behavior.
+- **Data:** D002 persistence/serialization/index/transaction claims should use real storage integration where those semantics are the target rather than fake repositories.
+- **Systems:** release/signing/artifact/deployment claims require exact artifact/environment evidence.
+- **Architecture:** contract tests can validate semantic boundaries, but substituted providers do not prove every concrete provider.
 
 ## Current Balance Loop
-F001 direct Dart/Flutter execution remains toolchain-blocked and was not simulated. Mobile is no longer untouched, but its strongest runtime/device claims remain open.
+F001 direct Dart/Flutter execution remains toolchain-blocked and was not simulated.
 
 Current highest-value candidates:
-1. `Q002` — test-level boundaries and trade-offs, because upcoming M002 process-death, D002 persistence and Systems release validation need explicit placement of unit/integration/system evidence;
-2. `D002` — files/serialization/database/index/transaction fundamentals, high direct leverage for LogMate local ledger and MintTap data integrity;
-3. `M002` — Android/iOS process lifecycle/termination/background semantics if a trustworthy platform-level failure/transfer method is available without pretending device execution.
+1. `D002` — serialization/files/database/index/transaction fundamentals, now strongly enabled by Q002's evidence-boundary discipline and directly relevant to future LogMate local ledger plus MintTap data integrity;
+2. continue `Q002` only if a trustworthy broader-system counterexample or exact product test transfer is available;
+3. `M002` — Android/iOS process lifecycle/termination/background semantics when trustworthy platform-level validation can be obtained.
 
-Selection should follow evidence opportunity and live-project risk, not rotation.
+Selection follows evidence opportunity and live-project risk, not rotation.
 
 ## Evidence rule
 No PASS from reading alone. Expected progression where applicable:
