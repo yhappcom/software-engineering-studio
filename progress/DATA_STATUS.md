@@ -51,31 +51,46 @@ Established with Python 3.13.5 / SQLite 3.46.1 / Linux evidence:
 - same-filesystem `os.replace` successfully published a valid candidate in the bounded POSIX fixture;
 - this does **not** establish power-loss durability, cross-filesystem behavior, active-WAL/open-handle safety, or Android/iOS publication semantics.
 
+### D006 — Replication, synchronization, consistency, idempotency and conflicts
+**IN STUDY — first integrated Foundation block complete.**  
+Canonical: `research/data/D006_replication_sync_consistency_idempotency_conflicts.md`  
+Fixture: `research/data/fixtures/D006_retry_conflict_semantics.py`
+
+Established with RFC 9110/current Firestore sources plus Python 3.13.5/Linux model evidence:
+- retry policy and idempotency are distinct; an applied mutation with lost acknowledgement followed by retry duplicated an unsafe increment from 10 to 20;
+- stable logical operation identity + bounded server deduplication kept the modeled effect at 10 under the same duplicate delivery;
+- delivery, application and acknowledgement are distinct states;
+- whole-record LWW converged but discarded one independent concurrent field update in the bounded model;
+- a fieldwise merge preserved both changes only because the fixture deliberately made the fields independent; it is not a universal conflict algorithm;
+- Firestore transaction callbacks may rerun under contention, so once-only application side effects must not be attached to callback execution without appropriate semantics.
+
+Evidence limit: deterministic single-process model only; no real network, backend, multi-device, FlutterFire, process-death, reorder/tombstone, security/replay or production claim.
+
 ## Product transfer retained
 `yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`.
 
-Prior exact-ref evidence described configuration persistence, local ledger, Sync and Backup/Export as not implemented, so D004/D005 remain transfer candidates rather than existing defect findings. MintTap repository identity remains unresolved; no MintTap implementation claim is made.
+Prior exact-ref evidence described configuration persistence, local ledger, Sync and Backup/Export as not implemented, so D004-D006 remain transfer candidates rather than existing defect findings. MintTap repository identity remains unresolved; no MintTap implementation claim is made.
 
 ## Queue
 - `D001` — substantial first block complete.
 - `D002` — two integrated mechanism blocks complete; platform/power/performance evidence OPEN.
 - `D003` — two integrated migration blocks complete; actual rollback-release and mobile migration evidence OPEN.
-- `D004` — **IN STUDY / first integrated cache-offline ownership block complete**; real SDK, durable pending queue, eviction/completeness and process-death evidence OPEN.
-- `D005` — two integrated backup-restore blocks complete; crash/power-loss, WAL/open-handle, corruption breadth, version matrix and mobile behavior OPEN.
-- `D006` — Replication, synchronization, consistency, idempotency and conflicts.
+- `D004` — first integrated cache-offline ownership block complete; real SDK/durable pending/process-death evidence OPEN.
+- `D005` — two integrated backup-restore blocks complete; crash/power-loss/WAL/mobile behavior OPEN.
+- `D006` — **IN STUDY / first integrated retry-conflict block complete**; reorder, tombstone/delete, operation-vs-state sync, real multi-writer/backend evidence OPEN.
 
 ## Gate requirement
 Foundation PASS requires executable persistence examples, corruption/interruption/failure cases where feasible, explicit durability/consistency semantics, and recovery verification rather than happy-path writes only.
 
-Data Stage 1 remains **NOT PASS**. D001-D005 now cover authority/durability, representation/transaction/journal/index, migration compatibility/publication/constraint failures, cache/offline ownership, and restore acceptance/publication safety. Real mobile storage/cache behavior, stronger interruption/durability, and distributed-system foundations remain open.
+Data Stage 1 remains **NOT PASS**. D001-D006 now span authority/durability, representation/transactions, migration, cache/offline ownership, restore, and first replication/idempotency/conflict mechanics. Real mobile/backend behavior and stronger distributed failure evidence remain open.
 
 ## Dependencies / handoffs
-- **Foundations:** F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
-- **Architecture:** confirmed base, pending mutation and derived projection are separate semantic ownership roles even if physically colocated.
-- **Mobile:** validate Android/iOS/FlutterFire offline write, pending-state persistence, process death, reconnect and cache behavior.
-- **Quality:** distinguish local visibility from backend acknowledgement; test stale refresh, cache miss, rejection and reconnect.
-- **Systems:** persistent cache confidentiality, eviction/resource policy and durable publication are separate claims.
-- **Design Studio:** future sync/recovery UI must map confirmed/pending/failed states accurately.
+- **Foundations:** F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17; F004-F006 will deepen ordering/async/network mechanisms.
+- **Architecture:** operation identity/conflict unit and confirmed/pending ownership are semantic contracts.
+- **Mobile:** validate process-death/connectivity/retry behavior on exact eventual sync stack.
+- **Quality:** Q003/Q006 should include lost ACK, duplicate/reordered delivery and concurrent writer schedules.
+- **Systems:** replay/security identity is distinct from correctness idempotency identity.
+- **Design Studio:** future sync/conflict UI must map local/pending/acknowledged/conflicted states accurately.
 
 ## Next work
-D004's first ownership failure boundary is now established. Balance Loop should compare continuation into a real SDK pending-write/cache experiment against `D006` distributed vocabulary/replication-conflict foundations, `Q003` nondeterminism, and `M002/M003`. If no trustworthy Dart/Flutter/mobile SDK environment is available, D006 is the strongest independent Data prerequisite because offline-first semantics become unsafe once multiple writers/retries/conflicts are introduced.
+Use Balance Loop. D006 now closes the previously untouched Stage-1 replication/idempotency/conflict prerequisite at first-block depth. Strong next candidates are `Q003` nondeterminism/concurrency because it supplies schedule/order validation needed to deepen D006, or continue D006 with reorder/tombstone only if that professional boundary yields stronger executable evidence. Direct Dart/Flutter execution should still be attempted whenever a trustworthy SDK becomes available.
