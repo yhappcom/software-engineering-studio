@@ -15,20 +15,20 @@ GitHub is canonical memory; chat is temporary context.
 | Specialist | Canonical research | Status | Prefix | Current state |
 | --- | --- | --- | --- | --- |
 | Computer Science & Programming Foundations | `research/foundations/` | `progress/FOUNDATIONS_STATUS.md` | `F###` | Stage 1 IN STUDY — F001 open validation |
-| Software Architecture & Design | `research/architecture/` | `progress/ARCHITECTURE_STATUS.md` | `A###` | Stage 1 READY |
+| Software Architecture & Design | `research/architecture/` | `progress/ARCHITECTURE_STATUS.md` | `A###` | Stage 1 READY — A001 next high-leverage block |
 | Mobile & Cross-Platform Engineering | `research/mobile/` | `progress/MOBILE_STATUS.md` | `M###` | Stage 1 READY |
 | Data, Persistence & Distributed Systems | `research/data/` | `progress/DATA_STATUS.md` | `D###` | Stage 1 IN STUDY — D001 substantial first block complete |
-| Quality, Testing & Reliability | `research/quality/` | `progress/QUALITY_STATUS.md` | `Q###` | Stage 1 READY |
+| Quality, Testing & Reliability | `research/quality/` | `progress/QUALITY_STATUS.md` | `Q###` | Stage 1 IN STUDY — Q001 substantial first block complete |
 | Systems, Security, Performance & Delivery | `research/systems/` | `progress/SYSTEMS_STATUS.md` | `S###` | Stage 1 READY |
 
-No specialist has passed Foundation yet. Two tracks now contain executable evidence; that is progress, not a maturity gate pass.
+No specialist has passed Foundation yet. Foundations, Data and Quality now contain executable evidence; this advances maturity but does not satisfy their full Stage 1 gates.
 
 ## Current integrated learning queue
 
 1. **F001 — Program execution from source to running process/runtime** — IN STUDY; source/model + executable OS-boundary evidence complete; direct Dart/Flutter execution remains OPEN because the current validation environment does not provide Dart/Flutter SDKs.
 2. **D001 — State, persistence, durability and source-of-truth fundamentals** — IN STUDY; first-principles authority model + executable process-crash persistence evidence complete.
-3. **Q001 — Correctness, specification, test oracle and reproducibility foundations** — READY; now has concrete F001/D001 evidence to reuse.
-4. **A001 — Boundaries, state ownership, coupling/cohesion and change pressure** — READY; D001 provides a concrete mutation-authority/SSOT dependency.
+3. **Q001 — Correctness, specification, test oracle and reproducibility foundations** — IN STUDY; substantial first block complete and Studio-wide validation contract promoted.
+4. **A001 — Abstraction, information hiding, cohesion, coupling and change pressure** — READY; now has concrete execution/data/quality contracts to integrate.
 5. **M001 — Flutter/Dart runtime and mobile lifecycle foundations** — READY but direct executable claims remain tooling/platform dependent.
 6. **S001 — Trust/resource/build boundaries** — READY.
 
@@ -79,21 +79,56 @@ Checked exact product evidence:
 
 The current product README states that core operations are local/on-device, a local ledger is planned before backup/owner Sync, and cloud connectivity is layered above local operation. Engineering implication: future implementation must distinguish local durable commit, sync acknowledgement, backup state and derived totals/search. No final storage engine or synchronization algorithm is inferred.
 
-## Cross-repository handoffs now available
+## Q001 — Correctness, Specification, Oracle & Reproducibility
 
-- **Architecture:** D001's mutation authority and source-of-truth contract should constrain A001 boundary design.
-- **Quality:** F001/D001 provide concrete examples for test-context labeling and failure-model construction; process kill/interruption should become explicit test classes.
-- **Mobile:** mobile lifecycle/process/storage behavior must be separately validated rather than inferred from Linux SQLite.
-- **Systems:** journaling/synchronous/performance/security/release trade-offs remain separate production evidence.
-- **Design Studio Interaction/Content:** `saved`, `syncing`, `synced`, `failed`, `unknown` language/state must reflect actual engineering commit/sync boundaries.
+Canonical: `research/quality/Q001_correctness_specification_oracle_reproducibility.md`
+
+Primary professional reference: IEEE Computer Society SWEBOK Guide V4.0a, Software Testing KA.
+
+Meaningful findings:
+- test pass is bounded evidence relative to a claim/specification/property, selected input/state, oracle and environment; it is not global correctness proof;
+- specification and oracle are related but distinct: the former defines required behavior/property, while the latter decides a concrete observed outcome;
+- a real defective implementation can pass a real executable test if the oracle is too weak;
+- failure observation and root-cause proof are separate stages;
+- reproducibility requires preserving enough ref/environment/input/configuration information to reconstruct relevant conditions;
+- fixed seed controls one source of randomness but does not establish general determinism.
+
+Executable evidence:
+- Python 3.13.5 / Linux;
+- deliberate mutant silently ignored negative ledger entries;
+- weak positive-only oracle passed both correct and mutant implementations;
+- exact-value and signed-symmetry oracles rejected the mutant;
+- deterministic seed `20260916` generated 100 cases with SHA-256 `81efdf1e5bd528f37007ee1759cf43cb3be44b470768e357c51c799d6b9a4857`;
+- mutant failed 75/100 generated cases, correct implementation failed 0/100;
+- two unchanged runs reproduced identical stdout, case hash and failure counts.
+
+Evidence limit: this does not prove the correct implementation globally correct and does not validate Dart/Flutter, MintTap or LogMate.
+
+### Studio-wide method promotion
+
+`methods/VALIDATION_STANDARD.md` now includes the Test Evidence Contract V1:
+
+`CLAIM → SPEC/PROPERTY → TARGET → INPUT/STATE → ORACLE → ENVIRONMENT → OBSERVATION → VERDICT → FAILURE MODEL → REPRODUCTION DATA → EVIDENCE LIMIT`.
+
+This contract applies across all six tracks where executable evidence is material.
+
+## Cross-repository / cross-track handoffs now available
+
+- **Architecture:** combine F001 execution boundaries, D001 mutation authority/SSOT and Q001 independently observable contracts/oracles in A001.
+- **Data:** future migration/backup/sync tests should include explicit specification/oracle/reproduction/evidence-limit fields.
+- **Mobile:** lifecycle/process-death tests must record platform/device/build/lifecycle prestate and distinguish process death from widget/route disposal.
+- **Systems:** release/performance/security checks need claim-specific oracles and configuration/build identity rather than generic exit-code success.
+- **Design Studio Interaction/Content:** user-facing `saved`, `syncing`, `synced`, `failed`, `unknown` states should map to actual engineering contracts that can be independently observed/tested.
+- **Web Manager:** browser/runtime/network/cache evidence needs explicit environment and transfer limits.
+- **Marketing Manager:** analytics/ad instrumentation correctness requires event-definition/version semantics, not merely SDK emission.
 
 ## Product-relevance map
 
 ### MintTap
-Future transfer areas: Flutter architecture, Firebase/Firestore semantics, analytics/ad instrumentation, calculation correctness, persistence/data integrity, release/version auditing, performance, privacy/security and regression validation. Exact refs required.
+Future transfer areas: Flutter architecture, Firebase/Firestore semantics, analytics/ad instrumentation, calculation correctness, persistence/data integrity, release/version auditing, performance, privacy/security and regression validation. Exact refs required. Q001 made no new MintTap code claim.
 
 ### LogMate
-High-value engineering areas: local ledger, offline-first persistence, import, backup/restore, owner Sync, conflict handling, mobile lifecycle, cross-platform semantic consistency and testability. D001 now supplies the initial persistence/authority contract.
+High-value engineering areas: local ledger, offline-first persistence, import, backup/restore, owner Sync, conflict handling, mobile lifecycle, cross-platform semantic consistency and testability. D001 supplies the initial persistence/authority contract; Q001 supplies the future oracle/reproducibility discipline. Q001 did not validate LogMate implementation code.
 
 ## Evidence rule
 
@@ -101,8 +136,12 @@ No PASS from reading alone. Expected progression where applicable:
 
 `SOURCE → MODEL → EXECUTABLE EXAMPLE → FAILURE → DEBUG/ROOT CAUSE → ALTERNATIVE → TRANSFER → PRODUCTION EVIDENCE`.
 
+Substantial executable evidence should additionally follow `methods/VALIDATION_STANDARD.md` and preserve its Test Evidence Contract.
+
 ## Current next action
 
-Use `methods/BALANCE_LOOP.md` rather than forcing F001 while Dart/Flutter execution is unavailable.
+Highest-value next integrated block is **A001 — Abstraction, information hiding, cohesion, coupling and change pressure**.
 
-Highest-value next integrated block is **Q001 — Correctness, specification, test oracle and reproducibility foundations**, because it can reuse both F001 and D001 and improves the evidence quality of every later specialist. `A001` is the next strong alternative if a project-architecture dependency becomes urgent.
+Reason: F001 now supplies execution boundaries, D001 supplies logical data authority/invariants, and Q001 supplies independently observable contracts and evidence discipline. Architecture can integrate these into a reusable rule for deciding where state, dependencies and change boundaries should live before Flutter-specific implementation choices are studied.
+
+`Q002` remains the next Quality-specific topic; `M001` remains high priority when trustworthy Flutter/mobile execution evidence is available.
