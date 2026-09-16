@@ -33,6 +33,7 @@ Canonical reusable research is organized by specialist ownership.
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
+- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / first integrated Foundation block complete**. Determinism/reproducibility/flakiness distinctions plus deliberately widened shared-state lost-update failure, synchronized alternative and D006 event-order transfer. Deeper schedule exploration, harness-vs-SUT flake isolation and Dart/network transfer OPEN.
 
 ### Systems
 - `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / two integrated executable blocks complete**.
