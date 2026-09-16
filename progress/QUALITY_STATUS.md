@@ -11,72 +11,49 @@ Build engineering capability to define correctness, design tests with valid orac
 ## Current evidence
 
 ### Q001 — Correctness, specification, test oracle and reproducibility
-**IN STUDY — substantial Foundation block complete.**
+**SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed.**
 
-Canonical study: `research/quality/Q001_correctness_specification_oracle_reproducibility.md`  
+Canonical: `research/quality/Q001_correctness_specification_oracle_reproducibility.md`
 Fixture: `research/quality/fixtures/Q001_oracle_reproducibility.py`
 
-Established:
-- a test verdict is meaningful only relative to a specification/property, selected input/state, oracle and execution context;
-- specification defines required behavior/property, while the oracle decides whether a concrete observed outcome satisfies it;
-- a fully executable test can still be weak evidence when its oracle is incomplete or coupled to the implementation;
-- green tests do not establish global correctness or absence of latent faults;
-- failure observation and root-cause proof are separate evidence stages;
-- reproducibility requires enough environment/input/configuration/ref context for another execution to reconstruct the relevant conditions;
-- deterministic seed control is bounded and must not be confused with global program determinism.
+Established independent specification/oracle discipline, deliberate weak-oracle defect evidence, invariant/exact oracles, seeded reproducibility, and the Studio-wide Test Evidence Contract V1 in `methods/VALIDATION_STANDARD.md`.
 
-Executable evidence:
-- Python 3.13.5 / Linux;
-- deliberate mutant ignored negative ledger entries;
-- weak positive-only oracle passed both correct and defective implementations;
-- exact-value oracle detected two bounded examples in the mutant;
-- specification-derived signed-symmetry invariant rejected the mutant;
-- deterministic seed `20260916` generated 100 cases with case-set SHA-256 `81efdf1e5bd528f37007ee1759cf43cb3be44b470768e357c51c799d6b9a4857`;
-- the mutant failed 75/100 generated cases while the correct implementation failed 0/100;
-- two unchanged executions produced identical complete stdout, case hash and failure counts.
+### Q002 — Test levels, evidence boundaries and trade-offs
+**IN STUDY — first integrated Foundation block complete.**
 
-The result is deliberately bounded. It does not prove the correct implementation globally correct, does not establish Dart/Flutter behavior, and does not validate MintTap or LogMate.
+Canonical: `research/quality/Q002_test_levels_evidence_boundaries.md`
+Fixture: `research/quality/fixtures/Q002_test_level_boundary.py`
 
-## Studio-wide method promoted
+New evidence:
+- SWEBOK v4 and ISTQB CTFL v4.0.1 distinguish test levels by target/objective/interactions/environment rather than prestige;
+- test level is modeled as an evidence boundary: target + real/substituted collaborators + crossed runtime/platform boundaries + environment + oracle + observable failure classes;
+- executable Python fixture: isolated Service test with fake repository PASS, concrete control PASS, deliberate real-collaborator write-drop integration FAIL;
+- root cause: the fake substituted away the mechanism containing the defect;
+- therefore component/unit PASS does not establish integration correctness;
+- broader tests are not automatically superior: breadth can increase relevant mechanism coverage while worsening localization/nondeterminism, and cannot repair an invalid oracle.
 
-Q001 produced the **Test Evidence Contract V1**, now integrated into `methods/VALIDATION_STANDARD.md`:
-
-`CLAIM → SPEC/PROPERTY → TARGET → INPUT/STATE → ORACLE → ENVIRONMENT → OBSERVATION → VERDICT → FAILURE MODEL → REPRODUCTION DATA → EVIDENCE LIMIT`.
-
-All tracks should use this chain for substantial executable evidence when applicable.
+Evidence limit: no Dart/Flutter/database/network/device/system E2E execution was claimed.
 
 ## Initial queue
-- `Q001` — **IN STUDY / substantial first block complete**.
-- `Q002` — Unit/integration/system/e2e test boundaries and trade-offs.
+- `Q001` — substantial Foundation block complete.
+- `Q002` — **IN STUDY** — first integrated test-level boundary block complete; broader system-level counterexample/transfer still open.
 - `Q003` — Determinism, nondeterminism, concurrency and flaky-test mechanics.
 - `Q004` — Property-based/model-based testing and invariant checking.
 - `Q005` — Debugging, fault isolation, observability and crash analysis.
 - `Q006` — Fault injection, recovery verification and regression governance.
 
 ## Gate requirement
-Foundation PASS requires tests that can fail for the right reason, at least one reproduced defect/failure path, root-cause reasoning, and explicit distinction between test coverage/activity and actual correctness evidence.
-
-Q001 satisfies the early oracle/reproducibility prerequisite and includes a deliberately reproduced defect, but Quality Stage 1 is **not PASS**. Test-level boundaries, nondeterminism/flakiness, root-cause/debugging, observability, recovery and regression evidence remain open.
+Foundation PASS requires tests that can fail for the right reason, reproduced defect/failure paths, root-cause reasoning, explicit test-level/evidence boundaries, and foundational debugging/recovery/regression understanding. Quality Stage 1 is **not PASS**.
 
 ## Dependencies / handoffs
-- Foundations: attach runtime/build/process context to runtime-sensitive tests.
-- Data: D001's SQLite SIGKILL result is claim-scoped evidence; future migration/backup/sync fixtures should record explicit oracle and reproduction contracts.
-- Architecture: contracts/invariants should be independently observable so tests do not clone internal implementation.
-- Mobile: lifecycle/process-death/background tests must identify exact platform/device/build/lifecycle prestate.
-- Systems: release/performance/security checks need claim-specific oracles and configuration identity.
-- Design Studio: interaction/content semantic contracts may be upstream specifications for observable engineering states.
-- Web Manager: browser/network/runtime evidence needs exact environment and route/cache/network context.
-- Marketing Manager: instrumentation correctness requires event semantic/version oracles, not merely SDK event presence.
-
-## Product transfer
-
-LogMate product context reused from the prior exact audit:
-
-`yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → 2026-09-16`.
-
-No LogMate code was validated by Q001. Methodological transfer only: future ledger calculations, import duplicate/review logic, durable commit, backup and synchronization require independent product/domain oracles and reproducible fixtures.
-
-No MintTap repository was audited in Q001.
+- Foundations: attach runtime/build/process context; F001 Dart/Flutter execution remains OPEN.
+- Architecture: A003 contracts can supply test properties, but fake-provider tests do not prove every provider implementation.
+- Mobile: lifecycle/process-death/background claims require exact platform/device/build/prestate and tests that cross those mechanisms.
+- Data: storage/transaction/durability claims require real persistence mechanisms where relevant; fake repositories cannot establish them.
+- Systems: artifact/release/security checks require claim-specific environment and artifact identity.
+- Design Studio: interaction semantics can become acceptance specifications when materially relevant.
+- Web Manager: browser/PWA tests need browser/network/cache/origin/artifact context.
+- Marketing Manager: instrumentation correctness requires semantic event/version oracles, not SDK presence.
 
 ## Next work
-Use the Balance Loop. Q002 is the next Quality-specific prerequisite, but Studio-wide leverage may now favor `A001` because F001, D001 and Q001 together provide execution, authority and validation contracts that architecture can integrate. Do not remain in Quality merely for equal-time rotation.
+Use Balance Loop. Q002 should continue only if a trustworthy broader-system counterexample or product transfer is available; otherwise D002 now has high leverage because Q002 supplies the evidence-boundary discipline needed to test real serialization/database/index/transaction mechanisms.
