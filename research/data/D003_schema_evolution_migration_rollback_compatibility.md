@@ -1,155 +1,148 @@
 # D003 — Schema Evolution, Migration, Rollback & Compatibility
 
-Status: **IN STUDY — first integrated executable Foundation block complete**  
+Status: **IN STUDY — two integrated executable Foundation blocks complete**  
 Date: 2026-09-17  
 Lead: Data, Persistence & Distributed Systems
 
 ## Problem
 
-A schema migration is not merely a new table shape. It is an evolution protocol across persisted representation, application readers/writers, migration metadata, transaction boundaries, and rollback/recovery expectations. D003 asks which combinations remain compatible and what happens when migration publication is interrupted.
+A schema migration is not merely a new table shape. It is an evolution protocol across persisted representation, application readers/writers, migration metadata, transaction boundaries, validation constraints, and rollback/recovery expectations.
 
 ## SOURCE
 
 Primary SQLite documentation checked 2026-09-17:
 
-- SQLite `ALTER TABLE` documents supported schema changes and, for arbitrary table redesign, a transaction-wrapped create/copy/drop/rename procedure with integrity/foreign-key checks before commit.
-- SQLite `PRAGMA user_version` exposes an application-controlled integer in the database header; SQLite itself assigns no semantics to it.
-- SQLite atomic-commit documentation defines transaction atomicity as all changes in a transaction occurring or none occurring, subject to the documented mechanism/failure assumptions.
+- `ALTER TABLE` documents arbitrary table redesign as a transaction-wrapped create/copy/drop/rename procedure and explicitly includes `foreign_key_check`/integrity validation before commit.
+- `PRAGMA user_version` is application-controlled metadata; SQLite assigns it no schema meaning.
+- transaction documentation distinguishes statement failure from transaction rollback: under the default ABORT conflict behavior a violating statement is backed out while earlier statements in the transaction can remain and the transaction stays active.
+- foreign-key enforcement is connection configuration and should be set explicitly rather than assuming a default; `PRAGMA foreign_key_check` reports persisted violations.
 
 ## SYNTHESIS — migration is a protocol, not a shape
 
-Useful model:
-
-`old persisted contract → compatibility window → schema/data transform → migration metadata → publication/commit → new persisted contract → old-contract retirement`
+`old persisted contract → compatibility window → schema/data transform → invariant/FK validation → migration metadata → publication/commit → new persisted contract → old-contract retirement`
 
 Compatibility is relational across at least:
 
 `reader version × writer version × stored schema/data version × migration state`.
 
-A schema can be structurally valid and still be operationally incompatible with a retained reader/writer. Likewise, application migration metadata can be stale even when the physical schema change succeeded if those publications are split.
+## EXECUTABLE VALIDATION — Block 1: compatibility/publication
 
-## EXECUTABLE VALIDATION
+Fixture: `research/data/fixtures/D003_schema_migration_compatibility.py`  
+Environment: Python 3.13.5 / SQLite 3.46.1 / Linux.
 
-Fixture: `research/data/fixtures/D003_schema_migration_compatibility.py`
+- V2 expand + backfill + fallback-read + dual-write preserved the bounded old/new reader-writer contracts.
+- Deliberately splitting physical schema mutation from `user_version` publication produced V2-shaped schema with `user_version=1`.
+- Putting schema change, backfill and version update in one explicit transaction and injecting failure before COMMIT restored the V1 schema/data/version contract.
+- V3 destructive retirement of `minutes` preserved migrated data for the new reader but caused the old reader to fail.
 
-Environment:
-- Python 3.13.5
-- SQLite 3.46.1
-- Linux
+**CONTRADICTION:** migration success does not imply rollback-release/old-consumer compatibility.
 
-### Block 1A — expand compatibility window
+## EXECUTABLE VALIDATION — Block 2: transform/constraint/FK failure
 
-V1 stores `flights(id, minutes)`. V2 adds nullable `duration_seconds`, backfills it, lets the new reader fall back to `minutes*60`, and lets the new writer dual-write both representations.
+Fixture: `research/data/fixtures/D003_constraint_fk_migration_failure.py`  
+Environment: Python 3.13.5 / SQLite 3.46.1 / Linux.
 
-After migration:
-- old writer inserted `B=90 minutes`;
-- new writer inserted `C=7200 seconds` while also retaining `minutes=120`;
-- old reader observed A=60, B=90, C=120;
-- new reader observed A=3600, B=5400, C=7200;
-- `user_version=2`.
+### 2A — catching a transform error and continuing can falsely publish a new version
 
-**VALIDATION:** the bounded expand/dual-read/dual-write protocol preserved both retained reader contracts for these operations.
+The proposed V2 table strengthened the persisted invariant to `seconds >= 0`. Legacy input deliberately contained a row that mapped to negative seconds. `INSERT ... SELECT` into the V2 table failed with `CHECK constraint failed: seconds>=0`.
 
-**EVIDENCE LIMIT:** this does not prove every expand/contract migration safe. Concurrent processes, large datasets, triggers/FKs, app downgrade, replication, mobile packaging and production rollout are outside this fixture.
+A deliberately weak migration caught that statement error, continued, set `user_version=2`, and COMMITted. Reopen/current observations were:
 
-### Block 1B — split publication failure
+- `user_version=2`;
+- both `flights` and empty `flights_v2` existed;
+- the old table contained two rows, including the incompatible legacy row;
+- the V2 copy contained zero rows.
 
-A deliberately weak migration committed `ALTER TABLE ... ADD COLUMN duration_seconds` and then simulated interruption before updating `PRAGMA user_version`.
+**FAILURE CASE:** a statement-level constraint failure did not automatically make the application migration protocol fail. The application swallowed the error and published V2 metadata anyway.
 
-Reopen observation:
-- physical columns: `id`, `minutes`, `duration_seconds`;
-- application migration metadata: `user_version=1`.
+**ROOT CAUSE:** SQLite's default ABORT behavior backs out the failing statement but does not necessarily roll back prior statements or end the explicit transaction. Migration success therefore requires an application-level success predicate and explicit error handling; `COMMIT succeeded` is not sufficient if required transform/validation steps failed earlier.
 
-**FAILURE CASE:** schema shape and application version metadata disagreed because they were published in separate commit boundaries.
+### 2B — fail-closed transaction alternative
 
-**ROOT CAUSE:** `user_version` is application-managed metadata, not an automatically synchronized description of schema shape. Splitting schema mutation and metadata update allows an intermediate state that either side alone cannot rule out.
+The comparison protocol treated the same transform error as migration failure and explicitly rolled back the transaction. Observation:
 
-### Block 1C — transactional migration rollback alternative
-
-Schema addition, backfill and `user_version=2` were placed in one explicit transaction. A deliberate exception was injected before COMMIT and the transaction rolled back.
-
-Reopen/current-connection observation after rollback:
-- columns returned to `id`, `minutes`;
 - `user_version=1`;
-- baseline A=60 remained readable by the old contract.
+- only original `flights` and `pilots` tables remained;
+- the deliberately inserted incompatible row was also rolled back;
+- original F1 remained.
 
-**VALIDATION:** for this SQLite operation set and failure point, the explicit transaction preserved the old schema/data/version contract rather than exposing the partially migrated state.
+**VALIDATION:** for this SQLite fixture and failure point, fail-closed handling plus transaction rollback preserved the complete V1 contract.
 
-### Block 1D — contract phase / destructive retirement
+### 2C — foreign-key enforcement and validation are separate operational obligations
 
-A V3 rebuild retained only `duration_seconds` and removed `minutes`. Migrated data remained valid for the V3 reader, but the old reader failed with `no such column: minutes`.
+A separate case explicitly disabled FK enforcement, inserted an orphan `pilot_id='MISSING'`, committed it, then re-enabled enforcement. `PRAGMA foreign_key_check` returned the persisted violation.
 
-**CONTRADICTION:** `migration succeeded` does not imply `old application remains compatible`.
+**CONTRADICTION:** `foreign_keys=ON now` does not prove that already persisted data satisfies the FK invariant. Validation of migrated data is a separate step.
 
-The compatibility break was caused by retiring a representation still required by the old consumer contract, not by corrupt data.
+**ENGINEERING JUDGMENT:** when a migration procedure temporarily relaxes enforcement, acceptance should include explicit invariant/FK checks before publication. Do not treat configuration restoration as data validation.
 
-## Compatibility matrix from the bounded fixture
+## Compatibility matrix from bounded evidence
 
-| Stored contract | Old reader | Old writer | New reader | New writer |
+| Stored contract/state | Old reader | Old writer | New reader | New writer |
 | --- | --- | --- | --- | --- |
-| V1 minutes-only | PASS | PASS | not claimed without migration-aware handling | not claimed |
-| V2 expanded + backfilled | PASS | PASS | PASS via fallback | PASS via dual-write |
-| V3 seconds-only | FAIL | FAIL/not applicable to removed column contract | PASS | PASS |
+| V1 minutes-only | PASS | PASS | migration-aware handling required | not claimed |
+| V2 expanded/backfilled | PASS | PASS | PASS via fallback | PASS via dual-write |
+| Weak failed-transform state labeled V2 | old table remains but publication is internally inconsistent | unsafe to infer | V2 copy incomplete | unsafe to infer |
+| V3 seconds-only | FAIL | incompatible with removed representation | PASS | PASS |
 
-This matrix is intentionally operation-specific. A PASS cell is not a universal guarantee for arbitrary queries, constraints or writes.
+Cells are operation-specific, not universal guarantees.
 
 ## ENGINEERING JUDGMENT
 
-For local persistent applications, prefer treating migration as a release protocol with explicit compatibility and recovery states rather than a startup SQL script. Before destructive retirement, identify whether older binaries, rollback releases, backups, imports, sync peers, extensions, or background processes can still emit/read the old contract.
+Treat migration as a release protocol with explicit compatibility, validation, publication and recovery states. `expand → backfill → compatible read/write → validate → contract` is useful when coexistence is required, but deployment/release constraints determine the needed compatibility window.
 
-`expand → backfill → compatible read/write window → validate → contract` is a useful pattern when coexistence is required, but it is not mandatory when the deployment model proves single-version exclusivity and rollback is unnecessary. The deployment/release model determines how much compatibility window is needed.
+For migrations that strengthen invariants, legacy data is an input to the migration algorithm, not an assumption. A transform must define what happens to nonconforming historical rows: reject/rollback, repair with an independently justified rule, quarantine for review, or another explicit domain policy. Silent dropping or metadata publication after failure is not a valid default.
 
 ## INVALID SHORTCUTS
 
 - `schema changed successfully` ≠ `migration protocol succeeded`.
 - `user_version=N` ≠ `SQLite verified schema N`.
+- `COMMIT succeeded` ≠ every required migration step succeeded if the application swallowed an earlier statement error.
+- `foreign_keys=ON` ≠ existing data has no FK violations.
 - `new reader works` ≠ `old reader still works`.
 - `additive schema change` ≠ universal reader/writer compatibility.
-- `transactional migration rollback worked here` ≠ every engine/DDL/failure domain has identical transactional DDL semantics.
 - `backup exists` ≠ rollback is safe; restore compatibility still requires validation.
 
 ## TRANSFER VALIDATION — LogMate relevance
 
-Evidence identity rechecked 2026-09-17:
+Retained evidence identity:
 
 `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`.
 
-Current exact ref describes configuration persistence, local ledger, Sync and Backup/Export as not implemented in the inspected product evidence. Therefore D003 is a **TRANSFER CANDIDATE**, not an audit finding about an existing LogMate migration.
+At that exact ref, inspected product evidence described durable local ledger/configuration persistence/Sync/Backup-Export as not implemented. D003 remains a **TRANSFER CANDIDATE**, not an existing-product defect finding.
 
-Reusable constraint: when LogMate introduces a durable FlightRecord/configuration schema, migration acceptance should name retained app/backup/import/sync compatibility and interruption recovery before destructive field retirement.
+Reusable constraint: before LogMate introduces durable FlightRecord/configuration migrations, define migration success predicates, handling for historical rows that violate new invariants, compatibility window, version publication, validation, and recovery oracle.
 
-MintTap repository identity was not resolved from the accessible GitHub repository search in this run, so no MintTap implementation claim is made.
+MintTap repository identity remains unresolved; no MintTap implementation claim is made.
 
 ## RELATED DOMAIN CHECK
 
-- **Foundations:** F001 process boundary remains relevant; direct Dart/Flutter execution is still OPEN because no `dart`/`flutter` executable was available in the current environment.
-- **Architecture:** A003 semantic compatibility model directly supplies retained consumer contracts; schema shape alone is insufficient.
-- **Mobile:** startup migration, process death, app upgrade/downgrade and platform storage behavior remain platform validation dependencies.
+- **Foundations:** F001 process boundary relevant; direct Dart/Flutter execution rechecked 2026-09-17 and remains OPEN because neither executable is available.
+- **Architecture:** A003 semantic compatibility/invariant model supplies retained consumer properties.
+- **Mobile:** Android/iOS startup/process-death/upgrade/downgrade migration remains a platform validation dependency.
 - **Data:** D001 authority/durability and D002 transaction/journal distinctions are prerequisites.
-- **Quality:** migration tests need old/new reader-writer oracles plus injected interruption and recovery verification.
-- **Systems:** release rollback and artifact identity determine whether an older binary can encounter a newer schema.
-- **Design Studio:** no design semantics changed; future migration/recovery UI must reflect real recoverability states.
-- **Web Manager:** not materially relevant to this local SQLite fixture.
-- **Marketing Manager:** not materially relevant.
-- **Product:** LogMate exact ref checked; MintTap repo unresolved, therefore no product inference.
+- **Quality:** migration oracle must include required-step completion plus post-migration invariant/FK checks; injected errors must not be mistaken for automatic transaction rollback.
+- **Systems:** release rollback determines whether old artifacts may encounter new state.
+- **Design Studio:** future repair/quarantine/recovery UI must reflect real recoverability; no design semantics changed.
+- **Web Manager / Marketing Manager:** not materially relevant to this local SQLite mechanism block.
+- **Product:** retained LogMate exact-ref evidence used; no product repository edited.
 
 ## OPEN / VALIDATION
 
-1. Add downgrade/rollback-release evidence where old binary meets newer persisted state.
-2. Add failed data-transform/constraint and foreign-key migration cases.
-3. Add backup-before-migration + restore validation; successful backup creation alone is insufficient.
-4. Validate migration interruption on the actual Android/iOS persistence stack before mobile claims.
-5. Later distributed/offline work must include mixed-version peers and replication during schema evolution.
-6. No Data Foundation PASS yet.
+1. Add actual rollback-release evidence where an old binary meets newer persisted state, beyond the current old-reader fixture.
+2. Add backup-before-migration + restore validation; successful backup creation alone is insufficient.
+3. Validate migration interruption on actual Android/iOS persistence stack.
+4. Later mixed-version sync/replication work must cover schema evolution across peers.
+5. No Data Foundation PASS yet.
 
 ## HANDOFFS
 
-- **TO Architecture:** A003 compatibility contracts transfer directly to persisted schemas; retain reader/writer behavior, not merely shape.
-- **TO Quality:** build migration matrices around reader/writer/schema/migration-state combinations and inject failures before/after publication boundaries.
-- **TO Mobile:** reproduce upgrade/startup/process-death migration behavior on exact Android/iOS stack before product acceptance.
-- **TO Systems:** release rollback policy must declare whether old artifacts may open new schemas; artifact version and schema version are separate identities.
-- **TO LogMate:** before durable ledger/configuration implementation, define migration/version metadata, compatibility window, destructive-retirement criteria and recovery oracle in the product repository. No product files edited.
+- **TO Architecture:** strengthened persisted invariants are compatibility changes; historical-state handling is part of the contract.
+- **TO Quality:** migration PASS oracle must include every required transform/validation step; add regression tests proving caught statement errors cannot publish the new version.
+- **TO Mobile:** reproduce migration failure/restart behavior on exact Android/iOS stack before acceptance.
+- **TO Systems:** release rollback policy must bind artifact identity to schema compatibility and migration success evidence.
+- **TO LogMate:** define nonconforming-history policy and fail-closed migration publication before durable ledger/configuration implementation. No product files edited.
 
 ## Current judgment
 
-The first D003 block establishes that **schema evolution is a compatibility-and-publication protocol, not merely a DDL transformation**. Transactional migration can remove some partial-publication states, while expand/contract can preserve mixed reader/writer compatibility when the deployment model requires it. Neither mechanism proves rollback or cross-version safety without an explicit compatibility matrix and failure validation.
+D003 now establishes two independent failure classes: cross-version compatibility/publication failure and transform/invariant-validation failure. Transactions can bound atomic publication, but only when the application treats required-step failure as migration failure. Constraint enforcement configuration and persisted-data validation are distinct. Backup/restore and real mobile migration evidence remain prerequisites before stronger operational claims.
