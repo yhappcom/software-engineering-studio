@@ -8,7 +8,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Specialist | Current state |
 | --- | --- |
 | Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN |
-| Architecture | Stage 1 IN STUDY — A001 substantial; A002 ownership + dependency comparison substantial |
+| Architecture | Stage 1 IN STUDY — A001/A002 substantial; A003 semantic-contract block underway |
 | Mobile | Stage 1 READY |
 | Data | Stage 1 IN STUDY — D001 substantial first block |
 | Quality | Stage 1 IN STUDY — Q001 substantial first block |
@@ -18,30 +18,29 @@ No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### F001 execution gap rechecked
-Current execution environment again exposes Python 3.13.5 but no `dart` or `flutter`. Direct Dart JIT/AOT and Flutter runtime validation remain OPEN; no substitute evidence was fabricated.
+### A003 — Interfaces, Contracts, Invariants & API Evolution
+Canonical: `research/architecture/A003_interfaces_contracts_api_evolution.md`
 
-### A002 — Dependency Direction, State Ownership & Derived Projections
-Canonical: `research/architecture/A002_dependency_direction_state_ownership.md`
+A003 now has executable evidence that source/call-shape compatibility does not imply semantic compatibility:
+- retained consumer contract expected `total_minutes()` to mean block time; fixture total was 150;
+- a same-name/same-signature replacement silently changed meaning to airborne time and returned 125, failing the retained oracle;
+- an additive alternative preserved old block-time semantics and exposed airborne total separately;
+- a second same-signature replacement strengthened its precondition by rejecting empty input that the old contract accepted as total 0, reproducing a separate compatibility break.
 
-A002 now has two materially different executable evidence blocks:
-1. **ownership failure:** writable derived projection diverged to 210 while authority remained 150; rebuild erased the unauthorized mutation; authority mutation + revision invalidation rejected stale state then restored consistent 210.
-2. **dependency-structure alternative:** a block-time summary policy was tested against a settings mechanism replacement. Direct policy→concrete settings dependency required policy code to change when file/string API became remote/boolean API. A policy-owned semantic `UnitPreference` contract kept the summary policy unchanged; only the detail adapter changed. Both designs were behavior-matched by the same exact-output oracle.
+Primary method evidence: current Eiffel Design by Contract documentation was checked for precondition/postcondition/invariant responsibility semantics. Studio synthesis treats an operational contract as accepted input + returned meaning + state transition + invariant + failure semantics + observable side effects where relevant.
 
-Synthesis: dependency inversion is useful when a stable semantic policy must survive an independently changing detail. Dependency injection/interface presence alone is not evidence; A001's over-abstraction counterexample remains the limiting case.
-
-Evidence limit: Python synchronous fixture only; no Flutter, persistence, concurrency, network, lifecycle or production claim.
+Evidence limit: Python synchronous fixture only. No ABI, Dart/Flutter, persisted schema, protocol, mobile, or production compatibility claim.
 
 ## Cross-track handoffs
-- **Data:** persistence/cache/sync interfaces should express semantic authority needs rather than vendor DTO/schema shape where possible.
-- **Quality:** test a boundary with a materially different implementation/mechanism; mockability alone does not prove architectural value.
-- **Mobile:** DI framework wiring must be separated from dependency inversion and state authority.
-- **LogMate:** local ledger remains unimplemented at retained exact ref `b551ce434ad72b1895033e0f3617c73b026d40ea`, app `1.0.0+1`; do not prescribe generic Repository/Service layering before concrete ownership/variation exists.
+- **Data:** D003 must separate schema/representation compatibility from semantic invariants and retained reader/writer contracts.
+- **Quality:** compatibility tests should use prior consumer expectations/invariants as independent oracles; compilation success is insufficient.
+- **Mobile:** plugin/platform API evolution requires behavioral/failure-contract evidence in addition to Dart signatures.
+- **Systems:** release/versioning work must name the compatibility dimension claimed: source, binary, data/schema, protocol, or behavioral.
 
 ## Current Balance Loop
-Architecture remains high leverage because A002's professional boundary has now reached the contract question: a boundary can localize mechanism change, but its semantic obligations, invariants and compatibility under evolution are not yet established. Therefore **A003 — Interfaces, Contracts, Invariants & API Evolution** is the strongest coherent continuation.
+F001 direct Dart JIT/AOT and Flutter runtime validation remains OPEN because no trustworthy execution environment has become available; no simulated evidence was substituted.
 
-M001 remains high product leverage but direct runtime evidence is still toolchain-blocked. S001 remains the strongest independent alternative if A003 becomes blocked. D002/Q002 remain important but do not currently exceed A003's cross-track leverage for future LogMate ledger/import/sync and MintTap calculation/data boundaries.
+A003 remains the highest-value coherent continuation because its professional boundary is incomplete and directly constrains future LogMate ledger/import/sync contracts and MintTap calculation/data boundaries. Next evidence should build a provider/consumer compatibility matrix and test invariant evolution plus an additive change that is nevertheless breaking. M001 remains high product leverage but runtime-toolchain constrained; S001 remains the strongest independent alternative if Architecture becomes blocked.
 
 ## Evidence rule
 No PASS from reading alone. Expected progression where applicable:
