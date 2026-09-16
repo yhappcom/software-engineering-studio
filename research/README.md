@@ -24,7 +24,8 @@ Canonical reusable research is organized by specialist ownership.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model + SQLite process-kill evidence; mobile/power-loss/migration/backup/distributed evidence remain OPEN.
-- `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — **IN STUDY / two integrated Foundation blocks complete**. JSON publication failure/staging alternative, transaction rollback, index plan/result separation, and real SQLite DELETE-vs-WAL abrupt application-process-exit validation now separate semantic COMMIT from journal/recovery mechanism and from power-loss durability scope.
+- `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — **IN STUDY / two integrated Foundation blocks complete**. JSON publication failure/staging alternative, transaction rollback, index plan/result separation, and real SQLite DELETE-vs-WAL abrupt application-process-exit validation separate semantic COMMIT from journal/recovery mechanism and power-loss durability scope.
+- `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — **IN STUDY / first integrated Foundation block complete**. Executable old/new reader-writer compatibility window, split schema/version publication failure, transactional rollback alternative, and destructive-contract old-reader failure.
 
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Oracle/reproducibility evidence; Test Evidence Contract promoted Studio-wide.
