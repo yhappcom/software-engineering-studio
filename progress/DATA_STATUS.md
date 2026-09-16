@@ -3,10 +3,10 @@
 Track: Data, Persistence & Distributed Systems  
 Prefix: `D###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
-Last sync: 2026-09-16
+Last sync: 2026-09-17
 
 ## Mission
-Build rigorous knowledge of data representation, integrity, persistence, transactions, schema evolution, caching, offline-first systems, replication, synchronization, conflict handling, backup/restore, and distributed-system semantics.
+Build rigorous knowledge of data representation, integrity, persistence, transactions, schema evolution, migrations, caching, offline-first systems, replication, synchronization, conflict handling, backup/restore, and distributed-system semantics.
 
 ## Current evidence
 
@@ -15,35 +15,39 @@ Build rigorous knowledge of data representation, integrity, persistence, transac
 
 Canonical: `research/data/D001_state_persistence_durability_source_of_truth.md`
 
-Established state/persistence/durability/authority distinctions and SQLite rollback-journal application-process-kill evidence. Evidence remains bounded: no power-loss, mobile filesystem, migration, backup or distributed-sync claim.
+Established state/persistence/durability/authority distinctions and SQLite rollback-journal application-process-kill evidence. Power-loss, mobile filesystem, migration, backup and distributed-sync claims remain outside that evidence.
 
 ### D002 — Representation, files, databases, indexes and transaction fundamentals
-**IN STUDY — first integrated executable Foundation block complete.**
+**IN STUDY — two integrated executable Foundation blocks complete.**
 
 Canonical: `research/data/D002_representation_files_database_indexes_transactions.md`  
-Fixture: `research/data/fixtures/D002_representation_transaction_index.py`
+Fixtures: `research/data/fixtures/D002_representation_transaction_index.py`, `research/data/fixtures/D002_journal_mode_process_exit.py`
 
-New evidence:
-- RFC 8259 representation semantics were separated from publication/transaction/durability semantics;
-- interrupted destructive whole-file JSON overwrite produced an invalid canonical JSON document;
-- staging replacement bytes separately and interrupting before publication preserved the old canonical JSON in the bounded process-level model;
-- SQLite insert executed inside a transaction but failed before commit/was rolled back, preserving only the committed baseline;
-- the same semantic SQL query returned the same count before/after index creation while `EXPLAIN QUERY PLAN` changed from table scan to indexed search;
-- therefore serialization, publication, transaction, durability and index are distinct mechanisms and guarantees.
+Established:
+- serialization, publication, transaction, journal/recovery mechanism, durability policy and index are distinct;
+- destructive interrupted JSON publication can corrupt representation; staged construction before publication preserves the old file in the bounded process model;
+- SQLite transaction rollback preserved committed baseline;
+- index creation changed access plan while preserving semantic result;
+- new process-exit comparison used real SQLite `DELETE` rollback-journal and `WAL`, `synchronous=FULL`;
+- abrupt child exit after uncommitted INSERT recovered only baseline A in both modes;
+- COMMIT before the same abrupt exit recovered A+B in both modes; `PRAGMA integrity_check` was `ok` in all four cases;
+- therefore the tested semantic boundary was COMMIT, while journal modes remain physically different mechanisms.
+
+Primary SQLite evidence also establishes that WAL + synchronous policy must be reasoned about separately: application crash, OS crash and power loss are not interchangeable durability scopes.
 
 Environment: Python 3.13.5 / SQLite 3.46.1 / Linux 6.18.44 x86_64 / glibc 2.41.
 
-Evidence limits: no power-loss/fsync guarantee, Android/iOS filesystem/database claim, WAL comparison, or benchmark/performance claim.
+Evidence limits: no power-loss/OS-crash/fsync/torn-write proof, Android/iOS database claim, or performance benchmark.
 
-## Product transfer checked
+## Product transfer retained
 
-`yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → 2026-09-16`.
+`yhappcom/logmate → main commit b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-16`.
 
-The exact ref establishes Flutter/Dart context but no implemented local-ledger storage choice. No PROJECT DECISION selects a database. Future ledger transaction boundaries should follow domain invariants; export serialization and derived search/totals should not become accidental mutation authorities.
+This ref establishes Flutter/Dart context but no implemented local-ledger storage choice. No database/journal PROJECT DECISION is inferred.
 
 ## Queue
 - `D001` — substantial first block complete.
-- `D002` — **IN STUDY** — first representation/transaction/index failure-and-alternative block complete; WAL, cost and mobile publication evidence open.
+- `D002` — **IN STUDY / professional Foundation mechanism boundary materially stronger**; power-loss/mobile/performance evidence remains open.
 - `D003` — Schema evolution, migration, rollback and compatibility.
 - `D004` — Cache semantics and offline-first data ownership.
 - `D005` — Backup/restore, import/export and data-integrity verification.
@@ -52,15 +56,15 @@ The exact ref establishes Flutter/Dart context but no implemented local-ledger s
 ## Gate requirement
 Foundation PASS requires executable persistence examples, corruption/interruption/failure cases where feasible, explicit durability/consistency semantics, and recovery verification rather than happy-path writes only.
 
-Data Stage 1 remains **NOT PASS**. D001/D002 now establish authority/durability plus representation/transaction/index boundaries, but migration/recovery, backup/restore, mobile-relevant storage behavior and distributed-system foundations remain open.
+Data Stage 1 remains **NOT PASS**. D001/D002 now establish authority/durability plus representation/transaction/journal/index boundaries, but migration/recovery, backup/restore, mobile-relevant storage behavior and distributed-system foundations remain open.
 
 ## Dependencies / handoffs
-- **Foundations:** F001 process boundary reused; direct Dart/Flutter execution remains OPEN.
+- **Foundations:** F001 process boundary reused; direct Dart/Flutter execution remains OPEN after 2026-09-17 environment recheck.
 - **Architecture:** A002/A003 provide ownership/invariant/compatibility constraints for transaction and schema boundaries.
 - **Mobile:** validate Android/iOS process-death/filesystem/database semantics before mobile durability claims.
-- **Quality:** Q002 evidence-boundary discipline reused; storage claims should exercise real storage mechanisms.
-- **Systems:** journaling/fsync/index/security/performance/release trade-offs need measured evidence.
+- **Quality:** distinguish application-process exit from OS/power-loss; storage claims must exercise the relevant real mechanism/failure domain.
+- **Systems:** measure journaling/synchronous/checkpoint/index costs and validate lower storage-stack durability/security assumptions.
 - **Design Studio:** later `saved`/`syncing`/`failed` states must correspond to real commit/sync contracts.
 
 ## Next work
-Use Balance Loop. D002 should continue if trustworthy WAL/interruption or measured index/transaction-cost evidence is available; otherwise D003 migration/compatibility now has strong leverage from A003 and D002, while M002 remains important when platform-level evidence becomes available.
+D002 should not simulate power-loss evidence. Balance Loop now favors `D003` schema evolution/migration/rollback/compatibility because A003 + D002 provide its prerequisites and migration failure has high data-loss leverage. M002 remains the strongest platform-dependent alternative when trustworthy Android/iOS execution evidence becomes available.
