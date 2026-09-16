@@ -17,7 +17,7 @@ Canonical reusable research is organized by specialist ownership.
 ### Architecture
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Positive change-locality, over-abstraction counterexample, exact-ref LogMate transfer.
 - `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Authority/projection second-writer failure and materially different dependency-direction alternative comparison complete.
-- `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — **IN STUDY**. Same-signature semantic-result change and strengthened-precondition failures executable-tested; additive alternative preserved the old semantic operation. Compatibility matrix, invariant evolution and additive-breaking counterexample remain OPEN.
+- `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**. Same-signature semantic/precondition failures plus provider/consumer pre/postcondition matrix, invariant violation, and additive-but-breaking strict-protocol counterexample executable-tested.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model + SQLite process-kill evidence; mobile/power-loss/migration/backup/distributed evidence remain OPEN.
