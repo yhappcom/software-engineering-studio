@@ -1,87 +1,98 @@
 # A003 — Interfaces, Contracts, Invariants & API Evolution
 
-Status: **IN STUDY — first integrated contract/evolution block complete**  
+Status: **SUBSTANTIAL FOUNDATION BLOCK COMPLETE — TRACK NOT YET PASSED**  
 Date: 2026-09-16  
 Lead: Architecture
 
 ## Problem
-A source-compatible interface can still break consumers when its meaning, accepted input domain, guarantees, failure behavior, state transition, or invariant changes. Architecture therefore needs a semantic contract model, not only method signatures.
+A source-compatible interface can still break consumers when meaning, accepted input domain, guarantees, failure behavior, state transition, invariant, or protocol assumptions change. Architecture therefore needs semantic compatibility evidence, not signature inspection alone.
 
 ## SOURCE
-Current Eiffel Design by Contract documentation was checked as a primary method source. It defines cooperation between client and supplier through precise contracts: preconditions are client obligations, postconditions are supplier guarantees when the precondition holds, and class invariants are consistency conditions maintained across exported operations. The documentation also treats assertion violations as evidence of bugs in the responsible party and distinguishes contract/interface information from implementation bodies.
+Eiffel Design by Contract documentation was checked for client/supplier obligations: preconditions are client obligations, postconditions supplier guarantees, and invariants consistency conditions maintained across exported operations.
 
-Source: Eiffel.org, `ET: Design by Contract, Assertions and Exceptions`, checked 2026-09-16.
+Barbara Liskov and Jeannette Wing, *A Behavioral Notion of Subtyping*, ACM TOPLAS 16(6), 1994, was checked via the CMU-hosted author paper. Its substitution criterion is specification-based: properties established for the supertype must continue to hold for the subtype. The paper explicitly reasons about preconditions, postconditions, exceptions, invariants and observable behavior/history.
 
 ## SYNTHESIS — semantic contract model
-For Studio architecture work, a useful operational contract may include:
+A useful operational contract may include:
 
 `accepted inputs/preconditions + returned meaning/postconditions + state transition + invariants + failure semantics + observable side effects`
 
-A type/method signature constrains only part of this space. Source compatibility, type compatibility, binary compatibility, and behavioral/semantic compatibility must not be collapsed into one claim.
+Source/type/binary/data-schema/protocol/behavioral compatibility are separate dimensions. Claims must name the dimension actually evidenced.
 
-## VALIDATION — same signature, broken meaning
+## VALIDATION A — same signature, broken meaning and strengthened precondition
 Fixture: `research/architecture/fixtures/A003_contract_evolution.py`
 
+Retained consumer contract expected `total_minutes()` to mean block time. Fixture data independently gives block total 150 and airborne total 125. A same-name/same-signature replacement silently returned airborne time and failed the retained oracle. An additive alternative preserved `total_minutes() == 150` and exposed airborne total separately.
+
+A second replacement kept the signature but rejected empty input that V1 accepted as total 0. Root cause was provider-side semantic drift, not call-shape incompatibility.
+
+## VALIDATION B — provider/consumer compatibility matrix, invariant evolution, additive break
+Fixture: `research/architecture/fixtures/A003_compatibility_matrix.py`
+
+Environment: Python 3.13.5; Linux 6.18.44 x86_64, glibc 2.41.
+
 ### Test Evidence Contract
-- **CLAIM:** preserving a method name/signature does not preserve consumer compatibility if semantic meaning changes.
-- **SPEC/PROPERTY:** existing `total_minutes()` consumers expect total block time; for the fixture data the independent expected total is 150 minutes.
-- **TARGET:** V1 block-time provider, same-signature provider silently changed to airborne time, and additive V2 provider.
-- **INPUT:** flights with block/airborne pairs `(90,75)` and `(60,50)`.
-- **ORACLE:** block total = 150; airborne total = 125, independently derived from fixture values.
-- **OBSERVATION:** same-signature semantic-break provider returned 125 and failed the old consumer contract; additive V2 retained `total_minutes() == 150` and exposed `total_airborne_minutes() == 125` separately.
-- **VERDICT:** syntactic sameness was insufficient; preserving the old semantic operation preserved the bounded consumer contract.
-- **FAILURE MODEL:** provider changes result meaning without changing the call shape.
-- **EVIDENCE LIMIT:** Python synchronous fixture only; no claim about language ABI, Dart, Flutter, HTTP versioning, persistence schema, or production compatibility.
+- **CLAIM:** relative to retained consumer obligations, a replacement that accepts at least the old legal inputs and guarantees at least the old results can preserve the bounded contract; strengthening preconditions, weakening postconditions, or violating retained invariants can break it. An additive protocol field can also break a strict existing consumer.
+- **SPEC/PROPERTY:** old calls use inputs `0,1,5` and require `result >= input`; account invariant requires `balance >= 0`; V1 protocol consumer accepts exactly the known `minutes` field.
+- **TARGET:** four provider variants, two account implementations, and V1/V2 JSON producers against the retained V1 consumer.
+- **ORACLE:** old-domain calls must remain accepted and satisfy the old postcondition; exported account operation must preserve non-negative balance; retained strict protocol consumer must successfully parse provider output.
+- **OBSERVATION:** weaker precondition PASS; stronger precondition FAIL at old-legal `x=0`; stronger postcondition PASS; weaker postcondition FAIL (`x=0` returned `-1`); base account preserved invariant while replacement reached `balance=-1`; V1 JSON parsed as 90 while V2's additive `source` field was rejected as unknown.
+- **VERDICT:** the bounded compatibility matrix matches behavioral-substitution reasoning. Additive syntax alone did not guarantee compatibility with an existing strict consumer.
+- **FAILURE MODEL:** provider narrows legal input, weakens old guarantee, expands reachable state beyond old invariant, or expands protocol shape beyond a strict consumer's accepted language.
+- **REPRODUCTION DATA:** fixture path above; deterministic fixed inputs; no network/external service.
+- **EVIDENCE LIMIT:** synchronous Python/JSON example only. It does not establish Dart subtype rules, ABI compatibility, tolerant-reader best practice, HTTP/Protobuf compatibility, persisted schema migration safety, or production behavior.
 
-## VALIDATION — strengthened precondition
-The same fixture tests an old provider that accepts an empty collection and returns `0` against a same-signature provider that newly rejects empty input.
+## COMPATIBILITY MATRIX — bounded reasoning rule
+For an established consumer contract:
 
-- **CLAIM:** strengthening a provider precondition can break an existing valid caller even when the signature is unchanged.
-- **ORACLE:** the retained V1 contract accepts `[]` and returns `0`.
-- **OBSERVATION:** the strengthened provider raised `ValueError` for that previously valid input.
-- **ROOT CAUSE:** the provider reduced the legal input domain while callers still possessed the old contract.
+| Provider evolution | Bounded expectation | Executable result |
+| --- | --- | --- |
+| Weaken precondition / accept more | can preserve old callers | PASS |
+| Strengthen precondition / accept less | may reject old-valid caller | FAIL reproduced |
+| Strengthen postcondition / guarantee more while retaining old guarantee | can preserve old expectation | PASS |
+| Weaken postcondition | may violate old expectation | FAIL reproduced |
+| Permit state violating retained invariant | breaks behavioral substitutability | FAIL reproduced |
+| Add protocol member | not inherently safe; depends on consumer acceptance rules | strict-consumer FAIL reproduced |
 
-This is not a rule that every API must accept empty input. The rule is that changing an already-promised legal domain is a semantic compatibility decision.
+This is not a universal versioning algorithm. Compatibility is relational: **provider change × actual consumer assumptions × compatibility dimension**.
 
 ## CONTRADICTION
-A common shortcut is “no breaking change because the method signature did not change.” The fixture falsifies that universal claim in two independent ways: changed result meaning and strengthened precondition.
+Two shortcuts are now executable-falsified:
+1. “same signature means non-breaking”; and
+2. “additive change means non-breaking”.
 
-A second shortcut is “additive API changes are always safe.” This block does **not** establish that. Additive changes can still affect overload resolution, serialization, default behavior, resource use, ordering, authorization, or exhaustive consumers depending on language/protocol. That remains OPEN for a later compatibility matrix.
+The additive JSON example is deliberately strict. It does not imply consumers should always reject unknown fields. It proves only that additive provider changes are not intrinsically safe independent of the consumer contract.
 
 ## ENGINEERING JUDGMENT
-When a new requirement conflicts with an established semantic contract, prefer one of:
-- preserve the old operation and add a distinct semantic operation;
-- explicitly version/migrate the contract;
-- deliberately break the contract with identified consumers, migration evidence, and rollback/recovery where risk requires it.
+When a new requirement conflicts with an established semantic contract, prefer preserving the old semantic operation and adding a distinct one, explicit version/migration, or a deliberate breaking change with identified consumers and migration/rollback evidence proportional to risk.
 
-Do not silently reuse an old name for a new meaning merely because the type system permits it.
+Do not weaken a public guarantee or expand reachable invalid state merely because compilation succeeds. Do not label an additive change safe until the relevant consumer acceptance rule is known.
 
 ## CONNECTION TO A001 / A002 / Q001
-- **A001:** a boundary earns its cost by hiding volatile knowledge; A003 states what semantic promise must remain visible and stable enough for consumers.
-- **A002:** dependency inversion protects policy only if the policy-owned interface has a meaningful contract; an interface whose semantics drift does not protect the policy.
-- **Q001:** compatibility claims need an oracle based on the prior/public contract, not on the new implementation's own behavior.
+- **A001:** boundaries hide volatile knowledge; A003 defines the visible promise that must remain stable or deliberately evolve.
+- **A002:** dependency inversion protects policy only when the policy-owned interface preserves meaningful semantics and invariants.
+- **Q001:** prior consumer expectations/invariants are independent compatibility oracles; replacement behavior cannot define its own correctness.
 
 ## RELATED DOMAIN CHECK
 - Foundations: type/signature compatibility must not be confused with runtime correctness; direct Dart execution remains OPEN in F001.
-- Data: schema/migration compatibility is analogous but has additional persistence/recovery semantics; canonical work belongs in D003.
-- Quality: retained-consumer contract tests are a direct handoff to Q002/Q006.
-- Mobile: lifecycle/platform APIs can preserve Dart signatures while platform semantics differ; requires M001/M002 evidence.
-- Systems: binary/build/release compatibility and rollback are separate dimensions; canonical work belongs in S004/S005/S006.
-- Design Studio: not materially required for this generic semantic-contract block; interaction semantics can later serve as upstream observable contracts.
-- Web Manager / Marketing Manager: not materially relevant to this block.
-- Product repositories: no new product audit was required; no production claim is made.
+- Data: schema/migration compatibility adds persistence, old/new reader-writer, rollback and recovery semantics; canonical work belongs in D003.
+- Quality: retained-consumer contract suites transfer directly to Q002/Q006.
+- Mobile: Dart/plugin/platform evolution requires exact framework/platform evidence; M001/M004 remain open.
+- Systems: binary/build/release compatibility and rollback are separate dimensions; S004-S006 own them.
+- Design Studio: not materially required for this generic block; interaction semantics can later be upstream observable contracts.
+- Web Manager / Marketing Manager: not materially relevant to this bounded study.
+- Product repositories: no live product evolution decision was required, so no new product claim was made.
 
 ## HANDOFFS
-- **TO Data:** D003 migrations should distinguish representational/schema compatibility from semantic data invariants and retained-reader/writer contracts.
-- **TO Quality:** construct compatibility tests from prior consumer expectations and invariants; do not generate the oracle from the replacement provider.
-- **TO Mobile:** when platform/plugin APIs evolve, record semantic behavior and failure contracts in addition to Dart signatures.
-- **TO Systems:** release/versioning evidence should state which compatibility dimension is claimed: source, binary, data/schema, protocol, or behavioral.
+- **TO Data:** D003 should build explicit old-reader/new-writer/new-reader/old-writer matrices and preserve semantic invariants separately from schema shape.
+- **TO Quality:** compatibility suites should retain prior consumer contracts as independent oracles and include failure semantics/invariants, not only return values.
+- **TO Mobile:** plugin/platform upgrades require behavioral and failure-contract checks in addition to Dart source compatibility.
+- **TO Systems:** release/versioning evidence must name source, binary, protocol, data, or behavioral compatibility and validate rollback where relevant.
 
 ## OPEN / VALIDATION
-- Build a provider/consumer compatibility matrix: weaker/stronger preconditions, weaker/stronger postconditions, invariant changes, failure-semantics changes.
-- Test an additive change that is nevertheless breaking in a representative typed/protocol context before claiming additive safety.
-- Study compatibility/versioning across API, persisted data, and distributed protocol boundaries in their owning tracks.
-- Transfer-test A003 against an exact MintTap or LogMate contract when a live interface/schema evolution decision exists.
+- Transfer-test A003 against an exact MintTap or LogMate contract when a real interface/schema evolution decision exists.
+- Persisted-schema/protocol compatibility matrices belong in D003/S005 rather than being inferred from the JSON fixture.
+- Dart/Flutter behavioral transfer remains blocked by missing trustworthy execution environment.
 
 ## Current conclusion
-An interface is not merely its syntax. Architecture must preserve or deliberately evolve the semantic obligations on which consumers rely. Compatibility evidence therefore requires retained consumer contracts/invariants and independent oracles, not compilation success alone.
+An interface is not merely syntax. Compatibility is a relationship between an evolved provider and retained consumer properties. A replacement must continue to accept the old legal calls, preserve the guarantees and invariants those callers rely on, and respect the consumer's accepted protocol/state language—or explicitly version/migrate the contract. “Same signature” and “additive” are classifications of change shape, not compatibility proofs.
