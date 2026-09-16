@@ -25,6 +25,9 @@ Canonical reusable research is organized by specialist ownership.
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **IN STUDY / substantial first block complete**. Weak oracle passed a deliberate defect; stronger exact/invariant oracles detected it; seeded cases reproduced identically; Test Evidence Contract promoted Studio-wide.
 
+### Systems
+- `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / first integrated block complete**. NIST/SLSA trust/provenance model + executable source-ref/artifact-identity counterexample; current Web Manager PWA provenance guard transfer-validated. Signing/authentic provenance, least privilege, mobile delivery and resource evidence remain OPEN.
+
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS.
 
