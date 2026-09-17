@@ -8,7 +8,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Specialist | Current state |
 | --- | --- |
 | Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F002-F006 initiated with executable/model evidence |
-| Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial + A005 first executable refactoring/debt boundary block complete |
+| Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 refactoring/debt + A006 evidence-preserving decision lifecycle first integrated blocks complete |
 | Mobile | Stage 1 IN STUDY — M001-M004 first professional/model boundaries complete; direct Flutter/native transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated with persistence/migration/cache/restore/sync evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 executable counterexample/shrinking evidence |
@@ -18,39 +18,39 @@ No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### M004 — Plugin, platform-channel and native integration failure boundaries
-Canonical: `research/mobile/M004_plugin_platform_channel_native_integration_boundaries.md`  
-Fixture: `research/mobile/fixtures/M004_native_bridge_contract_lifetime.py`
+### A006 — Evidence-preserving architecture decisions and ADR lifecycle
+Canonical: `research/architecture/A006_evidence_preserving_architecture_decisions.md`
 
-Current Flutter primary documentation establishes platform channels as asynchronous serialized boundaries; `MethodChannel.invokeMethod` distinguishes successful result, `PlatformException` and `MissingPluginException`; payload/result compatibility depends on the codec/runtime contract; and multiple Flutter engines create independent plugin instances/lifetimes. Built-in channel FIFO ordering is not promoted into atomicity, durability or exactly-once semantics.
+Current AWS Prescriptive Guidance and Microsoft Azure Well-Architected guidance establish ADR context/rationale/options/decision/consequences/status and supersession as durable decision-history concerns. Studio synthesis strengthens this for evidence-critical engineering: preserve exact evidence/ref, assumptions/uncertainty, validation status and reconsideration triggers when they materially affect later evaluation.
 
-Python 3.13.5/Linux bounded evidence accepted a valid registered response while rejecting missing registration, schema mismatch and a detached modeled engine instance. A deliberate unsafe adapter converted missing implementation into `None`, showing how an integration-availability failure can be silently collapsed into an application value. This validates the reasoning model only, not Flutter/native behavior.
+Critical separation: `ADR Accepted != validation PASS`. A decision can be accepted under current constraints while transfer/production validation remains OPEN. Accepted decision history should be superseded rather than silently rewritten when later evidence changes the choice, otherwise the repository loses whether the original decision was wrong or its assumptions later changed.
+
+A document-level adversarial oracle now asks whether a future reviewer can reconstruct the decision question, distinguish evidence from judgment/decision, identify assumptions/evidence limits, recover rejected-option rationale, determine current/superseded status and identify reconsideration triggers. This is governance/model evidence, not runtime/product evidence.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN after environment recheck 2026-09-18.
 - **Foundations F002-F006:** alias/lifetime, complexity, concurrency, async and network/termination failure mechanics retained.
-- **Architecture:** A001-A003/A005 change pressure, ownership/dependency, semantic contracts and refactoring/debt boundaries retained.
-- **Mobile:** M001-M004 cover runtime/state, lifecycle/process/background, storage/permission/security properties and first plugin/native integration boundaries; real runtime/platform transfer OPEN.
+- **Architecture:** A001-A003/A005/A006 now cover change pressure, ownership/dependency, semantic contracts, refactoring/debt and evidence-preserving decision lifecycle.
+- **Mobile:** M001-M004 runtime/state, lifecycle/process/background, storage/permission/security and plugin/native boundaries retained; real runtime/platform transfer OPEN.
 - **Data:** D001-D006 persistence/migration/cache/restore/sync evidence retained.
 - **Quality:** Q001-Q006 professional boundaries retained; Q004 includes executable generated counterexample/shrinking.
 - **Systems:** S001-S006 trust/security/performance/build/release/rollback evidence retained.
 
 ## Cross-track handoffs
-- **Architecture:** plugin method/payload/error/lifecycle behavior is an interface contract, not merely implementation detail.
-- **Data:** ambiguous native effects require explicit operation identity/postcondition before retry; channel completion is not durability.
-- **Quality:** future real Flutter integration campaign should inject missing plugin, native error, malformed reply, permission denial, engine detach/recreate and ambiguous retry.
-- **Systems:** bind plugin validation to exact dependency lock/build/artifact because source package presence does not prove native implementation packaging.
-- **Design Studio:** implementation must preserve ambiguous/unavailable states where interaction semantics distinguish them; no canonical design decision changed.
-- **Web Manager:** PWA/browser API integration is a distinct transfer target; native plugin evidence does not transfer automatically.
-- **Marketing Manager:** not materially relevant to M004.
+- **Quality:** ADR status cannot replace a validation verdict; decision records should link evidence with its oracle/environment/limits.
+- **Mobile/Systems:** volatile platform/build/security facts used in decisions need exact version/ref/date plus CHANGE WATCH/TRANSFER VALIDATION.
+- **Data:** migration/sync/recovery decisions should preserve compatibility/failure assumptions and recovery validation dependencies.
+- **Design Studio:** interaction semantics remain Design-owned; Engineering ADRs should link exact design contracts rather than silently redefine them.
+- **Web Manager:** PWA/browser/hosting decisions should link current web requirements and versioned technical evidence; no canonical web files changed.
+- **Marketing Manager:** not materially relevant to this A006 Foundation block.
 
 ## Current Balance Loop
-F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. `dart` and `flutter` executables remain unavailable in the current environment; Python 3.13.5 is available.
+F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. Environment recheck 2026-09-18 found no `dart` or `flutter` executable; Python 3.13.5 is available.
 
-M004 removes another untouched Mobile Stage-1 boundary at first professional/model level. Current strongest independent candidates are:
-1. `A006` ADR/evidence-preserving engineering decisions — remaining Architecture professional/governance boundary with broad cross-track reuse;
-2. `M005` cross-platform architecture, portability and platform divergence — next Mobile prerequisite, but real transfer evidence may remain runtime-constrained;
-3. `Q004` deliberate mutation sensitivity plus exhaustive-vs-generated comparison — deepens test-method evidence;
+A006 removes the main untouched Architecture decision-governance boundary at first professional level. Current strongest independent candidates are:
+1. `M005` cross-platform architecture, portability and platform divergence — next untouched Mobile boundary with high LogMate/native/PWA leverage, though real transfer remains runtime-constrained;
+2. `Q004` deliberate mutation sensitivity plus exhaustive-vs-generated comparison — executable and capable of strengthening test-method evidence without Dart/Flutter;
+3. `A006` executable ADR-corpus governance checker — useful cross-track reuse, but lower immediate product leverage than M005 unless a live decision-log need appears;
 4. return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
@@ -60,6 +60,7 @@ Selection remains prerequisite/risk/evidence driven rather than rotational.
 - Android storage/permission/backup behavior and Apple Data Protection/Keychain behavior are platform/version sensitive.
 - Deployment-platform rollback semantics and app-store/browser delivery policies are service/version sensitive.
 - GitHub artifact-attestation availability/permissions and Sigstore behavior are service-sensitive.
+- ADR process guidance checked 2026-09-18; operational guidance can evolve.
 - NIST SP 800-154 remains draft/planned for finalization; recheck before treating it as final.
 
 ## Evidence rule
