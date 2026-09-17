@@ -13,6 +13,7 @@ Canonical reusable research is organized by specialist ownership.
 
 ### Foundations
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN. Environment rechecked 2026-09-17: no trustworthy `dart`/`flutter` executable available.
+- `F002` — `research/foundations/F002_values_references_memory_lifetime.md` — **IN STUDY / first integrated Foundation block complete**. Binding/object/identity/mutation/alias/reachability/resource-lifetime distinctions plus bounded alias/shallow-copy failure and isolation comparison; direct Dart/Flutter transfer OPEN.
 - `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — **IN STUDY / two integrated Foundation blocks complete**.
 - `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — **IN STUDY / two integrated Foundation blocks complete**.
 - `F006` — `research/foundations/F006_os_file_socket_network_foundations.md` — **IN STUDY / two integrated Foundation blocks complete**. Stream framing plus graceful EOF/truncated-frame and abort/reset-after-complete-frame evidence; direct Dart/Flutter, real network/partition, cross-OS/mobile evidence OPEN.
