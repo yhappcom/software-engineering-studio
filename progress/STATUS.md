@@ -11,21 +11,22 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial Foundation blocks complete |
 | Mobile | Stage 1 IN STUDY — M001 first integrated block + M002 first process/background source/failure-model block complete |
 | Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 two blocks |
-| Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two + Q005 first + Q006 first integrated block |
+| Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two + Q004 source/model + prepared fixture (execution OPEN) + Q005 first + Q006 first |
 | Systems | Stage 1 IN STUDY — S001 two executable trust-boundary blocks complete |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### F003 — data structures, algorithms and complexity
-Canonical: `research/foundations/F003_data_structures_algorithms_complexity.md`
+### Q004 — property/model-based testing and invariant checking
+Canonical: `research/quality/Q004_property_model_based_testing_invariants.md`  
+Fixture: `research/quality/fixtures/Q004_model_property_sequence_shrinking.py`
 
-The last untouched Foundations Stage-1 block now has first executable evidence. The Studio separates abstract operation/invariant, representation, primitive-operation cost, workload composition and measured resource behavior. Current CPython documentation establishes approximately O(1) deque end operations and O(n) movement for list front removal.
+Q004 closes the last completely untouched Quality Foundation topic at the SOURCE/MODEL level. Current QuickCheck/model-based-testing literature and Hypothesis stateful-testing documentation support generated properties/action sequences, reference-model comparison, invariants and reduced reproducing programs.
 
-A Python 3.13.5/Linux size sweep drained the same FIFO values through list `pop(0)` and deque `popleft()`. An independent closed-form checksum oracle passed for both at 5k/10k/20k/40k elements, while the observed list/deque elapsed-time ratio rose from 2.57x to 64.96x in this run. The exact timings are not portable guarantees and the benchmark does not itself prove asymptotic complexity; the complexity claim comes from the runtime documentation/model while execution supplies bounded transfer evidence for the workload.
+The Studio now explicitly separates property/invariant, generator/model transition system, search strategy and counterexample reduction. Generated passing samples are counterexample-search evidence rather than proof; a reduced failure is not automatically root cause or globally minimal; and bounded exhaustive enumeration remains preferable when the complete relevant state space is genuinely tractable.
 
-Evidence limit: CPython comparison only. Direct Dart collection behavior/complexity, space complexity, broader structures/algorithms, Flutter frame-budget transfer, database/index transfer and production profiling remain OPEN. Environment rechecked 2026-09-17: neither `dart` nor `flutter` executable is available. No Foundations PASS.
+A stdlib-only executable fixture was prepared using D006's stale-update/newer-delete failure class. It generates versioned delivery histories from a fixed seed, compares a deliberately naive arrival-order replica with an independent version-aware model, and greedily removes commands while preserving a violation. **No execution result is claimed:** available execution tools failed with infrastructure `GatewaySelectionError`. The fixture is therefore executable material awaiting VALIDATION, not executable evidence.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN.
@@ -39,24 +40,23 @@ Evidence limit: CPython comparison only. Direct Dart collection behavior/complex
 - **D001-D006, Q001-Q002, A001-A003, S001:** prior evidence retained.
 
 ## Cross-track handoffs
-- **Data:** choose indexes/cache/import/sync structures from operation mix + invariants; do not transfer CPython constants or collection guarantees.
-- **Mobile:** transfer-test product-relevant structures against actual frame/startup/background budgets once Flutter execution exists.
-- **Quality:** benchmark/resource tests require semantic oracles and controlled size/workload; one timing is not complexity proof.
-- **Systems:** S003 should distinguish asymptotic model from measured CPU/memory/I/O/network profiling evidence.
-- **Architecture:** resource behavior can become part of an external contract/SLO even when representation is otherwise information-hidden.
-- **Design Studio / Web Manager / Marketing Manager:** considered and not materially relevant to this bounded in-memory Foundation block; no external canonical files changed.
+- **Data:** D006 future delete/recreate/tombstone-GC or operation-vs-state work should define Data-owned invariants first; Q004 can generate histories and reduce counterexamples.
+- **Architecture:** A003 contracts/invariants can become property sources, but test models should avoid duplicating implementation representation.
+- **Mobile:** generated lifecycle/process-death state machines require exact platform fault controls and durable-state oracles before transfer.
+- **Systems:** CI use of generated campaigns must bind framework/seed/artifact/environment and resource budgets.
+- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical semantic decision in those repositories is changed by this bounded testing-method block.
 
 ## Current Balance Loop
-F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated.
+F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. During this run the available local execution facility itself failed with infrastructure `GatewaySelectionError`, so Q004 execution was also preserved as OPEN rather than fabricated.
 
-F003 removes the last completely untouched Foundations Stage-1 block. Foundations now has at least initial evidence across F001-F006, so another Foundation-first block has lower marginal value unless direct Dart/Flutter execution becomes available.
+Q004 removes the last untouched Quality Foundation topic conceptually, but its executable rung is incomplete. First retry execution/mutation validation when trustworthy execution is available. If infrastructure remains blocked, source-only Q004 has lower marginal value.
 
-Strong next candidates:
-1. `Q004` property/model-based testing — now the only untouched Quality Foundation block and high leverage for D006/Q006 state-space exploration;
-2. Architecture Foundation closure on architecture-vs-design/refactoring/technical-debt boundaries;
-3. `S002` threat modeling/least privilege/secrets or `S003` resource cost/profiling, both still untouched and high reuse/risk;
+Strong independent next candidates:
+1. Architecture Foundation closure on architecture-vs-design-vs-implementation and refactoring/technical-debt boundaries;
+2. `S002` threat modeling/least privilege/secrets — high security/reuse value and currently untouched;
+3. `S003` CPU/memory/I/O/network cost models and profiling — high cross-track leverage, but meaningful execution should wait for working runtime tooling;
 4. `M003` sandbox/files/permissions only if platform evidence can advance beyond reading;
-5. return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment exists.
+5. return immediately to Q004 execution and direct Dart/Flutter/mobile execution when trustworthy environments become available.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
 
