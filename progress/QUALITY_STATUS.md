@@ -11,58 +11,49 @@ Build engineering capability to define correctness, design tests with valid orac
 ## Current evidence
 
 ### Q001 — Correctness, specification, test oracle and reproducibility
-**SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed.**
-
-Canonical: `research/quality/Q001_correctness_specification_oracle_reproducibility.md`
-Fixture: `research/quality/fixtures/Q001_oracle_reproducibility.py`
-
-Established independent specification/oracle discipline, deliberate weak-oracle defect evidence, seeded reproducibility, and the Studio-wide Test Evidence Contract V1 in `methods/VALIDATION_STANDARD.md`.
+**SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed.** Canonical: `research/quality/Q001_correctness_specification_oracle_reproducibility.md`.
 
 ### Q002 — Test levels, evidence boundaries and trade-offs
-**IN STUDY — first integrated Foundation block complete.**
-
-Canonical: `research/quality/Q002_test_levels_evidence_boundaries.md`
-Fixture: `research/quality/fixtures/Q002_test_level_boundary.py`
-
-Established that test level is an evidence boundary defined by target, real/substituted collaborators, crossed runtime/platform boundaries, environment, oracle and observable failure classes. An isolated fake-repository test passed while the concrete collaborator with a deliberate write-drop defect failed; broader tests are not automatically superior and cannot repair an invalid oracle.
+**IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q002_test_levels_evidence_boundaries.md`.
 
 ### Q003 — Determinism, nondeterminism, concurrency and flaky-test mechanics
-**IN STUDY — first integrated Foundation block complete.**
+**IN STUDY — two integrated Foundation blocks complete.**
 
 Canonical: `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md`  
-Fixture: `research/quality/fixtures/Q003_concurrency_schedule_flake.py`
+Fixtures: `research/quality/fixtures/Q003_concurrency_schedule_flake.py`, `research/quality/fixtures/Q003_async_event_order_matrix.py`
 
-Established with current Python/pytest sources plus Python 3.13.5/Linux executable evidence:
-- deterministic specification, deterministic behavior, reproducible setup, reproduced failure and flaky verdict are distinct claims;
-- a deliberately widened two-thread read/yield/write race violated an exact 2,000-increment invariant in 20/20 observed runs, producing 1,000;
-- the bounded Lock comparison produced 2,000 in five runs;
-- root cause is lost update across a non-indivisible logical read-modify-write; the injected yield exposes the schedule but is not the causal defect;
-- a green run under one schedule cannot establish schedule-independent correctness;
-- reruns can gather evidence but must not silently convert intermittent FAIL into correctness evidence;
-- D006 sync validation should exercise explicit event-order matrices rather than one happy ordering.
+Established:
+- one observed schedule cannot establish schedule-independent correctness;
+- widened shared read/modify/write reproduced lost updates while Lock comparison satisfied the bounded invariant;
+- explicit async event-order enumeration explored all 24 permutations of timeout/original-complete/cancel/retry in the bounded model;
+- naive retry violated an at-most-one logical-effect property in 12/24 schedules;
+- stable logical operation identity + bounded deduplication violated it in 0/24 schedules;
+- first failure trace `timeout → complete → cancel → retry → retry_complete` demonstrates that timeout observation does not establish original-operation terminal state;
+- cancellation after a late accepted completion cannot retroactively erase that side effect in the model;
+- exhaustive schedule enumeration is evidence only for the explicitly bounded event alphabet, not a real network/runtime proof.
 
-Evidence limit: deliberately widened CPython thread fixture only; no probability estimate, Dart isolate/event-loop, Flutter runtime, real network/backend, or production claim.
+Environment for second block: Python 3.13.5; deterministic permutation generation, no random seed. Direct Dart/Flutter runtime transfer remains OPEN.
 
 ## Initial queue
 - `Q001` — substantial Foundation block complete.
-- `Q002` — first integrated test-level boundary block complete; broader system transfer still open.
-- `Q003` — **IN STUDY / first integrated block complete**; schedule exploration, harness-vs-SUT flake isolation, cancellation/deadlock and Dart/runtime transfer OPEN.
+- `Q002` — first integrated block complete.
+- `Q003` — **IN STUDY / two integrated blocks complete**; harness-vs-SUT flake isolation, larger model/property schedule exploration, runtime transfer OPEN.
 - `Q004` — Property-based/model-based testing and invariant checking.
 - `Q005` — Debugging, fault isolation, observability and crash analysis.
 - `Q006` — Fault injection, recovery verification and regression governance.
 
 ## Gate requirement
-Foundation PASS requires tests that can fail for the right reason, reproduced defect/failure paths, root-cause reasoning, explicit test-level/evidence boundaries, and foundational debugging/recovery/regression understanding. Quality Stage 1 is **not PASS**.
+Quality Stage 1 remains **NOT PASS**. Foundation still requires stronger debugging/error-recovery/observability/regression evidence and transfer beyond bounded Python models.
 
 ## Dependencies / handoffs
-- Foundations: F004/F005 should deepen scheduling/async semantics; F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
-- Architecture: synchronization must follow ownership/invariant contracts rather than patch undefined ownership.
-- Mobile: lifecycle/process-death/background claims require exact platform/device/build/prestate and controllable ordering where feasible.
-- Data: D006 reorder/duplicate/conflict tests should preserve explicit event traces and exercise order matrices.
-- Systems: artifact/runtime/environment identity is part of reproducibility.
-- Design Studio: interaction semantics can become acceptance specifications when materially relevant.
-- Web Manager: browser/PWA ordering requires separate browser/service-worker transfer evidence.
-- Marketing Manager: instrumentation correctness requires semantic event/version oracles, not SDK presence.
+- Foundations: F004/F005 supplied scheduling/signaling/timeout/cancellation vocabulary; F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
+- Architecture: operation identity/terminal-state behavior are semantic contracts.
+- Mobile: lifecycle/process-death/background claims need exact platform/build/prestate and controllable ordering.
+- Data: D006 should now reuse constrained event-order matrices for data-owned duplicate/reorder/tombstone semantics.
+- Systems: artifact/runtime/environment identity remains part of reproducibility.
+- Design Studio: future pending/conflict/retry UX can consume verified semantics; no design files changed.
+- Web Manager: browser/service-worker transfer remains separate.
+- Marketing Manager: not materially relevant.
 
 ## Next work
-Use Balance Loop. Q003 exposes a Foundations prerequisite: deeper scheduling, synchronization and async/event-loop mechanics in `F004/F005` now have high cross-track leverage. Continue Q003 directly only if a coherent schedule-exploration/harness-isolation block can be validated without pretending Dart/Flutter or network evidence.
+Use Balance Loop. Q003 now has the explicit async event-order matrix requested by F005/global status. Strong next candidates are D006 reorder/tombstone/late-completion transfer using the matrix method, or Q005 debugging/fault-isolation foundations if that prerequisite outranks further distributed-model depth. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment exists.
