@@ -12,23 +12,23 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Mobile | Stage 1 IN STUDY — M001 first integrated block + M002 first process/background source/failure-model block complete |
 | Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 two blocks |
 | Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two + Q004 first executable counterexample/shrinking + Q005 first + Q006 first |
-| Systems | Stage 1 IN STUDY — S001 two + S002 first + S003 first + S004 first executable dependency/build block complete |
+| Systems | Stage 1 IN STUDY — S001 two + S002 first + S003 first + S004 first + S005 first executable release-evidence block complete |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### S004 — dependency, supply-chain and build-system foundations
-Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`  
-Fixture: `research/systems/fixtures/S004_dependency_resolution_integrity.py`
+### S005 — CI/CD, signing, versioning, reproducibility and release evidence
+Canonical: `research/systems/S005_ci_signing_versioning_release_evidence.md`  
+Fixture: `research/systems/fixtures/S005_release_identity_gate.py`
 
-Systems' untouched dependency/build Foundation gap now has first executable evidence. The model separates manifest constraints, resolved dependency graph, dependency content/integrity, toolchain/build inputs, build execution/platform, output artifact and provenance/deployment.
+Systems' untouched CI/signing/versioning/release-evidence Foundation gap now has first executable evidence. The model separates intended source/ref, resolved inputs/toolchain, CI workflow/run, output bytes/digest, signature/attestation subject, verification policy, release/version record, deployment target and runtime acceptance.
 
-Current Dart/pub primary documentation establishes that application packages should commit `pubspec.lock`; `pub get` normally respects locked versions when possible; `pub upgrade` intentionally re-resolves; and `pub get --enforce-lockfile` can fail when the lock is invalid or hosted-package content hashes differ.
+Current GitHub artifact-attestation documentation establishes cryptographically signed provenance claims and explicitly warns that an attestation is not a guarantee that an artifact is secure; verification and policy evaluation remain required. SemVer 2.0.0 establishes public-API version semantics when adopted and forbids silently changing released version contents; it is not artifact identity.
 
-Python 3.13.5/Linux bounded execution modeled an allowed dependency set where the same manifest resolved `1.0.0` before a compatible `1.1.0` existed and `1.1.0` afterward. A recorded lock retained `1.0.0`. Replacing the locked version's bytes while retaining its version label failed an independent SHA-256 digest oracle.
+Python 3.13.5/Linux bounded execution accepted the intended `source=abc123`, `build=42`, expected-digest artifact. It rejected a stale-source artifact that retained the same build label and rejected changed bytes that retained the same source/build labels. This demonstrates the bounded failure caused by collapsing source/build/artifact identities.
 
-The evidence does not establish Dart pub runtime behavior, malicious-package detection, registry/maintainer security, native package-manager behavior, build reproducibility, CI isolation or product safety. A lockfile stabilizes a resolution boundary; it does not prove dependency safety. Provenance identifies production context; it does not prove functional correctness.
+The evidence does not establish real signing, key custody, GitHub Actions/OIDC behavior, attestation verification, mobile signing/store delivery, reproducible builds, deployment correctness or product safety.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN after environment recheck 2026-09-18.
@@ -37,32 +37,33 @@ The evidence does not establish Dart pub runtime behavior, malicious-package det
 - **M001/M002:** Flutter/platform lifecycle/process/background conceptual boundaries; real runtime transfer OPEN.
 - **D001-D006:** persistence/migration/cache/restore/sync evidence retained.
 - **Q001-Q006:** all Quality Foundation topics have professional boundaries; Q004 includes executable generated counterexample/shrinking.
-- **S001-S004:** artifact trust/provenance, authority/security, resource measurement, and dependency/build identity now have executable evidence.
+- **S001-S005:** artifact trust/provenance, authority/security, resource measurement, dependency/build identity and first release-evidence composition now have executable evidence.
 
 ## Cross-track handoffs
-- **Architecture:** dependency choice creates API/change-pressure/runtime coupling; version labels do not establish semantic compatibility.
-- **Mobile:** direct `pub get --enforce-lockfile`, dependency graph and native build dependency transfer remains OPEN until a trustworthy Dart/Flutter/mobile environment exists.
-- **Data:** migration/persistence regressions must be bound to exact resolved dependencies/artifact before causal attribution.
-- **Quality:** dependency/lock/toolchain changes are test-relevant artifact changes; successful resolution/build is not a correctness oracle.
-- **Systems/S005:** release evidence should compose `manifest → resolution → content → build inputs/platform → artifact → provenance/deployment`.
+- **Architecture:** version semantics depend on declared compatibility contracts; version labels are not artifact or semantic-compatibility proof.
+- **Mobile:** canonical Flutter build → signing → artifact digest/package identity → install/store delivery transfer remains OPEN until a trustworthy mobile toolchain exists.
+- **Data:** migration/recovery evidence must bind the exact accepted artifact before causal attribution.
+- **Quality:** green CI/test evidence attaches to the tested artifact; a later rebuild under the same source/version label is not automatically equivalent.
+- **Systems/S006:** rollback should preserve/select previously accepted artifact identity and provenance rather than assume rebuilding old source recreates it.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision in those repositories is changed by this bounded Systems block.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. `dart` and `flutter` executables were rechecked 2026-09-18 and remain unavailable; Python 3.13.5 is available.
 
-S004 removes the untouched dependency/build Foundation gap at first executable level. Current strongest independent candidates are:
-1. `S005` CI/CD, signing, versioning, reproducibility and release evidence — directly composes S001-S004 and closes another high-risk untouched Systems prerequisite;
+S005 removes the untouched CI/signing/versioning/release-evidence Foundation gap at first executable level. Current strongest independent candidates are:
+1. `S006` rollback, incident evidence, production change safety and release governance — completes the Systems Stage-1 delivery chain and directly composes S001-S005;
 2. `M003` sandbox/files/permissions/secure storage/platform APIs — high live-mobile/security transfer value, but platform execution limitations remain;
 3. `A006` ADR/evidence-preserving decisions — useful governance prerequisite after principal Architecture concepts;
-4. `Q004` mutation sensitivity/exhaustive-vs-generated comparison — useful method depth but lower prerequisite urgency than untouched release foundations;
+4. `Q004` mutation sensitivity/exhaustive-vs-generated comparison — useful method depth but lower prerequisite urgency than untouched release/rollback foundations;
 5. return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
 
 ## CHANGE WATCH
-- Dart/pub lockfile/content-hash/advisory behavior and GitHub dependency-review capabilities are version/service sensitive.
-- SLSA 1.2 is the current specification family checked 2026-09-18; recheck for release-governance work.
-- Android/iOS/Flutter/browser build, signing and dependency tooling are platform/version sensitive.
+- GitHub artifact-attestation availability/permissions and Sigstore behavior are service-sensitive.
+- SLSA 1.2 is current as checked 2026-09-18.
+- Product/mobile versioning schemes may not use SemVer; do not impose SemVer without a declared contract.
+- Dart/pub lockfile/content-hash/advisory behavior and Android/iOS/Flutter signing/build tooling are version sensitive.
 - NIST SP 800-154 remains draft/planned for finalization; recheck before treating it as final.
 
 ## Evidence rule
