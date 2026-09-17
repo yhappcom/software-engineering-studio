@@ -7,7 +7,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 ## Specialist map
 | Specialist | Current state |
 | --- | --- |
-| Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F004 two synchronization blocks + F005 two async blocks complete |
+| Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F004 two synchronization + F005 two async + F006 first socket/network block complete |
 | Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial Foundation blocks complete |
 | Mobile | Stage 1 IN STUDY — M001 first integrated Foundation block complete |
 | Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 two blocks |
@@ -18,23 +18,19 @@ No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### Q005 — debugging, fault isolation and observability foundations
-Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`  
-Fixture: `research/quality/fixtures/Q005_fault_isolation_observability.py`
+### F006 — OS/file/socket/network foundations
+Canonical: `research/foundations/F006_os_file_socket_network_foundations.md`  
+Fixture: `research/foundations/fixtures/F006_stream_framing_boundary.py`
 
-The previously untouched Quality Foundation gap around symptom→isolation→causal testing now has a bounded executable block.
-- two independent injected stage defects produced the identical external result `11` for the same input;
-- final-output-only evidence therefore could not discriminate which stage was causal;
-- correlated boundary observations plus an independent normalize invariant isolated the first violated contract;
-- normalize-defect trace: `decoded=5 → normalized=11 → output=11`;
-- aggregate-defect trace: `decoded=5 → normalized=10 → output=11`;
-- disabling injected defects restored expected output `10` in the bounded intervention;
-- OpenTelemetry source evidence supports trace/log/resource correlation, but correlation is explicitly not promoted to root-cause proof.
+The previously untouched networking prerequisite now has a bounded executable block.
+- RFC 9293 plus POSIX/Python socket sources establish transport/I/O semantics without inventing application message boundaries;
+- local `SOCK_STREAM` fixture sent a two-byte length-prefixed `HELLO` frame and deliberately received one byte first;
+- naive one-receive-as-frame assumption could not even complete the header;
+- buffered framing alternative reconstructed length 5 and payload `HELLO`;
+- root cause is application framing/accumulation, not evidence of transport byte loss;
+- local send completion, peer receive, parse, apply, durable commit and application ACK are now explicit separate states for D006 handoff.
 
-The debugging model is now:
-`symptom → reproduction → isolation → causal hypothesis → discriminating observation/intervention → falsification/confirmation → root cause → fix → regression evidence`.
-
-Evidence limit: Python 3.13.5 deterministic single-process model; no distributed clocks, telemetry sampling/drop, production observability, crash dump, Flutter DevTools/native symbolication or automated causal-inference claim.
+Evidence limit: Python 3.13.5 / Linux 6.18.44 local socket pair; no Dart Socket/Flutter, real TCP partition/reset, TLS, mobile network, multi-device or production claim.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN. Environment rechecked 2026-09-17: neither executable is available.
@@ -42,26 +38,27 @@ Evidence limit: Python 3.13.5 deterministic single-process model; no distributed
 - **F005:** timeout-vs-underlying-work/cancellation plus ordering/error/cleanup.
 - **Q003:** shared-memory schedule failure plus explicit 24-order async event matrix.
 - **D006:** retry/idempotency/conflict plus reordered stale-update/delete/tombstone model.
+- **Q005:** identical-symptom fault-isolation/observability block.
 - **D001-D005, Q001-Q002, A001-A003, M001, S001:** prior evidence retained.
 
 ## Cross-track handoffs
-- **Foundations:** F006 networking is now the strongest untouched prerequisite for taking D006 from logical schedules toward transport/partition behavior.
-- **Architecture:** A003 contracts/invariants are useful fault-isolation boundaries; observability must not redefine semantic contracts.
-- **Mobile:** M002 lifecycle/process-death diagnosis should capture exact prestate and distinguish missing callback, failed durable write and failed recovery.
-- **Data:** D006 should record logical operation identity plus delivery/apply/ack/conflict state and first violated invariant for future sync debugging.
-- **Quality:** Q005 has first bounded block; crash/exception/distributed observability and regression governance remain OPEN.
-- **Systems:** telemetry must bind to artifact/version/environment identity; diagnostic fields require privacy/security review.
-- **Design Studio / Web Manager:** cross-repository search found no directly applicable current debugging/telemetry evidence.
-- **Marketing Manager:** not materially relevant.
+- **Foundations:** F006 now owns the transport foundation; direct Dart/Flutter execution remains blocked.
+- **Architecture:** framing/timeout/acknowledgement semantics are consumer-visible contracts where exposed.
+- **Mobile:** future networking evidence must include exact platform/build/connectivity/background/process state; local Python sockets are not mobile-runtime evidence.
+- **Data:** D006 should separate transport write → peer receive → parse → apply → durable commit → application ACK and retain logical operation identity above connection retries.
+- **Quality:** Q005/Q006 should distinguish truncated frame, EOF, timeout/reset, late ACK and duplicate retry instead of collapsing them into generic network failure.
+- **Systems:** TLS/authentication, socket/resource exhaustion and network performance remain separate security/performance boundaries.
+- **Design Studio / Web Manager / Marketing Manager:** cross-repository search found no directly applicable current canonical evidence for this bounded socket-framing mechanism.
+- **LogMate:** `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`; F006 is only a TRANSFER CANDIDATE for future synchronization. No socket implementation/defect or production-ref claim is made.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and was not simulated; environment rechecked 2026-09-17.
 
-Q005 removed a broad Quality prerequisite gap and adds a reusable debugging method for later persistence, sync, lifecycle and release failures. Strong next candidates:
-1. `F006` OS/file/socket/network foundations — highest prerequisite leverage for D006 transport, timeout, partial delivery and partition reasoning;
-2. `Q006` fault injection, recovery verification and regression governance — strongest Quality continuation if recovery risk outranks transport foundations;
+F006 removes a high-leverage untouched Foundation gap and gives D006/Q005 a real I/O boundary. Strong next candidates:
+1. continue `F006` with connection termination/EOF/reset/timeout and partial-delivery ambiguity if executable evidence materially extends the professional boundary;
+2. `Q006` fault injection, recovery verification and regression governance using the now-separated transport failure classes;
 3. `M002` Android/iOS process lifecycle/background execution when trustworthy platform evidence can materially exceed M001's current source/model level;
-4. return immediately to direct F001/F005 Dart/Flutter execution when a trustworthy SDK environment exists.
+4. return immediately to direct F001/F005/F006 Dart/Flutter execution when a trustworthy SDK environment exists.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
 
