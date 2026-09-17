@@ -35,28 +35,42 @@ Established from current Dart sources plus bounded Python 3.13.5/Linux model evi
 - Future completion, caller waiting, timeout and cancellation are distinct semantics;
 - waiter timeout can precede a later underlying side effect when work remains active;
 - cancellation requires the exact API/operation contract;
-- documented queue relations (for example Dart microtasks before zero-delay Future event execution) must be distinguished from incidental observed callback/timer order;
-- catching an async failure does not itself perform resource cleanup;
-- a bounded failure left modeled resource state open after the error was caught, while a `finally` alternative closed it and satisfied the independent cleanup oracle.
+- documented queue relations must be distinguished from incidental observed callback/timer order;
+- catching an async failure does not itself perform resource cleanup.
 
 OPEN: direct Dart Future/event/microtask execution, exact Dart cancellation-capable API execution, Flutter scheduler/lifecycle interaction, streams/backpressure, cancellation-during-cleanup and native/process-death behavior.
+
+### F006 — OS, file, socket and network foundations
+Status: **IN STUDY — first integrated Foundation block complete**
+
+Canonical: `research/foundations/F006_os_file_socket_network_foundations.md`  
+Fixture: `research/foundations/fixtures/F006_stream_framing_boundary.py`
+
+Established from RFC 9293, POSIX/Python socket semantics and bounded Python 3.13.5/Linux socket execution:
+- stream transport bytes and application message/frame boundaries are distinct;
+- a one-byte receive left a two-byte application header incomplete; a buffered length-prefixed parser reconstructed the frame correctly;
+- local send completion, peer receipt, parse, application apply, durable commit and application acknowledgement are distinct claims;
+- framing failure must not be misdiagnosed as transport data loss merely because one receive call returned less than an application frame;
+- the result is local `SOCK_STREAM` evidence, not Dart Socket, real TCP partition, mobile network or production evidence.
+
+OPEN: direct Dart/Flutter socket execution, TCP/reset/half-close/timeout/partition experiments, DNS/IP/routing/UDP contrast, mobile connectivity/background behavior, TLS/security and resource/performance boundaries.
 
 ## Remaining initial queue
 - `F002` — Values, references, memory models, stack/heap and lifetime.
 - `F003` — Data structures, algorithms and complexity.
 - `F004` — IN STUDY / two blocks.
 - `F005` — IN STUDY / two blocks.
-- `F006` — OS/file/socket/network foundations.
+- `F006` — IN STUDY / first socket-framing block.
 
 ## Gate requirement
 Foundation PASS requires first-principles explanation, executable examples, representative failure cases, and transfer into at least Dart/Flutter plus one comparison context when useful. Stage 1 remains NOT PASS.
 
 ## Dependencies / handoffs
-- Mobile: direct Dart/Flutter ordering and scheduler evidence remains required; do not transfer CPython queue behavior.
-- Data: D006 must separate timeout, operation terminal state and cleanup; retries can overlap active or incompletely cleaned prior work.
-- Quality: Q003 should use explicit event-order traces plus state/resource terminal oracles.
-- Architecture: async error/cancellation/cleanup/ordering are contracts where consumer-visible.
-- Systems: abandoned resources/work are future reliability/performance boundaries.
+- Mobile: direct Dart/Flutter execution and exact mobile networking/background evidence remain required; do not transfer CPython socket behavior as Dart runtime proof.
+- Data: D006 should place logical operation identity/retry above transport framing and distinguish write/receive/parse/apply/durable commit/ACK.
+- Quality: Q005/Q006 should isolate truncated frame, EOF, timeout/reset, late ACK and retry as distinct failure classes.
+- Architecture: framing, timeout, acknowledgement and cancellation are contracts where consumer-visible.
+- Systems: TLS/authentication, socket/resource exhaustion and network performance remain separate security/performance concerns.
 
 ## Next work
-Use Balance Loop. F005 now has two coherent mechanism/failure blocks. Further Foundation depth should not become queue trivia without Dart execution. Strong independent next candidates are `Q003` explicit async event-order matrices using F005 vocabulary, `D006` late-completion/reorder/tombstone semantics, or `F006` networking foundations if it becomes the stronger prerequisite. Direct Dart/Flutter execution remains the first attempt whenever a trustworthy SDK environment becomes available.
+Use Balance Loop. F006 removed the untouched networking prerequisite at a bounded stream/framing level. The strongest continuation is a second F006 block on connection termination/timeout/partial-delivery ambiguity if it can add executable failure evidence; otherwise Q006 fault injection/recovery governance or M002 lifecycle/process-death evidence may outrank it. Direct Dart/Flutter execution remains the first attempt whenever a trustworthy SDK environment becomes available.
