@@ -17,7 +17,7 @@ Canonical reusable research is organized by specialist ownership.
 - `F003` — `research/foundations/F003_data_structures_algorithms_complexity.md` — **IN STUDY / first integrated Foundation block complete**. Abstract queue semantics vs representation/cost separation plus CPython list-front-removal vs deque-end-removal size sweep with independent semantic oracle; direct Dart/Flutter, broader algorithms and space/resource transfer OPEN.
 - `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — **IN STUDY / two integrated Foundation blocks complete**.
 - `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — **IN STUDY / two integrated Foundation blocks complete**.
-- `F006` — `research/foundations/F006_os_file_socket_network_foundations.md` — **IN STUDY / two integrated Foundation blocks complete**. Stream framing plus graceful EOF/truncated-frame and abort/reset-after-complete-frame evidence; direct Dart/Flutter, real network/partition, cross-OS/mobile evidence OPEN.
+- `F006` — `research/foundations/F006_os_file_socket_network_foundations.md` — **IN STUDY / two integrated Foundation blocks complete**.
 
 ### Architecture
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
@@ -26,7 +26,7 @@ Canonical reusable research is organized by specialist ownership.
 
 ### Mobile
 - `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**.
-- `M002` — `research/mobile/M002_process_lifecycle_termination_background_execution.md` — **IN STUDY / first source/failure-model block complete**. Android/iOS activity/scene/process/background/durable-state boundaries established from current primary sources; real emulator/device/Dart/Flutter interruption validation OPEN.
+- `M002` — `research/mobile/M002_process_lifecycle_termination_background_execution.md` — **IN STUDY / first source/failure-model block complete**.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**.
@@ -34,15 +34,15 @@ Canonical reusable research is organized by specialist ownership.
 - `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — **IN STUDY / two integrated migration blocks complete**.
 - `D004` — `research/data/D004_cache_offline_first_data_ownership.md` — **IN STUDY / first integrated Foundation block complete**.
 - `D005` — `research/data/D005_backup_restore_recovery_acceptance.md` — **IN STUDY / two integrated backup-restore blocks complete**.
-- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` — **IN STUDY / two integrated Foundation blocks complete**. Retry/idempotency + concurrent-update conflict, then Q003-derived reorder/delete matrix; real backend/multi-device/tombstone-GC evidence OPEN.
+- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` — **IN STUDY / two integrated Foundation blocks complete**.
 
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
-- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / two integrated Foundation blocks complete**. Shared-memory schedule failure plus deterministic 24-order timeout/complete/cancel/retry matrix.
-- `Q004` — `research/quality/Q004_property_model_based_testing_invariants.md` — **IN STUDY / source-model block + executable fixture prepared; execution OPEN**. Separates property, generator/model, search and shrinking; transfers D006 stale-delete semantics into a generated-sequence/reference-model fixture without claiming unexecuted validation.
-- `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — **IN STUDY / first integrated Foundation block complete**. Identical-symptom fault isolation via correlated boundary observations plus independent invariant; production/distributed/crash/runtime transfer OPEN.
-- `Q006` — `research/quality/Q006_fault_injection_recovery_regression_governance.md` — **IN STUDY / first integrated Foundation block complete**. Three-point fault campaign with semantic recovery oracle and deliberate idempotency-regression mutant; real crash/restart/durable/network/mobile transfer OPEN.
+- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / two integrated Foundation blocks complete**.
+- `Q004` — `research/quality/Q004_property_model_based_testing_invariants.md` — **IN STUDY / first executable counterexample + shrinking evidence**. Python 3.13.5 fixed-seed campaign reproduced D006's stale-update-after-newer-delete class and reduced the first generated failure to deterministic `delete_v3 → update_v2`; mutation sensitivity/search comparison/Dart-Flutter transfer remain OPEN.
+- `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — **IN STUDY / first integrated Foundation block complete**.
+- `Q006` — `research/quality/Q006_fault_injection_recovery_regression_governance.md` — **IN STUDY / first integrated Foundation block complete**.
 
 ### Systems
 - `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / two integrated executable blocks complete**.
