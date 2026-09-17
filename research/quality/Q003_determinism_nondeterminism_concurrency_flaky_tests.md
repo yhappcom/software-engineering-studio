@@ -1,87 +1,87 @@
 # Q003 — Determinism, Nondeterminism, Concurrency & Flaky-Test Mechanics
 
-Status: **IN STUDY — first integrated Foundation block complete**  
+Status: **IN STUDY — two integrated Foundation blocks complete**  
 Date: 2026-09-17  
 Lead: Quality, Testing & Reliability
 
 ## Problem
-A repeated green result is not automatically evidence that behavior is deterministic. Concurrent software admits multiple schedules; a test can accidentally exercise only one, while a timing-based attempt to expose a race can itself be flaky. Q003 establishes a claim-scoped model for schedule-dependent failures and reproducibility.
+A repeated green result is not automatically evidence that behavior is deterministic. Concurrent/async software admits multiple schedules; a test can accidentally exercise only one. Q003 establishes claim-scoped schedule evidence and reproducibility rather than timing folklore.
 
 ## SOURCE
 Checked 2026-09-17:
-- Python 3.13 `threading` docs: threads share a process; Lock is a synchronization primitive; when multiple waiters contend, which proceeds is not defined. Barrier can coordinate fixed parties. https://docs.python.org/3.13/library/threading.html
-- pytest current flaky-test guidance: higher-level/shared-state/order-sensitive tests can be flaky; parallel execution can expose ordering/global-state assumptions; reruns mitigate symptoms but are dangerous as permanent concealment. https://docs.pytest.org/en/stable/explanation/flaky.html
+- Python 3.13 `threading` docs: threads share a process; Lock/Barrier provide synchronization and waiter selection is not generally defined: https://docs.python.org/3.13/library/threading.html
+- pytest current flaky-test guidance: shared state, ordering and parallel execution can expose flakiness; reruns may mitigate symptoms but must not conceal failures: https://docs.pytest.org/en/stable/explanation/flaky.html
+- Dart async/Future ordering/cancellation source model remains owned by F005. Direct Dart execution is still OPEN.
 
 ## SYNTHESIS
-Keep these distinct:
-- deterministic specification: permitted outcome is unique for the relevant state/input;
-- deterministic implementation under a model: all permitted schedules/events produce the required observable result;
-- reproducible test setup: another run can reconstruct relevant conditions;
-- reproduced failure: the failure occurred again;
-- flaky test: nominally identical test executions can yield different verdicts because uncontrolled relevant state/order/timing/environment changes.
+Keep distinct: deterministic specification; implementation correctness across relevant schedules; reproducible setup; reproduced failure; flaky verdict. A fixed seed does not control scheduler, clock, network, storage or external-service ordering.
 
-A fixed random seed controls only represented randomness. It does not control thread scheduling, clocks, network order, storage completion, external services, or hidden shared state.
+## EXECUTABLE VALIDATION 1 — shared read/modify/write
+Fixture: `research/quality/fixtures/Q003_concurrency_schedule_flake.py`.
 
-## EXECUTABLE VALIDATION
-Fixture: `research/quality/fixtures/Q003_concurrency_schedule_flake.py`
+Python 3.13.5/Linux bounded evidence reproduced a deliberately widened unsynchronized two-thread increment failure: 20/20 unsafe runs produced 1,000 against an exact 2,000 invariant; five Lock comparison runs produced 2,000. Root cause was lost update across a non-indivisible logical read-modify-write. The injected yield exposed the schedule but was not the causal defect.
 
-Environment observed before persistence:
-- Python 3.13.5
-- Linux 6.18.44 x86_64
-- glibc 2.41
+## EXECUTABLE VALIDATION 2 — async event-order matrix
+Fixture: `research/quality/fixtures/Q003_async_event_order_matrix.py`.
 
-### CLAIM
-A passing execution under one schedule does not establish schedule-independent correctness; an unsynchronized shared read-modify-write can violate the bounded counter invariant.
+### CLAIM / PROPERTY
+A single happy async ordering cannot establish correctness across timeout/late-completion/cancel/retry interleavings. Bounded property: one logical operation may produce at most one accepted side effect.
 
-### SPEC/PROPERTY
-Two workers each perform 1,000 logical increments. Accepted final value: exactly 2,000.
+### TARGET / INPUT
+Deterministic state model enumerates all 24 permutations of four control events: `timeout`, original `complete`, `cancel`, and `retry`. A retry, when started, eventually completes after the listed control-event schedule.
 
-### TARGET / FAILURE MODEL
-Unsafe variant deliberately splits read and write and calls `time.sleep(0)` between them to widen an interleaving window. Two threads begin through a Barrier. Comparison variant protects the increment with one Lock.
+### ORACLE
+Independent property oracle rejects any schedule with accepted-effect count > 1. Comparison uses one stable logical operation identity for original attempt and retry and counts unique accepted identities.
+
+### ENVIRONMENT / REPLICATION
+Executed 2026-09-17 with Python 3.13.5. No random seed; exhaustive permutation set is generated by `itertools.permutations`.
 
 ### OBSERVATION
-Pre-persistence execution produced 20/20 unsafe results of `1000` rather than `2000`; five locked comparison runs produced `2000`.
+- schedules explored: 24;
+- naive retry model violated the at-most-one property in 12 schedules;
+- stable-operation-ID/deduplicated comparison violated it in 0/24 schedules;
+- first recorded failure trace: `timeout → complete → cancel → retry → retry_complete`, accepted effects = 2.
 
-### ROOT CAUSE
-The unsafe operation is not one indivisible logical update: both workers can read the same old value before either publishes the increment, so one logical increment overwrites the other. The yield is test instrumentation that makes the schedule easier to reproduce; it is not the production cause.
+### DEBUG / ROOT CAUSE
+The defect is not timeout itself. Caller timeout does not establish original-operation terminal state. Retrying while the original can still complete creates overlapping attempts; when both are accepted independently, the logical operation is applied twice. Cancellation after late completion cannot undo an already accepted side effect in this model.
 
 ### ALTERNATIVE
-The lock comparison establishes the bounded invariant for this fixture by serializing the critical update. This does not establish that mutex serialization is the correct architecture for distributed, async, isolate, database, or message-driven systems.
+Stable logical operation identity plus bounded deduplication satisfies the at-most-one oracle for this fixture. This is not an exactly-once-delivery proof, nor a universal distributed transaction design.
 
-### REPLICATION
-The fixture persists exact iteration/run counts and uses no random seed. Re-execution should record environment and complete output. A future run that fails to expose the unsafe race is not evidence that the unsafe algorithm became correct; it shows the test schedule did not manifest the fault under that run.
+### CONTRADICTION
+The matrix falsifies the implicit test shortcut `timeout observed → original did not complete → retry is safe`. It also shows why testing only `timeout → cancel → retry` can remain green while other valid orders fail.
 
 ### EVIDENCE LIMIT
-This is deliberately widened CPython thread evidence. It is not a scheduler probability estimate, Dart isolate/thread evidence, Flutter runtime evidence, real network reorder evidence, or production evidence. The GIL does not make multi-step application invariants automatically atomic.
+This is deterministic single-process model evidence, not Dart/Flutter scheduler, network/backend, durable dedup store, process-death, multi-device or production evidence. The selected four-event alphabet is intentionally bounded and does not prove completeness for a real sync protocol.
 
-## ENGINEERING JUDGMENT — flaky-test response
-A rerun can help collect evidence but must not silently redefine FAIL as PASS. Preserve the first failure signature and relevant schedule/state; then reduce uncontrolled variables, create explicit synchronization/fault injection where possible, and add a regression oracle tied to the underlying invariant. `sleep()`-only tests are weak because elapsed time is an indirect scheduler assumption; use explicit barriers/events/hooks when the mechanism can be exposed.
+## ENGINEERING JUDGMENT
+For order-sensitive systems, replace arbitrary sleep/rerun confidence with explicit event alphabets, ordering constraints, terminal-state invariants and first-failure traces. Exhaustive enumeration is useful only when the state/event space is genuinely bounded; larger systems need model/property-based generation, reduction and targeted fault injection.
 
 ## D006 TRANSFER
-D006 established duplicate delivery, lost acknowledgement and concurrent-writer conflict semantics in a deterministic model. Q003 adds the validation rule: distributed/sync tests must enumerate or deliberately generate relevant event orders instead of relying on one happy schedule. `delivery A then B` passing cannot establish `B then A`, duplicate, delayed ACK, concurrent delete/update, or reconnect order correctness.
+D006 should treat timeout, operation terminal state, acknowledgement, cancellation observation and retry as separate states. Its next executable block can reuse the event-matrix method but must add data-owned semantics such as duplicate/reorder, delete/tombstone and conflict acceptance rather than copying this Quality model as product truth.
 
 ## RELATED DOMAIN CHECK
-- Foundations: F004/F005 remain prerequisites for deeper process/thread/async scheduling models; F001 direct Dart/Flutter execution remains OPEN.
-- Architecture: synchronization strategy must follow state ownership/invariant boundaries; adding a lock is not a substitute for defining ownership.
-- Mobile: lifecycle/connectivity/process-death ordering needs exact platform/runtime validation later.
-- Data: D006 directly motivates order/duplicate/conflict schedule coverage.
-- Systems: runtime/build/environment identity belongs in flaky/reproduction evidence.
-- Design Studio: not materially relevant to this first mechanism block except future user-visible conflict/recovery semantics.
-- Web Manager: not materially relevant to this first thread mechanism block; browser/service-worker ordering belongs to later transfer validation.
+- Foundations: F004/F005 directly support scheduling, signaling, timeout/cancellation and cleanup vocabulary. F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
+- Architecture: operation identity and terminal-state semantics are contracts; synchronization cannot repair undefined ownership.
+- Mobile: lifecycle/connectivity/process-death ordering requires exact platform/runtime validation later.
+- Data: D006 is the principal transfer target.
+- Systems: runtime/build/environment identity belongs in reproduction evidence; durable/security identity is separate from this bounded correctness identity.
+- Design Studio: future user-visible pending/conflict/retry states may consume these semantics, but no design contract was changed.
+- Web Manager: browser/service-worker transfer requires separate evidence; not assumed.
 - Marketing Manager: not materially relevant.
-- Product source: no new product behavior claim required; retained LogMate exact-ref transfer remains methodological only.
+- Product source: no new product audit was required; no product implementation claim is made.
 
 ## OPEN / VALIDATION
-- enumerate event-order testing/model-based schedule exploration rather than timing-only manifestation;
-- distinguish test flakiness caused by the SUT from flakiness caused by test harness/shared global state;
-- cancellation/timeouts/deadlock/livelock/starvation;
-- Dart event loop/isolate and Flutter runtime execution when trustworthy toolchain exists;
-- real network/backend duplicate/reorder/concurrent-writer transfer for D006.
+- distinguish SUT flake from harness/shared-global-state flake;
+- model/property-based schedule exploration beyond small exhaustive alphabets;
+- cancellation during cleanup, deadlock/livelock/starvation;
+- direct Dart event-loop/isolate and Flutter runtime execution;
+- real backend/network transfer with duplicate/reorder/process death.
 
 ## HANDOFFS
-- **Quality → Data:** D006 follow-up should test explicit order matrices and preserve first-failure event trace; do not use retries as correctness proof.
-- **Quality → Foundations:** F004/F005 should supply deeper scheduling/happens-before/async mechanics before Q003 claims broader concurrency competence.
-- **Quality → Mobile:** eventual lifecycle/sync tests should replace arbitrary sleeps with controllable hooks where feasible and record platform/build/prestate.
+- **Quality → Data:** extend D006 with explicit constrained event-order matrices and preserve first-failure trace plus terminal-state oracle.
+- **Quality → Foundations:** direct Dart/Flutter runtime transfer remains blocked; do not promote Python ordering behavior.
+- **Quality → Mobile:** eventual lifecycle/sync tests should use controllable hooks/state oracles rather than elapsed-time assumptions where feasible.
 
 ## Current judgment
-First integrated Q003 block has SOURCE + executable failure + root-cause isolation + synchronized alternative + D006 transfer. Q003 and Quality Stage 1 remain **NOT PASS**; deeper schedule exploration, harness-vs-SUT flake isolation, debugging/observability and recovery/regression work remain open.
+Q003 now has two integrated blocks: schedule-dependent shared-memory failure and deterministic async event-order exploration. Quality Stage 1 remains **NOT PASS**; harness-vs-SUT isolation, foundational debugging/recovery/regression work, and runtime/platform transfer remain open.
