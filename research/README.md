@@ -24,6 +24,7 @@ Canonical reusable research is organized by specialist ownership.
 
 ### Mobile
 - `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**.
+- `M002` — `research/mobile/M002_process_lifecycle_termination_background_execution.md` — **IN STUDY / first source/failure-model block complete**. Android/iOS activity/scene/process/background/durable-state boundaries established from current primary sources; real emulator/device/Dart/Flutter interruption validation OPEN.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**.
