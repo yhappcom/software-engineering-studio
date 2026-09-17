@@ -11,24 +11,27 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial Foundation blocks complete |
 | Mobile | Stage 1 IN STUDY — M001 first integrated Foundation block complete |
 | Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 two blocks |
-| Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two + Q005 first integrated block |
+| Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two + Q005 first + Q006 first integrated block |
 | Systems | Stage 1 IN STUDY — S001 two executable trust-boundary blocks complete |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### F006 — connection termination / partial-delivery ambiguity
-Canonical: `research/foundations/F006_os_file_socket_network_foundations.md`  
-Fixture: `research/foundations/fixtures/F006_connection_termination_ambiguity.py`
+### Q006 — fault injection, recovery verification and regression governance
+Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`  
+Fixture: `research/quality/fixtures/Q006_fault_injection_recovery_regression.py`
 
-The second F006 block extends framing into terminal connection behavior.
-- graceful write-close after only `00 05 HE` produced EOF with a declared five-byte payload still incomplete; EOF therefore does not make a truncated application frame valid;
-- abortive loopback TCP close after sending complete `00 05 HELLO` allowed the client to receive the complete frame and then observe `ConnectionResetError` in the bounded Linux environment;
-- therefore reset does not prove that the peer received zero application bytes, and neither reset nor EOF establishes whether a business operation was parsed/applied/durably committed;
-- transport terminal state and application operation terminal state remain separate; D006 logical operation identity/application ACK semantics remain necessary above connection retries.
+The first Q006 block converts prior F005/F006/D006/Q003 failure mechanics into a Quality-owned recovery campaign method.
+- explicit fault points: `before_apply`, `after_apply_before_ack`, `after_ack`;
+- recovery replays the same logical operation identity because the injected failure does not by itself establish terminal operation state;
+- independent terminal oracle requires balance 110 plus one applied/acknowledged logical operation;
+- robust idempotent comparison passed 3/3 injected points;
+- a deliberate regression mutant that records operation identity but no longer guards the effect failed both post-apply points with balance 120 while the before-apply point still passed;
+- therefore fault observation, successful retry and verified recovery are distinct claims;
+- killing the bounded mutant demonstrates sensitivity to that duplicated-effect regression, not completeness against all possible regressions.
 
-Evidence limit: Python 3.13.5 / Linux 6.18.44 local sockets. Abortive-close sequencing is OS/socket-stack dependent; no Dart/Flutter, real partition, cross-OS/mobile, TLS, multi-device or production claim.
+Evidence limit: Python 3.13.5 / Linux 6.18.44 deterministic single-process model. No Dart/Flutter, real process death/restart, durable storage, real network/backend, combined-fault, mobile or production release-gate claim.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN. Environment rechecked 2026-09-17: neither executable is available.
@@ -38,25 +41,27 @@ Evidence limit: Python 3.13.5 / Linux 6.18.44 local sockets. Abortive-close sequ
 - **Q003:** shared-memory schedule failure plus explicit 24-order async event matrix.
 - **D006:** retry/idempotency/conflict plus reordered stale-update/delete/tombstone model.
 - **Q005:** identical-symptom fault-isolation/observability block.
+- **Q006:** explicit fault-point campaign + semantic recovery oracle + regression-mutant sensitivity.
 - **D001-D005, Q001-Q002, A001-A003, M001, S001:** prior evidence retained.
 
 ## Cross-track handoffs
-- **Foundations:** F006 local professional boundary is materially stronger; direct Dart/Flutter execution remains blocked.
-- **Architecture:** framing/terminal-state/timeout/acknowledgement semantics are consumer-visible contracts where exposed.
-- **Mobile:** future networking evidence must include exact platform/build/connectivity/background/process state; Linux socket results are not mobile-runtime evidence.
-- **Data:** D006 must treat ambiguous connection failure as insufficient to infer apply state; keep stable logical operation identity and explicit application ACK/durable state above transport retries.
-- **Quality:** Q006 should inject EOF-before-frame, reset-after-complete-frame, timeout and late ACK as separate failure classes with semantic-state oracles.
-- **Systems:** TLS/authentication, socket/resource exhaustion and network performance remain separate security/performance boundaries.
-- **Design Studio / Web Manager / Marketing Manager:** no current canonical evidence materially changes this low-level transport result.
-- **LogMate:** retained exact product context `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`; F006 remains only a TRANSFER CANDIDATE. No socket implementation/defect or production-ref claim.
+- **Foundations:** F005/F006 now have a reusable Quality campaign consumer; direct Dart/Flutter execution remains blocked.
+- **Architecture:** consumer-visible recovery/terminal-state behavior should be represented as contracts/invariants where applicable.
+- **Mobile:** M002 should inject exact process/lifecycle failure points and judge durable/recovered state rather than lifecycle callback observation alone.
+- **Data:** D005/D006 can reuse the Q006 campaign structure while retaining Data-owned restore/sync semantic oracles.
+- **Quality:** Q006 removes the previously untouched fault-injection/recovery/regression Foundation gap at bounded executable level; real crash/restart/network/runtime transfer remains OPEN.
+- **Systems:** production/release recovery gates must bind tests to exact artifact/build/environment; security fault injection remains separate.
+- **Design Studio / Web Manager / Marketing Manager:** no current canonical evidence materially changes this bounded Quality method.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and was not simulated; environment rechecked 2026-09-17.
 
-F006 now covers framing plus graceful/abortive termination ambiguity at bounded executable level. Additional local-socket detail has lower marginal value until a Dart/mobile/real-network transfer is possible. Strong next candidates:
-1. `Q006` fault injection, recovery verification and regression governance, using F006/D006/Q003 failure classes;
-2. `M002` Android/iOS process lifecycle/background execution when authoritative platform evidence can materially exceed M001;
-3. untouched `F002` memory/lifetime or `F003` data structures/complexity if prerequisite leverage wins;
+Q006 now supplies a reusable method for `fault point → recovery action → independent terminal-state oracle → regression sensitivity`. Quality Foundation breadth is materially stronger, but real process/storage/network/runtime transfer is still missing.
+
+Strong next candidates:
+1. `M002` Android/iOS process lifecycle, termination and background execution, now using Q006 to shape failure/recovery evidence rather than lifecycle-reading alone;
+2. untouched `F002` memory/lifetime or `F003` data structures/complexity if prerequisite severity wins;
+3. `Q004` property/model-based testing once a richer state machine can materially improve state-space coverage;
 4. return immediately to direct F001/F005/F006 Dart/Flutter execution when a trustworthy SDK environment exists.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
