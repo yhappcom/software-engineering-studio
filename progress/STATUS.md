@@ -10,7 +10,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F004 two synchronization blocks + F005 two async blocks complete |
 | Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial Foundation blocks complete |
 | Mobile | Stage 1 IN STUDY — M001 first integrated Foundation block complete |
-| Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 first block |
+| Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 two blocks |
 | Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two integrated blocks |
 | Systems | Stage 1 IN STUDY — S001 two executable trust-boundary blocks complete |
 
@@ -18,44 +18,48 @@ No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### Q003 — explicit async event-order matrix
-Canonical: `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md`  
-Fixture: `research/quality/fixtures/Q003_async_event_order_matrix.py`
+### D006 — reordered stale update vs delete/tombstone
+Canonical: `research/data/D006_replication_sync_consistency_idempotency_conflicts.md`  
+Fixture: `research/data/fixtures/D006_reorder_tombstone_semantics.py`
 
-Bounded Python 3.13.5 deterministic model enumerated all 24 permutations of `timeout`, original `complete`, `cancel`, and `retry` against an independent at-most-one logical-effect oracle.
-- naive retry violated the property in 12/24 schedules;
-- stable logical operation identity + bounded deduplication violated it in 0/24 schedules;
-- first failure trace: `timeout → complete → cancel → retry → retry_complete`, two accepted effects;
-- root cause: caller timeout does not establish original-operation terminal state, so retry can overlap late completion;
-- cancellation after accepted completion does not retroactively undo the side effect in the bounded model;
-- this is not exactly-once delivery, Dart/Flutter scheduler, network/backend, durable dedup, process-death or production evidence.
+Q003's explicit schedule-enumeration method was transferred into a bounded Data-owned delete/reorder model.
+- event alphabet: newer `delete_v3` and delayed `stale_update_v2`;
+- independent property: terminal state must remain deleted because version 3 is newer than version 2;
+- naive physical-delete/state-replacement model failed 1/2 delivery orders: `delete → stale update` resurrected the record;
+- bounded versioned-tombstone comparison failed 0/2 orders;
+- root cause: physical absence retained no ordering history capable of rejecting the delayed stale update;
+- the result does not establish scalar-version sufficiency, wall-clock timestamp safety, tombstone GC safety, Firestore internals, real network/multi-device behavior, or a production sync design.
+
+Current Firebase documentation was rechecked: offline local changes synchronize on reconnect and multiple changes to the same document use last-write-wins; current Firestore API documentation separately exposes pending-write acknowledgement and states termination does not cancel persisted pending writes. These sources support keeping local visibility, pending work, acknowledgement and conflict policy distinct, but do not prove the bounded tombstone implementation.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN. Environment rechecked 2026-09-17: neither executable is available.
 - **F004:** lock-order/circular-wait plus condition predicate/signaling.
 - **F005:** timeout-vs-underlying-work/cancellation plus ordering/error/cleanup.
+- **Q003:** shared-memory schedule failure plus explicit 24-order async event matrix.
 - **D001-D006, Q001-Q003, A001-A003, M001, S001:** prior evidence retained.
 
 ## Product transfer
-No new product audit was required for this mechanism/validation block. Retained exact-ref context: `yhappcom/logmate → main b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-17`. No LogMate defect is inferred. MintTap repository identity remains unresolved; no MintTap implementation claim is made.
+LogMate exact ref rechecked: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → Dart SDK ^3.10.7 → evidence date 2026-09-17`. Default branch is not assumed to equal production. D006 remains a **TRANSFER CANDIDATE**; no LogMate defect or sync-technology decision is inferred. MintTap repository identity remains unresolved; no MintTap implementation claim is made.
 
 ## Cross-track handoffs
-- **Foundations:** F005 vocabulary successfully transferred into explicit Quality schedule validation; direct Dart runtime remains OPEN.
-- **Architecture:** logical operation identity and terminal state are behavioral contracts.
-- **Mobile:** lifecycle/connectivity/process-death schedule transfer still requires exact runtime/platform evidence.
-- **Data:** D006 should reuse constrained event-order matrices for data-owned duplicate/reorder/tombstone/late-completion semantics.
-- **Quality:** Q003 now has two integrated blocks; next depth should avoid timing-only rerun evidence.
-- **Systems:** correctness dedup identity is not automatically a security/replay identity or durable guarantee.
-- **Design Studio/Web Manager:** future interaction/browser transfer remains separate; no canonical files changed.
+- **Foundations:** direct Dart runtime remains OPEN; F006 networking would deepen D006 transport/partition mechanisms.
+- **Architecture:** delete/recreate policy, conflict unit, operation identity and tombstone lifecycle are semantic contracts.
+- **Mobile:** exact lifecycle/connectivity/process-death transfer remains required on the eventual sync stack.
+- **Data:** D006 now has two integrated blocks; next depth should target operation-vs-state sync or concurrent delete/recreate/tombstone-GC only when it outranks broader Foundation gaps.
+- **Quality:** Q003 event-order method successfully transferred into Data; future Q006 should include deletion/GC failure schedules.
+- **Systems:** correctness tombstones/operation IDs are not automatically security/replay controls; retention also has privacy/storage implications.
+- **Design Studio:** repository search found no directly applicable current sync/conflict/offline evidence; future UI handoff remains semantic-state mapping.
+- **Web Manager:** no directly applicable evidence found; browser/service-worker transfer remains separate.
 - **Marketing Manager:** not materially relevant.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and was not simulated; environment rechecked 2026-09-17.
 
-Q003 has now closed the explicit async event-order matrix requested by the previous global queue. Strong next candidates:
-1. `D006` reorder/tombstone/late-completion semantics using constrained schedule matrices, because it transfers the new Quality method into the highest-risk Data boundary;
-2. `Q005` debugging/fault-isolation/observability foundations, because Quality Stage 1 still lacks a dedicated root-cause/diagnostic block;
-3. `F006` OS/socket/network foundations, if network mechanism prerequisites outrank model-level D006 transfer;
+D006 has now completed the high-value Q003→Data transfer requested by the previous global queue. Strong next candidates:
+1. `Q005` debugging/fault-isolation/observability foundations — Quality Stage 1 still lacks a dedicated symptom→reproduction→isolation→causal-test block and this method has broad cross-track leverage;
+2. `F006` OS/file/socket/network foundations — prerequisite for moving D006 from logical scheduling models toward transport/partition behavior;
+3. D006 operation-based vs state-based sync or concurrent delete/recreate/tombstone-GC if risk evidence makes deeper Data work dominant;
 4. return immediately to direct F001/F005 Dart/Flutter execution when a trustworthy SDK environment exists.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
