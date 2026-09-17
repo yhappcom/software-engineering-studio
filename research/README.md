@@ -15,7 +15,7 @@ Canonical reusable research is organized by specialist ownership.
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN. Environment rechecked 2026-09-17: no trustworthy `dart`/`flutter` executable available.
 - `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — **IN STUDY / two integrated Foundation blocks complete**.
 - `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — **IN STUDY / two integrated Foundation blocks complete**.
-- `F006` — `research/foundations/F006_os_file_socket_network_foundations.md` — **IN STUDY / first integrated Foundation block complete**. RFC/POSIX/socket source evidence plus local stream-framing failure/alternative; direct Dart/Flutter, real TCP failure/partition and mobile-network evidence OPEN.
+- `F006` — `research/foundations/F006_os_file_socket_network_foundations.md` — **IN STUDY / two integrated Foundation blocks complete**. Stream framing plus graceful EOF/truncated-frame and abort/reset-after-complete-frame evidence; direct Dart/Flutter, real network/partition, cross-OS/mobile evidence OPEN.
 
 ### Architecture
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
@@ -37,7 +37,7 @@ Canonical reusable research is organized by specialist ownership.
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
 - `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / two integrated Foundation blocks complete**. Shared-memory schedule failure plus deterministic 24-order timeout/complete/cancel/retry matrix.
-- `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — **IN STUDY / first integrated Foundation block complete**. Two independent defects produced the identical external symptom; final-only evidence was ambiguous while correlated stage observations plus an independent boundary invariant isolated the first violated contract. Production/distributed/crash/runtime transfer remains OPEN.
+- `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — **IN STUDY / first integrated Foundation block complete**. Identical-symptom fault isolation via correlated boundary observations plus independent invariant; production/distributed/crash/runtime transfer OPEN.
 
 ### Systems
 - `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / two integrated executable blocks complete**.
