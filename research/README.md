@@ -50,6 +50,7 @@ Canonical reusable research is organized by specialist ownership.
 - `S002` — `research/systems/S002_threat_model_least_privilege_secrets_secure_storage.md` — **IN STUDY / first integrated executable Foundation block complete**.
 - `S003` — `research/systems/S003_resource_cost_models_profiling_foundations.md` — **IN STUDY / first integrated executable Foundation block complete**.
 - `S004` — `research/systems/S004_dependency_supply_chain_build_system_foundations.md` — **IN STUDY / first integrated executable Foundation block complete**. Separates manifest constraints, resolved graph, content integrity, build inputs/platform, artifact and provenance; bounded Python resolution-drift/integrity failure evidence complete; direct Dart/pub/build transfer OPEN.
+- `S005` — `research/systems/S005_ci_signing_versioning_release_evidence.md` — **IN STUDY / first integrated executable Foundation block complete**. Separates CI verdict, version, source, artifact digest, signature/attestation, verification policy and deployment identity; bounded stale-source/changed-bytes release-gate evidence complete; real CI/signing/reproducibility/mobile deployment OPEN.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS.
