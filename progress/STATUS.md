@@ -7,51 +7,50 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 ## Specialist map
 | Specialist | Current state |
 | --- | --- |
-| Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F002/F003 first blocks + F004 two + F005 two + F006 two blocks complete |
+| Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F002-F006 initiated with executable/model evidence |
 | Architecture | Stage 1 IN STUDY — A001/A002/A003 substantial + A005 first executable refactoring/debt boundary block complete |
-| Mobile | Stage 1 IN STUDY — M001 first integrated block + M002 first process/background source/failure-model block complete |
-| Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 two blocks |
-| Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two + Q004 first executable counterexample/shrinking + Q005 first + Q006 first |
-| Systems | Stage 1 IN STUDY — S001 two + S002-S006 first executable/professional blocks; all S001-S006 now initiated with evidence |
+| Mobile | Stage 1 IN STUDY — M001 runtime/lifecycle + M002 process/background + M003 sandbox/storage/permission/security-property first blocks complete |
+| Data | Stage 1 IN STUDY — D001-D006 initiated with persistence/migration/cache/restore/sync evidence |
+| Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 executable counterexample/shrinking evidence |
+| Systems | Stage 1 IN STUDY — S001-S006 all initiated with executable/professional evidence |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### S006 — Rollback, incident evidence, production change safety and release governance
-Canonical: `research/systems/S006_rollback_incident_change_safety_governance.md`  
-Fixture: `research/systems/fixtures/S006_rollback_state_compatibility.py`
+### M003 — App sandbox, files, permissions, secure storage and platform APIs
+Canonical: `research/mobile/M003_sandbox_files_permissions_secure_storage_platform_apis.md`  
+Fixture: `research/mobile/fixtures/M003_storage_property_vector.py`
 
-Systems' last untouched Stage-1 block now has first executable evidence. The model treats deployed state as a vector across artifact, configuration, durable data/schema, infrastructure, routing, external dependencies and control state rather than treating rollback as the inverse of deployment.
+Current Android/Apple primary documentation plus bounded model evidence establish that mobile storage must be reasoned about as independent properties rather than a single “private/secure/persistent” label. Relevant axes include namespace/access authority, purgeability, uninstall behavior, backup/migration, lock-state availability, protection, sharing/export and recovery role.
 
-Current Google SRE canary guidance supports staged/time-limited exposure with evaluation before wider rollout and rollback/pause when a candidate is bad. Current AWS CodeDeploy documentation explicitly states that rollback redeploys a previous revision as a new deployment rather than restoring an old deployment event, reinforcing the distinction between selecting an old revision and restoring whole-system state.
+Android app-specific internal persistent files and cache are both app-private, but cache can be removed earlier and app-specific files are removed on uninstall. Android also provides app-private/system-mediated file access paths that do not require broad storage permissions. Apple Data Protection and Keychain accessibility classes expose different availability and migration contracts; device-only accessibility can intentionally conflict with migration/recovery requirements.
 
-Python 3.13.5/Linux bounded execution modeled a v1 artifact supporting schema 1 and a faulty v2 that had already advanced durable state to schema 2. Binary-only rollback to v1 failed against current state. A separately modeled compatible schema-1 restore allowed the exact old artifact to satisfy the recovery oracle. This demonstrates the bounded failure of assuming `previously known-good artifact => safe against current state`.
-
-The evidence does not establish safe database reversal, snapshot consistency, data-loss acceptability, real deployment rollback, mobile/store downgrade, distributed recovery or production incident behavior.
+Python 3.13.5/Linux bounded fixture passed independent role predicates that reject purgeable cache as the only non-reconstructible authoritative record, reject app-private internal files when uninstall survival is required, and reject ordinary private files when credential protection is required. This validates the reasoning model only; it is not Android/iOS/Flutter execution evidence.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN after environment recheck 2026-09-18.
-- **F002-F006:** alias/lifetime, complexity, concurrency, async and network/termination failure mechanics retained.
-- **A001-A003/A005:** change pressure, ownership/dependency, semantic contracts, refactoring/debt boundaries retained.
-- **M001/M002:** Flutter/platform lifecycle/process/background conceptual boundaries; real runtime transfer OPEN.
-- **D001-D006:** persistence/migration/cache/restore/sync evidence retained.
-- **Q001-Q006:** all Quality Foundation topics have professional boundaries; Q004 includes executable generated counterexample/shrinking.
-- **S001-S006:** trust/provenance, authority/security, resource measurement, dependency/build identity, release evidence and rollback/change-safety now all have first professional evidence.
+- **Foundations F002-F006:** alias/lifetime, complexity, concurrency, async and network/termination failure mechanics retained.
+- **Architecture:** A001-A003/A005 change pressure, ownership/dependency, semantic contracts and refactoring/debt boundaries retained.
+- **Mobile:** M001-M003 now cover runtime/state, lifecycle/process/background and first storage/permission/security-property boundaries; real runtime/platform transfer OPEN.
+- **Data:** D001-D006 persistence/migration/cache/restore/sync evidence retained.
+- **Quality:** Q001-Q006 professional boundaries retained; Q004 includes executable generated counterexample/shrinking.
+- **Systems:** S001-S006 trust/security/performance/build/release/rollback evidence retained.
 
 ## Cross-track handoffs
-- **Architecture:** rollback safety consumes A003 compatibility contracts; old artifact identity alone does not establish current-state compatibility.
-- **Mobile:** canonical Flutter build/sign/install/update/downgrade/store transfer remains OPEN until a trustworthy mobile toolchain/platform exists.
-- **Data:** D003/D005 schema compatibility and restore acceptance are prerequisites to stateful rollback readiness; data reversal must not be assumed.
-- **Quality:** post-rollback acceptance requires independent semantic/data-integrity oracles, not deployment-command success or process liveness.
-- **Systems:** preserve exact previously accepted artifact identity from S005 and evaluate current configuration/data/external-state compatibility before using it as a rollback target.
-- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision in those repositories is changed by this bounded Systems block.
+- **Architecture:** storage API/location is subordinate to explicit state ownership and recovery contracts.
+- **Data:** app-private does not establish durability, uninstall survival, backup or restore acceptance; specify those independently.
+- **Quality:** real-platform validation should inject cache eviction, permission denial/revocation, lock/reboot, uninstall/reinstall and restore boundaries with semantic oracles.
+- **Systems:** S002 remains canonical for threat modeling/least privilege/secrets; M003 applies those principles at mobile platform APIs.
+- **Design Studio:** recovery/export UX may constrain storage semantics; no canonical design decision changed here.
+- **Web Manager:** PWA/browser storage is not covered by native M003 and remains M006/web overlap.
+- **Marketing Manager:** not materially relevant to this block.
 
 ## Current Balance Loop
-F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. `dart` and `flutter` executables were rechecked 2026-09-18 and remain unavailable; Python 3.13.5 is available.
+F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. `dart` and `flutter` executables remain unavailable in the current environment; Python 3.13.5 is available.
 
-S006 removes the final untouched Systems Stage-1 block at first professional/executable level. Current strongest independent candidates are:
-1. `M003` sandbox/files/permissions/secure storage/platform APIs — strongest live mobile/security gap, though real platform execution remains constrained;
+M003 removes another major untouched Mobile Stage-1 boundary at first professional/model level. Current strongest independent candidates are:
+1. `M004` plugin/platform-channel/native integration and failure boundaries — high mobile prerequisite and future Flutter leverage, but real runtime execution may remain constrained;
 2. `A006` ADR/evidence-preserving decisions — closes a remaining Architecture professional boundary with broad governance/release leverage;
 3. `Q004` deliberate mutation sensitivity plus exhaustive-vs-generated comparison — deepens test-method evidence;
 4. return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
@@ -59,11 +58,10 @@ S006 removes the final untouched Systems Stage-1 block at first professional/exe
 Selection remains prerequisite/risk/evidence driven rather than rotational.
 
 ## CHANGE WATCH
+- Android storage/permission/backup behavior and Apple Data Protection/Keychain behavior are platform/version sensitive.
+- Flutter/plugin mappings to native storage/security APIs require exact-version transfer validation.
 - Deployment-platform rollback semantics and app-store/browser delivery policies are service/version sensitive.
 - GitHub artifact-attestation availability/permissions and Sigstore behavior are service-sensitive.
-- SLSA 1.2 is current as checked 2026-09-18.
-- Product/mobile versioning schemes may not use SemVer; do not impose SemVer without a declared contract.
-- Dart/pub lockfile/content-hash/advisory behavior and Android/iOS/Flutter signing/build tooling are version sensitive.
 - NIST SP 800-154 remains draft/planned for finalization; recheck before treating it as final.
 
 ## Evidence rule
