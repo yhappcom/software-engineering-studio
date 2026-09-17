@@ -22,19 +22,14 @@ Build engineering capability to define correctness, design tests with valid orac
 Established shared-memory schedule failure plus a deterministic 24-order timeout/complete/cancel/retry matrix. Naive retry violated an at-most-one logical-effect property in 12/24 schedules while stable logical-operation identity + bounded deduplication violated it in 0/24. Exhaustiveness is only for the bounded event alphabet.
 
 ### Q004 — Property/model-based testing and invariant checking
-**IN STUDY — SOURCE/MODEL + EXECUTABLE FIXTURE PREPARED; EXECUTION OPEN.**
+**IN STUDY — SOURCE/MODEL + FIRST EXECUTABLE COUNTEREXAMPLE/SHRINKING EVIDENCE.**
 
 Canonical: `research/quality/Q004_property_model_based_testing_invariants.md`  
 Fixture: `research/quality/fixtures/Q004_model_property_sequence_shrinking.py`
 
-Established from QuickCheck/model-based-testing literature and current Hypothesis stateful-testing documentation:
-- property/invariant, generator/model transition system, search strategy and counterexample reduction are separate concerns;
-- stateful generated tests can compare a SUT against an independent reference model and check invariants across action sequences;
-- shrinking/reduction preserves a failure while simplifying its reproducer but does not prove root cause or global minimality;
-- passing generated samples is counterexample-search evidence, not proof;
-- bounded exhaustive enumeration remains preferable when the complete relevant state/event space is genuinely tractable.
+Python 3.13.5 execution on 2026-09-17 resolved the prior fixture-execution infrastructure gap. With seed `20260917`, the first generated sequence `delete_v3, update_v2, update_v2` exposed the intended arrival-order resurrection defect (`naive='B'`, version-aware model=`None`). Greedy command deletion reduced it to `delete_v3, update_v2`, and the fixture verified 1-minimality under single-command deletion. This reduced sequence is retained as the deterministic model-level regression reproducer.
 
-A stdlib-only fixture was added to generate versioned update/delete delivery sequences, compare a naive arrival-order replica against a version-aware model, and greedily reduce the first violation to a 1-minimal sequence under single-command deletion. **Execution is OPEN:** available execution tools failed with infrastructure `GatewaySelectionError`, so no runtime output/verdict/environment is claimed. Creating executable code is not validation evidence.
+The result is counterexample-search/reduction evidence, not proof of coverage, global minimality, root cause, or real sync behavior. Deliberate mutation sensitivity of a version-aware SUT, exhaustive-vs-generated comparison, and Dart/Flutter/runtime transfer remain OPEN.
 
 ### Q005 — Debugging, fault isolation and observability foundations
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
@@ -42,39 +37,28 @@ A stdlib-only fixture was added to generate versioned update/delete delivery seq
 Established symptom/correlation/root-cause separation with identical-symptom injected defects, correlated boundary observations, an independent invariant and a bounded causal intervention. Production/distributed/crash/runtime transfer remains OPEN.
 
 ### Q006 — Fault injection, recovery verification and regression governance
-**IN STUDY — first integrated Foundation block complete.**
+**IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`.
 
-Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`  
-Fixture: `research/quality/fixtures/Q006_fault_injection_recovery_regression.py`
-
-Established with Python 3.13.5/Linux deterministic model evidence:
-- fault observation and recovery correctness are distinct claims;
-- a campaign injected `before_apply`, `after_apply_before_ack`, and `after_ack` failures and judged recovery by independent terminal-state semantics;
-- stable logical-operation identity preserved the exactly-one bounded effect in 3/3 injected points after replay;
-- a deliberate regression mutant that recorded but did not enforce operation identity produced balance 120 at both post-apply fault points, while the before-apply point still passed;
-- therefore successful retry is not itself a recovery oracle;
-- killing the deliberate mutant demonstrates sensitivity to this specific duplicated-effect regression, not mutation-testing completeness.
-
-Evidence limit: deterministic single-process model only; no Dart/Flutter, real process death, durable storage, network/backend, combined faults, mobile or production release-gate claim.
+Established three-point fault campaign with semantic recovery oracle and deliberate idempotency-regression mutant. Real crash/restart/durable/network/mobile transfer remains OPEN.
 
 ## Initial queue
 - `Q001` — substantial Foundation block complete.
 - `Q002` — first integrated block complete.
-- `Q003` — two integrated blocks complete; harness-vs-SUT flake isolation, larger runtime schedule exploration and runtime transfer OPEN.
-- `Q004` — **IN STUDY / source-model block + prepared fixture; execution/mutation evidence OPEN**.
-- `Q005` — first integrated block complete; crash/exception isolation, distributed observability, instrumentation perturbation and runtime transfer OPEN.
-- `Q006` — first integrated block complete; real crash/restart/durable/network fault campaigns, combined faults, resource cleanup and release-gate transfer OPEN.
+- `Q003` — two integrated blocks complete.
+- `Q004` — **IN STUDY / first executable counterexample + shrinking evidence complete**; mutation sensitivity/search comparison/runtime transfer OPEN.
+- `Q005` — first integrated block complete.
+- `Q006` — first integrated block complete.
 
 ## Gate requirement
-Quality Stage 1 remains **NOT PASS**. Q001-Q006 now all have at least a professional Foundation boundary, but Q004 lacks execution evidence and stronger real recovery/crash/runtime/platform transfer remains open. Reading or an unexecuted fixture cannot close the gate.
+Quality Stage 1 remains **NOT PASS**. Q001-Q006 all have professional Foundation boundaries and Q004 now has executable evidence, but stronger real recovery/crash/runtime/platform transfer and Q004 mutation/search-strength evidence remain open. Reading or one bounded generated campaign cannot close the gate.
 
 ## Dependencies / handoffs
 - Foundations: F003 complexity explains state-space growth; F004/F005/F006 provide concurrency/async/transport failure mechanisms; F001 direct Dart/Flutter execution remains OPEN.
-- Architecture: A003 contracts/invariants are independent property/recovery-oracle candidates; terminal-state/recovery behavior remains semantic contract material.
-- Mobile: M002 should inject exact process/lifecycle failure points and judge durable/recovered state rather than callback arrival alone; generated state-machine testing waits for real platform controls.
-- Data: D006 supplies the current stale-update/delete transfer case; future delete/recreate/tombstone-GC semantics should define Data-owned invariants before Q004 generates histories.
-- Systems: generated/release campaigns must bind exact artifact/build/environment, framework/seed and resource budget; security fault injection remains separate.
-- Design Studio / Web Manager / Marketing Manager: considered; no current canonical evidence materially changes this bounded Quality method.
+- Architecture: A003 contracts/invariants are independent property/recovery-oracle candidates.
+- Mobile: M002 should inject exact process/lifecycle failure points and judge durable/recovered state rather than callback arrival alone.
+- Data: D006 supplied and was independently re-exposed through generated histories; `delete_v3 → update_v2` is the reduced deterministic transfer case.
+- Systems: generated/release campaigns must bind exact artifact/build/environment, framework/seed and resource budget.
+- Design Studio / Web Manager / Marketing Manager: considered; no canonical evidence there changes this bounded Quality method.
 
 ## Next work
-First attempt to execute and mutation-check the prepared Q004 fixture when a trustworthy execution environment is available. If execution remains infrastructure-blocked, do not deepen source-only Q004 merely for continuity; use Balance Loop to advance an independent high-value gap such as Architecture Foundation closure or S002/S003. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment becomes available.
+Q004's immediate execution dependency is closed, so do not keep extending it merely for continuity. Use Balance Loop. Architecture Foundation closure and untouched S002 remain strong independent candidates; Q004 mutation sensitivity/search comparison can return when it outranks those gaps. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment becomes available.
