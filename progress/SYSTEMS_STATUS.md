@@ -17,43 +17,47 @@ Last sync: 2026-09-18
 **IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S003_resource_cost_models_profiling_foundations.md`. Wall latency/CPU/allocation/I/O/network observables separated; bounded Python CPU-vs-wait-vs-allocation fixture complete. Variance, profiler alternatives, real I/O/network and Dart/Flutter/device transfer OPEN.
 
 ### S004 — Dependency, supply-chain and build-system fundamentals
+**IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`. Manifest/resolved graph/content/toolchain/build/artifact/provenance identities separated; bounded resolution-drift and same-version integrity failure evidence complete. Direct Dart/pub/build transfer OPEN.
+
+### S005 — CI/CD, signing, versioning, reproducibility and release evidence
 **IN STUDY — first integrated executable Foundation block complete.**  
-Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`  
-Fixture: `research/systems/fixtures/S004_dependency_resolution_integrity.py`
+Canonical: `research/systems/S005_ci_signing_versioning_release_evidence.md`  
+Fixture: `research/systems/fixtures/S005_release_identity_gate.py`
 
 Established:
-- manifest constraints, resolved dependency graph, dependency content/integrity, toolchain/build inputs, build execution/platform, output artifact and provenance/deployment are distinct identities;
-- current Dart/pub docs recommend committing `pubspec.lock` for application packages and document `--enforce-lockfile` validation of exact resolution/content hashes;
-- Python 3.13.5/Linux bounded model showed the same allowed manifest resolving `1.0.0` then `1.1.0` as registry availability changed, while the recorded lock retained `1.0.0`;
-- same-version tampered bytes failed an independent SHA-256 digest oracle;
-- lockfile presence is not dependency safety, advisory absence is not security, and provenance is not functional correctness;
-- direct Dart/pub/build execution remains OPEN because `dart`/`flutter` are unavailable.
+- CI verdict, version label, source identity, artifact digest, signature/attestation, verification policy and deployment identity are separate claims;
+- current GitHub artifact-attestation docs expose cryptographically signed provenance claims including repository/commit/workflow/environment context and explicitly warn that attestations do not guarantee artifact security;
+- SemVer communicates a public-API change contract when adopted; it is not artifact identity and released contents must not be silently replaced under the same version;
+- Python 3.13.5/Linux bounded execution accepted the intended `source=abc123/build=42/digest` tuple while rejecting a stale-source artifact with the same build label and changed bytes under the same source/build labels;
+- signature/attestation presence, green CI and version matching are not release correctness or authorization by themselves;
+- reproducible-build, real CI/OIDC/attestation, key lifecycle, mobile signing/store delivery and deployment evidence remain OPEN.
 
 ## Queue
 - `S001` — IN STUDY; public-key/key lifecycle/CI/mobile signing OPEN.
 - `S002` — IN STUDY; real platform/product threat/secure-storage transfer OPEN.
 - `S003` — IN STUDY; variance/profiler/real I/O-network/runtime transfer OPEN.
-- `S004` — **IN STUDY / first executable dependency-resolution/integrity block complete**; Dart/pub, malicious dependency, native package managers, build scripts/cache/reproducibility OPEN.
-- `S005` — CI/CD, signing, versioning, reproducibility and release evidence.
+- `S004` — IN STUDY; Dart/pub, malicious dependency, native package managers, build scripts/cache/reproducibility OPEN.
+- `S005` — **IN STUDY / first executable release-identity block complete**; real CI/signing/attestation/reproducibility/mobile deployment OPEN.
 - `S006` — Rollback, incident evidence, production change safety and release governance.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S001-S004 now cover trust/provenance, authority/security, resource measurement and dependency/build identity with bounded executable evidence. Direct Dart/mobile/build-pipeline transfer plus signing/release/rollback and production evidence remain open.
+Systems Stage 1 remains **NOT PASS**. S001-S005 now cover trust/provenance, authority/security, resource measurement, dependency/build identity and first release-evidence composition with bounded executable evidence. Direct Dart/mobile/build-pipeline transfer plus real signing/attestation/reproducibility and rollback/production evidence remain open.
 
 ## HANDOFFS
-- **Foundations:** dependency graphs/build inputs are concrete graph/OS/network boundary applications; comparison-runtime constants do not transfer.
-- **Architecture:** dependency selection creates API/change-pressure/runtime coupling; semantic compatibility is independent of version numbering.
-- **Mobile:** transfer-test `pub get --enforce-lockfile`, transitive dependency inspection and native build dependencies on exact Flutter/Android/iOS toolchains when available.
-- **Data:** bind migration/persistence validation to exact resolved dependencies and artifact identity before attributing regressions.
-- **Quality:** dependency/lock/build-tool changes are test-relevant artifact changes; successful resolution/build is not correctness evidence.
-- **S005:** use `manifest → resolution → content → build inputs/platform → artifact → provenance/deployment` as the release evidence chain.
-- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there is changed by this bounded mechanism block.
+- **Foundations:** release/build execution remains an external process/artifact boundary; comparison-runtime evidence does not transfer to Dart/Flutter.
+- **Architecture:** A003 compatibility contracts determine version semantics; a version label is not proof of semantic compatibility.
+- **Mobile:** transfer-test canonical Flutter build → package signing → artifact digest/package identity → install/delivery on exact Android/iOS toolchains.
+- **Data:** bind migration/recovery evidence to the exact accepted release artifact before causal attribution.
+- **Quality:** test evidence must remain attached to the tested artifact/digest or a proven-equivalent build; green CI does not authorize a later rebuild automatically.
+- **S006:** rollback should select a previously accepted artifact/provenance record rather than assume rebuilding an old source/version recreates the same artifact.
+- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there is changed by this bounded release mechanism block.
 
 ## CHANGE WATCH / OPEN
 - Direct Dart/Flutter execution remains unavailable as rechecked 2026-09-18; Python 3.13.5 is available.
-- Dart/pub lockfile/content-hash/advisory behavior and GitHub dependency-review capabilities are version/service sensitive.
-- SLSA 1.2 is the current specification family checked 2026-09-18; recheck before release governance work.
-- Malicious-but-authentic packages, compromised maintainers/registries, git/path/native dependencies, build-script execution, cache poisoning and reproducible-build evidence remain OPEN.
+- GitHub artifact-attestation availability/permissions and Sigstore behavior are service-sensitive.
+- SLSA 1.2 is current as checked 2026-09-18.
+- Product/mobile versioning schemes may not use SemVer; do not impose it without a declared public-API/version contract.
+- Real CI/OIDC/workflow permissions, key compromise/revocation, Android/iOS signing, app-store delivery, reproducible-build comparison and deployment rollback remain OPEN.
 
 ## Next work
-Return to Balance Loop. S004 removes the untouched dependency/build Foundation gap at first executable level. Strong independent candidates are `S005` CI/CD/signing/versioning/release evidence because it directly composes S001-S004, `M003` sandbox/files/permissions/secure storage if platform evidence can advance beyond reading, and `A006` ADR/evidence-preserving decisions. Return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
+Return to Balance Loop. S005 removes the untouched CI/signing/versioning/release-evidence Foundation gap at first executable level. Strong next candidates are `S006` rollback/incident/change safety because it completes the Systems Stage-1 delivery chain, `M003` sandbox/files/permissions/secure storage for high mobile/security leverage, and `A006` ADR/evidence-preserving decisions. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment becomes available.
