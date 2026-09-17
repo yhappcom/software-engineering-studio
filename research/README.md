@@ -28,7 +28,8 @@ Canonical reusable research is organized by specialist ownership.
 ### Mobile
 - `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**.
 - `M002` — `research/mobile/M002_process_lifecycle_termination_background_execution.md` — **IN STUDY / first source/failure-model block complete**.
-- `M003` — `research/mobile/M003_sandbox_files_permissions_secure_storage_platform_apis.md` — **IN STUDY / first integrated Foundation block + bounded executable classification evidence**. Separates sandbox isolation, purgeability, uninstall behavior, backup/migration, lock-state availability, credential protection, sharing/export and recovery roles; real Android/iOS/Flutter transfer OPEN.
+- `M003` — `research/mobile/M003_sandbox_files_permissions_secure_storage_platform_apis.md` — **IN STUDY / first integrated Foundation block + bounded executable classification evidence**.
+- `M004` — `research/mobile/M004_plugin_platform_channel_native_integration_boundaries.md` — **IN STUDY / first integrated Foundation block + bounded executable contract/lifetime evidence**. Separates registration, channel/codec, native failure, semantic result and per-engine plugin lifetime; direct Flutter/native transfer OPEN.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**.
