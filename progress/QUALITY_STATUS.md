@@ -17,55 +17,49 @@ Build engineering capability to define correctness, design tests with valid orac
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q002_test_levels_evidence_boundaries.md`.
 
 ### Q003 — Determinism, nondeterminism, concurrency and flaky-test mechanics
-**IN STUDY — two integrated Foundation blocks complete.**
+**IN STUDY — two integrated Foundation blocks complete.** Canonical: `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md`.
 
-Canonical: `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md`  
-Fixtures: `research/quality/fixtures/Q003_concurrency_schedule_flake.py`, `research/quality/fixtures/Q003_async_event_order_matrix.py`
-
-Established:
-- one observed schedule cannot establish schedule-independent correctness;
-- widened shared read/modify/write reproduced lost updates while Lock comparison satisfied the bounded invariant;
-- explicit async event-order enumeration explored all 24 permutations of timeout/original-complete/cancel/retry in the bounded model;
-- naive retry violated an at-most-one logical-effect property in 12/24 schedules;
-- stable logical operation identity + bounded deduplication violated it in 0/24 schedules;
-- exhaustive schedule enumeration is evidence only for the explicitly bounded event alphabet, not a real network/runtime proof.
+Established shared-memory schedule failure plus a deterministic 24-order timeout/complete/cancel/retry matrix. Naive retry violated an at-most-one logical-effect property in 12/24 schedules while stable logical-operation identity + bounded deduplication violated it in 0/24. Exhaustiveness is only for the bounded event alphabet.
 
 ### Q005 — Debugging, fault isolation and observability foundations
+**IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
+
+Established symptom/correlation/root-cause separation with identical-symptom injected defects, correlated boundary observations, an independent invariant and a bounded causal intervention. Production/distributed/crash/runtime transfer remains OPEN.
+
+### Q006 — Fault injection, recovery verification and regression governance
 **IN STUDY — first integrated Foundation block complete.**
 
-Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`  
-Fixture: `research/quality/fixtures/Q005_fault_isolation_observability.py`
+Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`  
+Fixture: `research/quality/fixtures/Q006_fault_injection_recovery_regression.py`
 
-Established with current OpenTelemetry source semantics plus Python 3.13.5 executable evidence:
-- symptom, correlation and root cause are distinct claims;
-- two independent injected defects produced the identical final symptom (`11`) in the bounded pipeline;
-- final-output-only evidence could not discriminate the causal stage;
-- correlated boundary observations plus an independent normalize invariant isolated the first violated contract;
-- disabling the injected defect restored the final oracle in the bounded intervention;
-- telemetry correlation supports investigation but does not itself establish causation;
-- observability should preserve discriminating semantic state/identity where needed, while instrumentation perturbation and privacy/security remain separate concerns.
+Established with Python 3.13.5/Linux deterministic model evidence:
+- fault observation and recovery correctness are distinct claims;
+- a campaign injected `before_apply`, `after_apply_before_ack`, and `after_ack` failures and judged recovery by independent terminal-state semantics;
+- stable logical-operation identity preserved the exactly-one bounded effect in 3/3 injected points after replay;
+- a deliberate regression mutant that recorded but did not enforce operation identity produced balance 120 at both post-apply fault points, while the before-apply point still passed;
+- therefore successful retry is not itself a recovery oracle;
+- killing the deliberate mutant demonstrates sensitivity to this specific duplicated-effect regression, not mutation-testing completeness.
 
-Evidence limit: deterministic single-process Python model only; no production telemetry, distributed clocks, sampling/drop behavior, crash dump, Flutter DevTools, native symbolication or automated causal-inference claim.
+Evidence limit: deterministic single-process model only; no Dart/Flutter, real process death, durable storage, network/backend, combined faults, mobile or production release-gate claim.
 
 ## Initial queue
 - `Q001` — substantial Foundation block complete.
 - `Q002` — first integrated block complete.
 - `Q003` — two integrated blocks complete; harness-vs-SUT flake isolation, larger model/property schedule exploration, runtime transfer OPEN.
 - `Q004` — Property-based/model-based testing and invariant checking.
-- `Q005` — **IN STUDY / first integrated block complete**; crash/exception isolation, distributed observability, instrumentation perturbation and runtime transfer OPEN.
-- `Q006` — Fault injection, recovery verification and regression governance.
+- `Q005` — first integrated block complete; crash/exception isolation, distributed observability, instrumentation perturbation and runtime transfer OPEN.
+- `Q006` — **IN STUDY / first integrated block complete**; real crash/restart/durable/network fault campaigns, combined faults, resource cleanup and release-gate transfer OPEN.
 
 ## Gate requirement
-Quality Stage 1 remains **NOT PASS**. Q005 closes the previously untouched symptom→reproduction→isolation→causal-test Foundation gap at bounded model level, but stronger error/recovery/crash/observability/regression evidence and transfer beyond Python models remain required.
+Quality Stage 1 remains **NOT PASS**. Q001-Q006 now cover correctness/oracles, test-level boundaries, nondeterministic schedule reasoning, debugging/root-cause separation, and a first fault-injection/recovery/regression campaign. Property/model-based testing (Q004), stronger real recovery/crash evidence, and runtime/platform transfer remain open.
 
 ## Dependencies / handoffs
-- Foundations: F004/F005 supply scheduling/signaling/timeout/cancellation mechanisms; F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
-- Architecture: A003 contracts/invariants are useful independent isolation boundaries; operation terminal-state behavior remains a semantic contract.
-- Mobile: lifecycle/process-death/background diagnosis needs exact platform/build/prestate and must distinguish missing callback, failed durable write and failed recovery.
-- Data: D006 should record logical operation ID plus delivery/apply/ack/conflict state and first violated invariant when debugging duplicate/reorder failures.
-- Systems: runtime observations must bind to artifact/version/environment identity; diagnostic data also requires privacy/security review.
-- Design Studio / Web Manager: repository search found no directly applicable current debugging/telemetry evidence.
-- Marketing Manager: not materially relevant.
+- Foundations: F004/F005/F006 provide concurrency/async/transport failure mechanisms; F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
+- Architecture: A003 contracts/invariants are independent recovery-oracle candidates; terminal-state/recovery behavior remains semantic contract material.
+- Mobile: M002 should inject exact process/lifecycle failure points and judge durable/recovered state rather than callback arrival alone.
+- Data: D005/D006 should reuse the Q006 campaign shape while retaining Data-owned restore/sync semantics and operation identity.
+- Systems: release-gate recovery evidence must bind to exact artifact/build/environment; security fault injection remains separate.
+- Design Studio / Web Manager / Marketing Manager: no current canonical evidence materially changes this bounded Quality method.
 
 ## Next work
-Use Balance Loop. Q005 now removes the untouched debugging/fault-isolation Foundation gap with executable ambiguity/isolation evidence. Strong next candidates are `F006` OS/file/socket/network foundations because D006 needs transport/partition mechanisms, or `Q006` fault injection/recovery/regression if reliability evidence outranks networking. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment exists.
+Use Balance Loop. Q006 removes the untouched fault-injection/recovery/regression Foundation gap at bounded executable level. Strong next candidates are `M002` Android/iOS process lifecycle/background execution because Q006 now supplies a recovery-test method, or untouched `F002/F003` if their prerequisite leverage outranks platform work. `Q004` becomes increasingly valuable once a richer state machine exists. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment becomes available.
