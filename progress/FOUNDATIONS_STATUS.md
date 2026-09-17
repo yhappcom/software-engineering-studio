@@ -17,6 +17,13 @@ Canonical: `research/foundations/F001_program_execution_foundations.md`; fixture
 
 Established source/runtime/process/engine/embedder/OS distinctions and a Linux/Python parent-child process/I/O boundary. Direct Dart SDK JIT/AOT and Flutter runtime execution remain OPEN. Environment rechecked 2026-09-17: neither `dart` nor `flutter` executable is available.
 
+### F002 — Values, references, memory models, stack/heap and lifetime
+Status: **IN STUDY — first integrated Foundation block complete**
+
+Canonical: `research/foundations/F002_values_references_memory_lifetime.md`; fixture: `research/foundations/fixtures/F002_aliasing_lifetime_boundary.py`.
+
+Established variable/binding vs object/value, identity, mutation vs rebinding, aliasing, reachability and resource-lifetime distinctions. Python 3.13.5/Linux failure evidence shows direct aliasing and shallow nested copying preserve write-through mutable state, while rebinding is distinct from mutation; a bounded deep-copy comparison isolates the deliberately simple graph. Current Dart sources establish GC, identity, weak-reference/finalizer semantics, but direct Dart/Flutter execution remains OPEN. Stack/heap placement is not promoted into a language semantic guarantee.
+
 ### F004 — Processes, threads, scheduling, synchronization and concurrency hazards
 Status: **IN STUDY — two integrated Foundation blocks complete**
 
@@ -37,19 +44,11 @@ Status: **IN STUDY — two integrated Foundation blocks complete**
 Canonical: `research/foundations/F006_os_file_socket_network_foundations.md`  
 Fixtures: `research/foundations/fixtures/F006_stream_framing_boundary.py`, `research/foundations/fixtures/F006_connection_termination_ambiguity.py`
 
-Established from RFC 9293, socket semantics and bounded Python 3.13.5/Linux execution:
-- stream transport bytes and application frame boundaries are distinct;
-- buffered framing is required when protocol messages need explicit boundaries;
-- graceful EOF after `00 05 HE` left a declared five-byte payload incomplete and must not publish a valid frame;
-- an abortive loopback TCP close delivered the complete `00 05 HELLO` frame to the receiver before `ConnectionResetError` in the bounded environment;
-- therefore reset does not prove that zero application bytes were received, and neither reset nor EOF establishes business-operation apply/durable-commit state;
-- local send, peer receive, frame completion, apply, durable commit and application ACK remain separate claims.
-
-Evidence limit: local Linux sockets only; abortive-close sequencing is OS/socket-stack dependent. No Dart Socket/Flutter, real network partition, cross-OS/mobile/TLS/multi-device or production claim.
+Established stream/application-frame separation plus graceful EOF/truncated-frame and abort/reset-after-complete-frame ambiguity in bounded Linux socket evidence. Local send, peer receive, frame completion, apply, durable commit and application ACK remain separate claims. Direct Dart/mobile/real-network transfer remains OPEN.
 
 ## Remaining initial queue
-- `F002` — Values, references, memory models, stack/heap and lifetime.
-- `F003` — Data structures, algorithms and complexity.
+- `F002` — IN STUDY / first integrated block; direct Dart identity/alias/final-binding and explicit resource-lifetime transfer OPEN.
+- `F003` — Data structures, algorithms and complexity — untouched.
 - `F004` — IN STUDY / two blocks.
 - `F005` — IN STUDY / two blocks.
 - `F006` — IN STUDY / two blocks.
@@ -58,11 +57,11 @@ Evidence limit: local Linux sockets only; abortive-close sequencing is OS/socket
 Foundation PASS requires first-principles explanation, executable examples, representative failure cases, and transfer into at least Dart/Flutter plus one comparison context when useful. Stage 1 remains NOT PASS.
 
 ## Dependencies / handoffs
-- Mobile: direct Dart/Flutter execution and exact mobile networking/background evidence remain required; do not transfer Linux socket behavior as Dart/mobile runtime proof.
-- Data: D006 should keep logical operation identity and explicit application ACK/durable state above ambiguous connection failures.
-- Quality: Q005/Q006 should isolate EOF-before-frame, reset-after-complete-frame, timeout and late ACK as distinct failure classes.
-- Architecture: framing, terminal state, timeout and acknowledgement are contracts where consumer-visible.
-- Systems: TLS/authentication, socket/resource exhaustion and network performance remain separate security/performance concerns.
+- Architecture: A002 should use shared mutable reachability/aliasing as a concrete ownership and coupling mechanism; container copying does not imply deep isolation.
+- Mobile: direct Dart/Flutter execution remains required; lifecycle/GC/resource cleanup are distinct contracts.
+- Data: cache/snapshot/import/backup staging must verify structural independence at every mutable level required by the invariant.
+- Quality: aliasing failures need independent boundary-state oracles; avoid tests that share the same mutable expected-state graph.
+- Systems: deterministic file/socket/native-resource release must not be inferred from ordinary GC/finalizer timing.
 
 ## Next work
-Use Balance Loop. F006 now covers framing plus graceful/abortive termination ambiguity at a bounded executable level. Further local socket elaboration has diminishing Foundation value until Dart/mobile or real-network transfer is available. Strong independent candidates are `Q006` fault injection/recovery/regression governance, `M002` lifecycle/process-death/background execution with authoritative platform evidence, or untouched `F002/F003` if their prerequisite leverage wins. Direct Dart/Flutter execution remains the first attempt whenever a trustworthy SDK environment becomes available.
+Use Balance Loop. F002 removes the untouched values/references/aliasing gap at a first executable level, but direct Dart and deterministic resource-lifetime transfer remain OPEN. `F003` is now the only untouched Foundations Stage-1 block and is a strong independent candidate because complexity/resource reasoning feeds Data, Mobile and Systems. `Q004` property/model-based testing is also increasingly valuable for richer state-space validation. Direct Dart/Flutter execution remains the first attempt whenever a trustworthy SDK environment becomes available.
