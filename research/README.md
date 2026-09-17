@@ -24,6 +24,7 @@ Canonical reusable research is organized by specialist ownership.
 - `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `A005` — `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
+- `A006` — `research/architecture/A006_evidence_preserving_architecture_decisions.md` — **IN STUDY / first integrated Foundation decision-evidence block complete**. Separates decision status from validation verdict and preserves evidence/assumptions/supersession lifecycle.
 
 ### Mobile
 - `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**.
