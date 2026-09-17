@@ -28,32 +28,44 @@ Established:
 - explicit async event-order enumeration explored all 24 permutations of timeout/original-complete/cancel/retry in the bounded model;
 - naive retry violated an at-most-one logical-effect property in 12/24 schedules;
 - stable logical operation identity + bounded deduplication violated it in 0/24 schedules;
-- first failure trace `timeout → complete → cancel → retry → retry_complete` demonstrates that timeout observation does not establish original-operation terminal state;
-- cancellation after a late accepted completion cannot retroactively erase that side effect in the model;
 - exhaustive schedule enumeration is evidence only for the explicitly bounded event alphabet, not a real network/runtime proof.
 
-Environment for second block: Python 3.13.5; deterministic permutation generation, no random seed. Direct Dart/Flutter runtime transfer remains OPEN.
+### Q005 — Debugging, fault isolation and observability foundations
+**IN STUDY — first integrated Foundation block complete.**
+
+Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`  
+Fixture: `research/quality/fixtures/Q005_fault_isolation_observability.py`
+
+Established with current OpenTelemetry source semantics plus Python 3.13.5 executable evidence:
+- symptom, correlation and root cause are distinct claims;
+- two independent injected defects produced the identical final symptom (`11`) in the bounded pipeline;
+- final-output-only evidence could not discriminate the causal stage;
+- correlated boundary observations plus an independent normalize invariant isolated the first violated contract;
+- disabling the injected defect restored the final oracle in the bounded intervention;
+- telemetry correlation supports investigation but does not itself establish causation;
+- observability should preserve discriminating semantic state/identity where needed, while instrumentation perturbation and privacy/security remain separate concerns.
+
+Evidence limit: deterministic single-process Python model only; no production telemetry, distributed clocks, sampling/drop behavior, crash dump, Flutter DevTools, native symbolication or automated causal-inference claim.
 
 ## Initial queue
 - `Q001` — substantial Foundation block complete.
 - `Q002` — first integrated block complete.
-- `Q003` — **IN STUDY / two integrated blocks complete**; harness-vs-SUT flake isolation, larger model/property schedule exploration, runtime transfer OPEN.
+- `Q003` — two integrated blocks complete; harness-vs-SUT flake isolation, larger model/property schedule exploration, runtime transfer OPEN.
 - `Q004` — Property-based/model-based testing and invariant checking.
-- `Q005` — Debugging, fault isolation, observability and crash analysis.
+- `Q005` — **IN STUDY / first integrated block complete**; crash/exception isolation, distributed observability, instrumentation perturbation and runtime transfer OPEN.
 - `Q006` — Fault injection, recovery verification and regression governance.
 
 ## Gate requirement
-Quality Stage 1 remains **NOT PASS**. Foundation still requires stronger debugging/error-recovery/observability/regression evidence and transfer beyond bounded Python models.
+Quality Stage 1 remains **NOT PASS**. Q005 closes the previously untouched symptom→reproduction→isolation→causal-test Foundation gap at bounded model level, but stronger error/recovery/crash/observability/regression evidence and transfer beyond Python models remain required.
 
 ## Dependencies / handoffs
-- Foundations: F004/F005 supplied scheduling/signaling/timeout/cancellation vocabulary; F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
-- Architecture: operation identity/terminal-state behavior are semantic contracts.
-- Mobile: lifecycle/process-death/background claims need exact platform/build/prestate and controllable ordering.
-- Data: D006 should now reuse constrained event-order matrices for data-owned duplicate/reorder/tombstone semantics.
-- Systems: artifact/runtime/environment identity remains part of reproducibility.
-- Design Studio: future pending/conflict/retry UX can consume verified semantics; no design files changed.
-- Web Manager: browser/service-worker transfer remains separate.
+- Foundations: F004/F005 supply scheduling/signaling/timeout/cancellation mechanisms; F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
+- Architecture: A003 contracts/invariants are useful independent isolation boundaries; operation terminal-state behavior remains a semantic contract.
+- Mobile: lifecycle/process-death/background diagnosis needs exact platform/build/prestate and must distinguish missing callback, failed durable write and failed recovery.
+- Data: D006 should record logical operation ID plus delivery/apply/ack/conflict state and first violated invariant when debugging duplicate/reorder failures.
+- Systems: runtime observations must bind to artifact/version/environment identity; diagnostic data also requires privacy/security review.
+- Design Studio / Web Manager: repository search found no directly applicable current debugging/telemetry evidence.
 - Marketing Manager: not materially relevant.
 
 ## Next work
-Use Balance Loop. Q003 now has the explicit async event-order matrix requested by F005/global status. Strong next candidates are D006 reorder/tombstone/late-completion transfer using the matrix method, or Q005 debugging/fault-isolation foundations if that prerequisite outranks further distributed-model depth. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment exists.
+Use Balance Loop. Q005 now removes the untouched debugging/fault-isolation Foundation gap with executable ambiguity/isolation evidence. Strong next candidates are `F006` OS/file/socket/network foundations because D006 needs transport/partition mechanisms, or `Q006` fault injection/recovery/regression if reliability evidence outranks networking. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment exists.
