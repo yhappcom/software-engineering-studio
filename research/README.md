@@ -38,6 +38,7 @@ Canonical reusable research is organized by specialist ownership.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
 - `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / two integrated Foundation blocks complete**. Shared-memory schedule failure plus deterministic 24-order timeout/complete/cancel/retry matrix.
 - `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — **IN STUDY / first integrated Foundation block complete**. Identical-symptom fault isolation via correlated boundary observations plus independent invariant; production/distributed/crash/runtime transfer OPEN.
+- `Q006` — `research/quality/Q006_fault_injection_recovery_regression_governance.md` — **IN STUDY / first integrated Foundation block complete**. Three-point fault campaign with semantic recovery oracle and deliberate idempotency-regression mutant; real crash/restart/durable/network/mobile transfer OPEN.
 
 ### Systems
 - `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / two integrated executable blocks complete**.
