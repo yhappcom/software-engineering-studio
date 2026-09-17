@@ -12,21 +12,23 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Mobile | Stage 1 IN STUDY — M001 first integrated block + M002 first process/background source/failure-model block complete |
 | Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 two blocks |
 | Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two + Q004 first executable counterexample/shrinking + Q005 first + Q006 first |
-| Systems | Stage 1 IN STUDY — S001 two executable trust-boundary blocks + S002 first executable least-privilege/security block complete |
+| Systems | Stage 1 IN STUDY — S001 two executable trust-boundary blocks + S002 first executable security block + S003 first executable profiling/resource block complete |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### S002 — threat modeling, least privilege, secrets and secure storage
-Canonical: `research/systems/S002_threat_model_least_privilege_secrets_secure_storage.md`  
-Fixture: `research/systems/fixtures/S002_least_privilege_capability_boundary.py`
+### S003 — CPU/memory/I/O/network cost models and profiling
+Canonical: `research/systems/S003_resource_cost_models_profiling_foundations.md`  
+Fixture: `research/systems/fixtures/S003_resource_cost_profiling.py`
 
-Systems' largest untouched security Foundation gap now has first executable evidence. Current NIST AC-6 evidence grounds least privilege in only the authority needed by users/processes for assigned tasks. NIST SP 800-154 is explicitly treated as an Initial Public Draft with a 2025 plan-to-finalize note, not final normative authority. Current Android Keystore documentation establishes key-material extraction/use restrictions when applicable, while also preserving the important limit that a compromised authorized app process may still be able to use a non-exportable key.
+Systems' untouched performance/profiling Foundation gap now has first executable evidence. The resource model separates wall latency, process CPU time, allocation/retention/peak memory, I/O and network dimensions rather than collapsing performance into one timer.
 
-Python 3.13.5/Linux execution compared ambient read authority with a resource-scoped capability. The intentionally overprivileged component read unrelated `tax` state; the scoped capability rejected that access while preserving the declared `profile` operation. This is bounded authority-model evidence, not Android/iOS/Flutter/product security evidence.
+Python 3.13.5/Linux execution compared three deliberately different workloads. CPU arithmetic observed 345.435 ms wall / 345.408 ms process CPU; an 80 ms wait observed 80.203 ms wall / only 0.098 ms process CPU; a short allocation workload observed 5319.660 KiB peak traced Python allocation. Broad workload-class assertions passed.
 
-The reusable security reasoning chain is now: `asset/security property → principal → entry/data flow → trust boundary → authority → threat/failure → control → residual risk → validation`. Secrets are modeled across purpose, authority, storage, exposure, lifetime, rotation/revocation, logging and compromise response rather than as merely encrypted values.
+The failure lesson is bounded but reusable: wall time alone cannot identify CPU work. Low CPU can falsify a CPU-bound explanation for this controlled wait, but low CPU in production does not prove disk/network root cause without additional evidence. `tracemalloc` allocation is also explicitly not treated as total RSS/native/GPU/platform memory.
+
+F003 complexity is now connected to S003 profiling without conflation: complexity predicts growth under a model; profiling observes a specific workload/runtime/environment. One benchmark run remains insufficient for performance truth or a regression threshold.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN after environment recheck 2026-09-18.
@@ -35,28 +37,31 @@ The reusable security reasoning chain is now: `asset/security property → princ
 - **M001/M002:** Flutter/platform lifecycle/process/background conceptual boundaries; real runtime transfer OPEN.
 - **D001-D006:** persistence/migration/cache/restore/sync evidence retained.
 - **Q001-Q006:** all Quality Foundation topics have professional boundaries; Q004 includes executable generated counterexample/shrinking.
-- **S001/S002:** artifact trust/provenance plus runtime authority/threat/secrets first executable boundaries.
+- **S001-S003:** artifact trust/provenance, runtime authority/security, and first resource/profiling boundaries now have executable evidence.
 
 ## Cross-track handoffs
-- **Mobile/M003:** validate sandbox, permission, Keystore/Keychain and key invalidation with exact platform evidence; secure-storage API presence is not a complete security claim.
-- **Architecture:** security-relevant interfaces should minimize authority width as part of ownership/dependency design.
-- **Quality:** recovery/fault campaigns should include overprivilege, revocation and expired-secret paths with independent authorization oracles.
-- **Data:** classify sensitive assets and required authority before accepting backup/sync/export paths.
+- **Foundations/F003:** complexity is predictive model; measured profiling is bounded observation; neither substitutes for the other.
+- **Mobile:** transfer CPU/wait/allocation distinctions to Flutter/Android/iOS frame/startup/memory-pressure tooling when a trustworthy environment exists.
+- **Data:** index/cache/sync alternatives should state which resource dimension changes and what trade-off is introduced.
+- **Quality:** future performance regression evidence needs exact artifact/environment/workload, distributions/noise and a product budget oracle rather than a single timing.
+- **Architecture:** resource budgets become architectural when cross-boundary structure/ownership determines them.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision in those repositories is changed by this bounded Systems block.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. `dart` and `flutter` executables were rechecked 2026-09-18 and remain unavailable; Python 3.13.5 is available.
 
-S002 removes the largest untouched security Foundation gap at first executable level. Current strongest independent candidates are:
-1. `S003` CPU/memory/I/O/network cost models and profiling — untouched, high cross-track/performance leverage;
+S003 removes the untouched performance/profiling Foundation gap at first executable level. Current strongest independent candidates are:
+1. `S004` dependency/supply-chain/build-system fundamentals — untouched release/security prerequisite with high reuse;
 2. `M003` sandbox/files/permissions/secure storage/platform APIs — high live-mobile/security transfer value, but platform execution limitations remain;
-3. `S004` dependency/supply-chain/build-system fundamentals — untouched release/security prerequisite;
-4. `A006` ADR/evidence-preserving decisions — useful governance prerequisite after principal Architecture concepts;
+3. `A006` ADR/evidence-preserving decisions — useful governance prerequisite after principal Architecture concepts;
+4. `Q004` mutation sensitivity/exhaustive-vs-generated comparison — useful method depth but lower prerequisite urgency than untouched S004;
 5. return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
 
 ## CHANGE WATCH
+- Python profiling APIs support the bounded S003 fixture only; their semantics/constants are not transferred to Dart/mobile.
+- Android/iOS/Flutter/browser performance tooling and budgets are platform/version sensitive.
 - NIST SP 800-154 remains draft/planned for finalization; recheck before treating it as final.
 - Android Keystore/attestation guarantees are API/device/version sensitive.
 - ISO/IEC/IEEE 42010:2022 remains current from prior check; DIS 42024 remains draft work.
