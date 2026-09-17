@@ -40,6 +40,7 @@ Canonical reusable research is organized by specialist ownership.
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
 - `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / two integrated Foundation blocks complete**. Shared-memory schedule failure plus deterministic 24-order timeout/complete/cancel/retry matrix.
+- `Q004` — `research/quality/Q004_property_model_based_testing_invariants.md` — **IN STUDY / source-model block + executable fixture prepared; execution OPEN**. Separates property, generator/model, search and shrinking; transfers D006 stale-delete semantics into a generated-sequence/reference-model fixture without claiming unexecuted validation.
 - `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — **IN STUDY / first integrated Foundation block complete**. Identical-symptom fault isolation via correlated boundary observations plus independent invariant; production/distributed/crash/runtime transfer OPEN.
 - `Q006` — `research/quality/Q006_fault_injection_recovery_regression_governance.md` — **IN STUDY / first integrated Foundation block complete**. Three-point fault campaign with semantic recovery oracle and deliberate idempotency-regression mutant; real crash/restart/durable/network/mobile transfer OPEN.
 
