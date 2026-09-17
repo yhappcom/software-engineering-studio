@@ -31,6 +31,7 @@ Canonical reusable research is organized by specialist ownership.
 - `M002` — `research/mobile/M002_process_lifecycle_termination_background_execution.md` — **IN STUDY / first source/failure-model block complete**.
 - `M003` — `research/mobile/M003_sandbox_files_permissions_secure_storage_platform_apis.md` — **IN STUDY / first integrated Foundation block + bounded executable classification evidence**.
 - `M004` — `research/mobile/M004_plugin_platform_channel_native_integration_boundaries.md` — **IN STUDY / first integrated Foundation block + bounded executable contract/lifetime evidence**. Separates registration, channel/codec, native failure, semantic result and per-engine plugin lifetime; direct Flutter/native transfer OPEN.
+- `M005` — `research/mobile/M005_cross_platform_portability_divergence.md` — **IN STUDY / first integrated Foundation block + bounded executable capability evidence**. Models portability as semantic contract/capability/mechanism/fallback/acceptance and includes exact-ref LogMate PWA/native transfer; real platform execution OPEN.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**.
