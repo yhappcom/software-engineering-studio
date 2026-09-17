@@ -13,8 +13,8 @@ Canonical reusable research is organized by specialist ownership.
 
 ### Foundations
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN. Environment rechecked 2026-09-17: no trustworthy `dart`/`flutter` executable available.
-- `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — **IN STUDY / two integrated Foundation blocks complete**. Barrier-controlled circular-wait precondition + global lock-order alternative, followed by condition notification-vs-durable-predicate failure and `wait_for(predicate)` alternative. Direct Dart isolate/runtime, starvation/fairness and process-vs-thread transfer remain OPEN.
-- `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — **IN STUDY / first integrated Foundation block complete**. Current Dart event-loop/Future source model plus bounded waiter-timeout-vs-underlying-work failure and explicit cooperative-cancellation alternative. Direct Dart Future/microtask/cancellation execution, Flutter interaction, streams/backpressure and native cleanup remain OPEN.
+- `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — **IN STUDY / two integrated Foundation blocks complete**. Lock-order/circular-wait and predicate/signaling evidence; direct Dart/runtime/fairness transfer OPEN.
+- `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — **IN STUDY / two integrated Foundation blocks complete**. Current Dart event-loop/Future source model; waiter-timeout-vs-underlying-work failure/cancellation alternative; documented-vs-incidental ordering distinction; async error caught-without-cleanup failure and `finally` cleanup alternative. Direct Dart Future/microtask/cancellation execution, Flutter interaction, streams/backpressure and native cleanup remain OPEN.
 
 ### Architecture
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
@@ -25,17 +25,17 @@ Canonical reusable research is organized by specialist ownership.
 - `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**. Source model + lifecycle-gap executable model; real Flutter/device/process-death validation OPEN.
 
 ### Data
-- `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**. State/persistence/durability/SSOT/invariant model + SQLite process-kill evidence.
-- `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — **IN STUDY / two integrated Foundation blocks complete**. Serialization/publication/transaction/index and DELETE-vs-WAL application-process-exit evidence.
-- `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — **IN STUDY / two integrated migration blocks complete**. Old/new compatibility and publication failure plus constraint-transform failure, fail-closed rollback alternative, and FK enforcement-vs-validation evidence. Actual rollback-release and mobile migration remain OPEN.
-- `D004` — `research/data/D004_cache_offline_first_data_ownership.md` — **IN STUDY / first integrated Foundation block complete**. Cache/freshness/authority separation, destructive stale-refresh failure, pending-overlay alternative and cache-miss-vs-authoritative-absence counterexample. Real Firestore/FlutterFire, durable pending queue, process-death and conflict evidence OPEN.
-- `D005` — `research/data/D005_backup_restore_recovery_acceptance.md` — **IN STUDY / two integrated backup-restore blocks complete**. Actual isolated restore + physical/schema/semantic acceptance, corrupt/incompatible artifact failures, destructive publish-before-validation failure, validate-before-publish alternative, and injected pre-publication failure evidence. Crash/power-loss, active-WAL/open-handle and mobile publication semantics remain OPEN.
-- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` — **IN STUDY / first integrated Foundation block complete**. Lost-ack retry duplication vs operation-id deduplication, delivery/application/ack separation, and whole-record LWW concurrent-intent loss with bounded alternative. Real network/backend/multi-device/reorder/tombstone evidence OPEN.
+- `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**.
+- `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — **IN STUDY / two integrated Foundation blocks complete**.
+- `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — **IN STUDY / two integrated migration blocks complete**.
+- `D004` — `research/data/D004_cache_offline_first_data_ownership.md` — **IN STUDY / first integrated Foundation block complete**.
+- `D005` — `research/data/D005_backup_restore_recovery_acceptance.md` — **IN STUDY / two integrated backup-restore blocks complete**.
+- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` — **IN STUDY / first integrated Foundation block complete**.
 
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
-- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / first integrated Foundation block complete**. Determinism/reproducibility/flakiness distinctions plus deliberately widened shared-state lost-update failure, synchronized alternative and D006 event-order transfer. Deeper schedule exploration, harness-vs-SUT flake isolation and Dart/network transfer OPEN.
+- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / first integrated Foundation block complete**.
 
 ### Systems
 - `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / two integrated executable blocks complete**.
