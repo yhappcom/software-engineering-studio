@@ -30,12 +30,13 @@ Canonical reusable research is organized by specialist ownership.
 - `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — **IN STUDY / two integrated migration blocks complete**.
 - `D004` — `research/data/D004_cache_offline_first_data_ownership.md` — **IN STUDY / first integrated Foundation block complete**.
 - `D005` — `research/data/D005_backup_restore_recovery_acceptance.md` — **IN STUDY / two integrated backup-restore blocks complete**.
-- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` — **IN STUDY / two integrated Foundation blocks complete**. Retry/idempotency + concurrent-update conflict, then Q003-derived reorder/delete matrix: naive physical delete resurrected under delayed stale update in 1/2 orders while bounded versioned tombstone preserved deletion in 2/2; real backend/multi-device/tombstone-GC evidence OPEN.
+- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` — **IN STUDY / two integrated Foundation blocks complete**. Retry/idempotency + concurrent-update conflict, then Q003-derived reorder/delete matrix; real backend/multi-device/tombstone-GC evidence OPEN.
 
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
-- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / two integrated Foundation blocks complete**. Shared-memory schedule failure plus deterministic 24-order timeout/complete/cancel/retry matrix; naive retry duplicated logical effects in 12/24 bounded schedules while stable-operation-ID dedup comparison satisfied the at-most-one oracle. Direct Dart/network transfer OPEN.
+- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / two integrated Foundation blocks complete**. Shared-memory schedule failure plus deterministic 24-order timeout/complete/cancel/retry matrix.
+- `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — **IN STUDY / first integrated Foundation block complete**. Two independent defects produced the identical external symptom; final-only evidence was ambiguous while correlated stage observations plus an independent boundary invariant isolated the first violated contract. Production/distributed/crash/runtime transfer remains OPEN.
 
 ### Systems
 - `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / two integrated executable blocks complete**.
