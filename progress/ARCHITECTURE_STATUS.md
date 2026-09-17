@@ -3,7 +3,7 @@
 Track: Software Architecture & Design  
 Prefix: `A###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
-Last sync: 2026-09-16
+Last sync: 2026-09-17
 
 ## Current evidence
 
@@ -14,38 +14,45 @@ Last sync: 2026-09-16
 **SUBSTANTIAL FOUNDATION BLOCK COMPLETE.** Ownership failure + materially different dependency-structure comparison are preserved in `research/architecture/A002_dependency_direction_state_ownership.md` and its fixtures.
 
 ### A003 — Interfaces, contracts, invariants and API evolution
-**SUBSTANTIAL FOUNDATION BLOCK COMPLETE.**
+**SUBSTANTIAL FOUNDATION BLOCK COMPLETE.** Canonical: `research/architecture/A003_interfaces_contracts_api_evolution.md`. Established semantic compatibility, retained-consumer oracles, stronger/weaker pre/postcondition effects and additive-shape compatibility failure in bounded executable evidence.
 
-Canonical: `research/architecture/A003_interfaces_contracts_api_evolution.md`  
-Fixtures: `research/architecture/fixtures/A003_contract_evolution.py`, `research/architecture/fixtures/A003_compatibility_matrix.py`
+### A005 — Architecture/design/implementation, refactoring and technical-debt boundaries
+**IN STUDY — first integrated Foundation block complete.**  
+Canonical: `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md`  
+Fixture: `research/architecture/fixtures/A005_refactoring_behavior_boundary.py`
 
-Established with executable failure/alternative evidence:
-- same method signature can break retained consumers through changed meaning or strengthened precondition;
-- provider/consumer compatibility is relational, not a property of change syntax alone;
-- weaker precondition and stronger postcondition variants preserved the bounded old consumer contract;
-- stronger precondition and weaker postcondition variants broke it;
-- a replacement that expanded reachable state to negative balance violated a retained invariant;
-- an additive JSON field broke a strict retained consumer, falsifying the universal claim that additive changes are inherently non-breaking;
-- prior consumer expectations/invariants provide the compatibility oracle; replacement behavior does not define its own correctness.
+Established:
+- architecture is the significant structures/relations/properties/decisions needed to reason about system qualities; an architecture description is not the architecture itself;
+- architecture/design/implementation are reasoning scopes, not labels mechanically assigned by file/class size;
+- refactoring is behavior-preserving restructuring relative to an explicit observer set, not arbitrary cleanup/rewrite;
+- Python 3.13.5/Linux executable evidence preserved all three declared behaviors across an internal split refactoring, while a deliberate clamp mutant changed negative-input failure semantics and was detected;
+- technical debt is modeled as a concrete contingent future-change liability, not a synonym for bug, smell, old code or aesthetic dislike;
+- debt claims should name artifact/decision, short-term context/benefit, plausible future change, extra cost/risk, remediation and uncertainty.
 
-Primary sources checked: Eiffel Design by Contract documentation and Liskov/Wing 1994 behavioral-subtyping paper. Evidence limit remains synchronous Python/JSON; no Dart/Flutter, ABI, persisted-schema, network-protocol, or production compatibility claim.
+Current primary sources: ISO/IEC/IEEE 42010:2022, CMU SEI architecture/technical-debt material, and Fowler's precise refactoring definition. ISO/IEC/IEEE DIS 42024 remains under development and is CHANGE WATCH rather than adopted authority.
 
 ## Queue
 - `A001` — substantial Foundation block complete.
 - `A002` — substantial Foundation block complete; concurrency intentionally deferred.
 - `A003` — substantial Foundation block complete; product transfer deferred until a real evolution decision exists.
-- `A004` — patterns and misuse.
-- `A005` — refactoring/technical debt/evolutionary architecture.
+- `A004` — patterns and misuse; useful but not required as a pattern catalog for Foundation closure.
+- `A005` — **IN STUDY / first integrated Foundation block complete**; repeated-change/evolution and Dart/Flutter/product transfer OPEN.
 - `A006` — ADRs/evidence-preserving decisions.
 
 ## Gate assessment
-Architecture Stage 1 remains **NOT PASS**. A001-A003 now cover change pressure/information hiding, ownership/dependency direction, semantic contracts/invariants, failures, alternatives, and exact-ref transfer in A001. The remaining Foundation roadmap gap is architecture-vs-design-vs-implementation plus refactoring/technical-debt fundamentals; A004 pattern catalog depth is not itself a Foundation prerequisite and should not be used to delay more urgent cross-track work.
+Architecture Stage 1 remains **NOT PASS**. A001-A003 plus A005 now cover the roadmap's principal Foundation concepts: information hiding/change pressure, ownership/dependency direction, contracts/invariants, architecture-vs-design-vs-implementation, and refactoring/technical-debt fundamentals. Reading alone did not close the gap: A005 includes a behavior-preservation oracle and deliberate semantic-change mutant. Broader evolutionary evidence, transfer, and remaining A004/A006 professional boundaries remain open.
 
 ## HANDOFFS
-- **Data:** D003 should distinguish schema shape from semantic compatibility and build old/new reader-writer matrices.
-- **Quality:** retain prior consumer contracts as independent compatibility oracles; include invariants/failure semantics.
-- **Mobile:** plugin/platform evolution requires behavior/failure evidence in addition to Dart signatures.
-- **Systems:** release/versioning evidence must name compatibility dimension and rollback expectations.
+- **Data:** persisted schema/data evolution is not ordinary internal refactoring when old readers/writers/data are observers.
+- **Quality:** refactoring validation should declare observer sets and use independent contract oracles; green tests alone do not prove preservation.
+- **Mobile:** lifecycle/plugin/platform behavior can be externally relevant even when Dart-facing structure looks internal.
+- **Systems:** performance/security/artifact properties belong in the observer set when contractual/risk-significant; debt can exist in build/release infrastructure too.
+- **Product teams:** technical-debt backlog items should identify a concrete future-change liability and consequence rather than generic cleanup.
+
+## CHANGE WATCH / OPEN
+- Direct Dart/Flutter transfer remains blocked by unavailable `dart`/`flutter` executables.
+- ISO/IEC/IEEE 42010:2022 is current as checked 2026-09-17; DIS 42024 is under development.
+- A005 repeated-change/evolution evidence and exact-ref product debt transfer remain OPEN.
 
 ## Next work
-Return to Balance Loop rather than extending A003. F001 direct Dart/Flutter execution remains toolchain-blocked. Strong independent candidates are `M001` using official source/model evidence without pretending runtime validation, `S001` trust/resource/build boundaries, or Architecture Foundation closure work on architecture-vs-design/refactoring if its prerequisite leverage wins the comparison.
+Return to Balance Loop. The principal Architecture Foundation conceptual gap is now materially closed at first executable level, so do not extend A005 merely for continuity. Untouched `S002` threat modeling/least privilege/secrets now has stronger risk/reuse leverage; `S003` performance/profiling and Mobile M003 remain strong candidates. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment becomes available.
