@@ -13,8 +13,8 @@ Canonical reusable research is organized by specialist ownership.
 
 ### Foundations
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**. Source/model + OS process/I/O evidence; direct Dart JIT/AOT and Flutter runtime validation remain OPEN. Environment rechecked 2026-09-17: no trustworthy `dart`/`flutter` executable available.
-- `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — **IN STUDY / two integrated Foundation blocks complete**. Lock-order/circular-wait and predicate/signaling evidence; direct Dart/runtime/fairness transfer OPEN.
-- `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — **IN STUDY / two integrated Foundation blocks complete**. Current Dart event-loop/Future source model; waiter-timeout-vs-underlying-work failure/cancellation alternative; documented-vs-incidental ordering distinction; async error caught-without-cleanup failure and `finally` cleanup alternative. Direct Dart Future/microtask/cancellation execution, Flutter interaction, streams/backpressure and native cleanup remain OPEN.
+- `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — **IN STUDY / two integrated Foundation blocks complete**.
+- `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — **IN STUDY / two integrated Foundation blocks complete**.
 
 ### Architecture
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
@@ -22,7 +22,7 @@ Canonical reusable research is organized by specialist ownership.
 - `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 
 ### Mobile
-- `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**. Source model + lifecycle-gap executable model; real Flutter/device/process-death validation OPEN.
+- `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**.
@@ -35,7 +35,7 @@ Canonical reusable research is organized by specialist ownership.
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
-- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / first integrated Foundation block complete**.
+- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — **IN STUDY / two integrated Foundation blocks complete**. Shared-memory schedule failure plus deterministic 24-order timeout/complete/cancel/retry matrix; naive retry duplicated logical effects in 12/24 bounded schedules while stable-operation-ID dedup comparison satisfied the at-most-one oracle. Direct Dart/network transfer OPEN.
 
 ### Systems
 - `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / two integrated executable blocks complete**.
