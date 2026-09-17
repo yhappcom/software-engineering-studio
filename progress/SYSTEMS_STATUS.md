@@ -20,44 +20,47 @@ Last sync: 2026-09-18
 **IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`. Manifest/resolved graph/content/toolchain/build/artifact/provenance identities separated; bounded resolution-drift and same-version integrity failure evidence complete. Direct Dart/pub/build transfer OPEN.
 
 ### S005 — CI/CD, signing, versioning, reproducibility and release evidence
+**IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S005_ci_signing_versioning_release_evidence.md`. CI verdict/version/source/artifact digest/signature-attestation/verification/deployment identities separated; bounded stale-source and changed-bytes release-gate evidence complete. Real CI/signing/attestation/reproducibility/mobile deployment OPEN.
+
+### S006 — Rollback, incident evidence, production change safety and release governance
 **IN STUDY — first integrated executable Foundation block complete.**  
-Canonical: `research/systems/S005_ci_signing_versioning_release_evidence.md`  
-Fixture: `research/systems/fixtures/S005_release_identity_gate.py`
+Canonical: `research/systems/S006_rollback_incident_change_safety_governance.md`  
+Fixture: `research/systems/fixtures/S006_rollback_state_compatibility.py`
 
 Established:
-- CI verdict, version label, source identity, artifact digest, signature/attestation, verification policy and deployment identity are separate claims;
-- current GitHub artifact-attestation docs expose cryptographically signed provenance claims including repository/commit/workflow/environment context and explicitly warn that attestations do not guarantee artifact security;
-- SemVer communicates a public-API change contract when adopted; it is not artifact identity and released contents must not be silently replaced under the same version;
-- Python 3.13.5/Linux bounded execution accepted the intended `source=abc123/build=42/digest` tuple while rejecting a stale-source artifact with the same build label and changed bytes under the same source/build labels;
-- signature/attestation presence, green CI and version matching are not release correctness or authorization by themselves;
-- reproducible-build, real CI/OIDC/attestation, key lifecycle, mobile signing/store delivery and deployment evidence remain OPEN.
+- rollback is a state-vector transition across artifact, configuration, durable data/schema, infrastructure, routing, external dependencies and control state, not generally the inverse of deployment;
+- a previously known-good artifact is not automatically compatible with current post-change state;
+- current AWS CodeDeploy documentation explicitly models rollback as a new deployment of a prior revision rather than restoration of an old deployment event; Google SRE canary/release guidance supports staged exposure, evaluation and rollback/pause on bad candidates;
+- Python 3.13.5/Linux bounded evidence showed a previously accepted schema-1 artifact failing after durable state advanced to schema 2; a modeled separately validated schema-1 restore re-established the old artifact's compatibility and passed the recovery oracle;
+- rollback-command success, symptom mitigation, semantic recovery and incident root cause are separate verdicts;
+- binary rollback, traffic reversal, feature disablement, roll-forward, snapshot restore and backward-compatible schema evolution have different preconditions/trade-offs.
+
+Evidence limit: deterministic model only; no real database restore, deployment platform, mobile/store rollback, distributed recovery, feature-flag system or production incident evidence.
 
 ## Queue
 - `S001` — IN STUDY; public-key/key lifecycle/CI/mobile signing OPEN.
 - `S002` — IN STUDY; real platform/product threat/secure-storage transfer OPEN.
 - `S003` — IN STUDY; variance/profiler/real I/O-network/runtime transfer OPEN.
 - `S004` — IN STUDY; Dart/pub, malicious dependency, native package managers, build scripts/cache/reproducibility OPEN.
-- `S005` — **IN STUDY / first executable release-identity block complete**; real CI/signing/attestation/reproducibility/mobile deployment OPEN.
-- `S006` — Rollback, incident evidence, production change safety and release governance.
+- `S005` — IN STUDY; real CI/signing/attestation/reproducibility/mobile deployment OPEN.
+- `S006` — **IN STUDY / first executable rollback-state compatibility block complete**; real staged deployment/recovery/incident/platform transfer OPEN.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S001-S005 now cover trust/provenance, authority/security, resource measurement, dependency/build identity and first release-evidence composition with bounded executable evidence. Direct Dart/mobile/build-pipeline transfer plus real signing/attestation/reproducibility and rollback/production evidence remain open.
+Systems Stage 1 remains **NOT PASS**. S001-S006 now all have at least first professional Foundation evidence, including bounded executable failures/alternatives. Direct Dart/mobile/build-pipeline transfer plus real signing/attestation/reproducibility, deployment rollback/recovery and production evidence remain open.
 
 ## HANDOFFS
-- **Foundations:** release/build execution remains an external process/artifact boundary; comparison-runtime evidence does not transfer to Dart/Flutter.
-- **Architecture:** A003 compatibility contracts determine version semantics; a version label is not proof of semantic compatibility.
-- **Mobile:** transfer-test canonical Flutter build → package signing → artifact digest/package identity → install/delivery on exact Android/iOS toolchains.
-- **Data:** bind migration/recovery evidence to the exact accepted release artifact before causal attribution.
-- **Quality:** test evidence must remain attached to the tested artifact/digest or a proven-equivalent build; green CI does not authorize a later rebuild automatically.
-- **S006:** rollback should select a previously accepted artifact/provenance record rather than assume rebuilding an old source/version recreates the same artifact.
-- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there is changed by this bounded release mechanism block.
+- **Foundations:** release/build/rollback execution remains an external process/artifact/state boundary; comparison-runtime evidence does not transfer to Dart/Flutter.
+- **Architecture:** A003 compatibility contracts determine whether an old artifact can safely operate against post-change state.
+- **Mobile:** transfer-test canonical Flutter build/sign/install/update/downgrade and store constraints before claiming rollback equivalence.
+- **Data:** D003/D005 own schema compatibility and restore acceptance; rollback readiness must consume those results rather than assume data reversibility.
+- **Quality:** post-rollback acceptance requires semantic/data-integrity oracles; deployment status/process liveness is insufficient.
+- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there is changed by this bounded rollback mechanism block.
 
 ## CHANGE WATCH / OPEN
 - Direct Dart/Flutter execution remains unavailable as rechecked 2026-09-18; Python 3.13.5 is available.
 - GitHub artifact-attestation availability/permissions and Sigstore behavior are service-sensitive.
-- SLSA 1.2 is current as checked 2026-09-18.
-- Product/mobile versioning schemes may not use SemVer; do not impose it without a declared public-API/version contract.
-- Real CI/OIDC/workflow permissions, key compromise/revocation, Android/iOS signing, app-store delivery, reproducible-build comparison and deployment rollback remain OPEN.
+- Deployment-platform rollback semantics and mobile/app-store/browser delivery policies are version/service sensitive.
+- Real CI/OIDC/workflow permissions, key compromise/revocation, Android/iOS signing, app-store delivery, reproducible-build comparison, staged deployment and rollback remain OPEN.
 
 ## Next work
-Return to Balance Loop. S005 removes the untouched CI/signing/versioning/release-evidence Foundation gap at first executable level. Strong next candidates are `S006` rollback/incident/change safety because it completes the Systems Stage-1 delivery chain, `M003` sandbox/files/permissions/secure storage for high mobile/security leverage, and `A006` ADR/evidence-preserving decisions. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment becomes available.
+Return to Balance Loop. S006 removes the last untouched Systems Stage-1 block at first executable level, so do not deepen Systems merely for symmetry. Strong next candidates are `M003` sandbox/files/permissions/secure storage for high live-mobile/security leverage, `A006` ADR/evidence-preserving decisions, or Q004 mutation/search-strength depth. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment becomes available.
