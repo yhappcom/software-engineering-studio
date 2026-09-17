@@ -23,6 +23,7 @@ Canonical reusable research is organized by specialist ownership.
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
+- `A005` — `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md` — **IN STUDY / first integrated Foundation block complete**. Architecture/design/implementation significance boundary, precise behavior-preserving refactoring model, executable semantic-change mutant, and contingent-liability technical-debt model; repeated-change/Dart-Flutter/product transfer OPEN.
 
 ### Mobile
 - `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**.
