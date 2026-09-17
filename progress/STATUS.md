@@ -12,23 +12,23 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Mobile | Stage 1 IN STUDY — M001 first integrated block + M002 first process/background source/failure-model block complete |
 | Data | Stage 1 IN STUDY — D001 substantial + D002 two + D003 two + D004 first + D005 two + D006 two blocks |
 | Quality | Stage 1 IN STUDY — Q001 substantial + Q002 first + Q003 two + Q004 first executable counterexample/shrinking + Q005 first + Q006 first |
-| Systems | Stage 1 IN STUDY — S001 two executable trust-boundary blocks + S002 first executable security block + S003 first executable profiling/resource block complete |
+| Systems | Stage 1 IN STUDY — S001 two + S002 first + S003 first + S004 first executable dependency/build block complete |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### S003 — CPU/memory/I/O/network cost models and profiling
-Canonical: `research/systems/S003_resource_cost_models_profiling_foundations.md`  
-Fixture: `research/systems/fixtures/S003_resource_cost_profiling.py`
+### S004 — dependency, supply-chain and build-system foundations
+Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`  
+Fixture: `research/systems/fixtures/S004_dependency_resolution_integrity.py`
 
-Systems' untouched performance/profiling Foundation gap now has first executable evidence. The resource model separates wall latency, process CPU time, allocation/retention/peak memory, I/O and network dimensions rather than collapsing performance into one timer.
+Systems' untouched dependency/build Foundation gap now has first executable evidence. The model separates manifest constraints, resolved dependency graph, dependency content/integrity, toolchain/build inputs, build execution/platform, output artifact and provenance/deployment.
 
-Python 3.13.5/Linux execution compared three deliberately different workloads. CPU arithmetic observed 345.435 ms wall / 345.408 ms process CPU; an 80 ms wait observed 80.203 ms wall / only 0.098 ms process CPU; a short allocation workload observed 5319.660 KiB peak traced Python allocation. Broad workload-class assertions passed.
+Current Dart/pub primary documentation establishes that application packages should commit `pubspec.lock`; `pub get` normally respects locked versions when possible; `pub upgrade` intentionally re-resolves; and `pub get --enforce-lockfile` can fail when the lock is invalid or hosted-package content hashes differ.
 
-The failure lesson is bounded but reusable: wall time alone cannot identify CPU work. Low CPU can falsify a CPU-bound explanation for this controlled wait, but low CPU in production does not prove disk/network root cause without additional evidence. `tracemalloc` allocation is also explicitly not treated as total RSS/native/GPU/platform memory.
+Python 3.13.5/Linux bounded execution modeled an allowed dependency set where the same manifest resolved `1.0.0` before a compatible `1.1.0` existed and `1.1.0` afterward. A recorded lock retained `1.0.0`. Replacing the locked version's bytes while retaining its version label failed an independent SHA-256 digest oracle.
 
-F003 complexity is now connected to S003 profiling without conflation: complexity predicts growth under a model; profiling observes a specific workload/runtime/environment. One benchmark run remains insufficient for performance truth or a regression threshold.
+The evidence does not establish Dart pub runtime behavior, malicious-package detection, registry/maintainer security, native package-manager behavior, build reproducibility, CI isolation or product safety. A lockfile stabilizes a resolution boundary; it does not prove dependency safety. Provenance identifies production context; it does not prove functional correctness.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN after environment recheck 2026-09-18.
@@ -37,34 +37,33 @@ F003 complexity is now connected to S003 profiling without conflation: complexit
 - **M001/M002:** Flutter/platform lifecycle/process/background conceptual boundaries; real runtime transfer OPEN.
 - **D001-D006:** persistence/migration/cache/restore/sync evidence retained.
 - **Q001-Q006:** all Quality Foundation topics have professional boundaries; Q004 includes executable generated counterexample/shrinking.
-- **S001-S003:** artifact trust/provenance, runtime authority/security, and first resource/profiling boundaries now have executable evidence.
+- **S001-S004:** artifact trust/provenance, authority/security, resource measurement, and dependency/build identity now have executable evidence.
 
 ## Cross-track handoffs
-- **Foundations/F003:** complexity is predictive model; measured profiling is bounded observation; neither substitutes for the other.
-- **Mobile:** transfer CPU/wait/allocation distinctions to Flutter/Android/iOS frame/startup/memory-pressure tooling when a trustworthy environment exists.
-- **Data:** index/cache/sync alternatives should state which resource dimension changes and what trade-off is introduced.
-- **Quality:** future performance regression evidence needs exact artifact/environment/workload, distributions/noise and a product budget oracle rather than a single timing.
-- **Architecture:** resource budgets become architectural when cross-boundary structure/ownership determines them.
+- **Architecture:** dependency choice creates API/change-pressure/runtime coupling; version labels do not establish semantic compatibility.
+- **Mobile:** direct `pub get --enforce-lockfile`, dependency graph and native build dependency transfer remains OPEN until a trustworthy Dart/Flutter/mobile environment exists.
+- **Data:** migration/persistence regressions must be bound to exact resolved dependencies/artifact before causal attribution.
+- **Quality:** dependency/lock/toolchain changes are test-relevant artifact changes; successful resolution/build is not a correctness oracle.
+- **Systems/S005:** release evidence should compose `manifest → resolution → content → build inputs/platform → artifact → provenance/deployment`.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision in those repositories is changed by this bounded Systems block.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. `dart` and `flutter` executables were rechecked 2026-09-18 and remain unavailable; Python 3.13.5 is available.
 
-S003 removes the untouched performance/profiling Foundation gap at first executable level. Current strongest independent candidates are:
-1. `S004` dependency/supply-chain/build-system fundamentals — untouched release/security prerequisite with high reuse;
+S004 removes the untouched dependency/build Foundation gap at first executable level. Current strongest independent candidates are:
+1. `S005` CI/CD, signing, versioning, reproducibility and release evidence — directly composes S001-S004 and closes another high-risk untouched Systems prerequisite;
 2. `M003` sandbox/files/permissions/secure storage/platform APIs — high live-mobile/security transfer value, but platform execution limitations remain;
 3. `A006` ADR/evidence-preserving decisions — useful governance prerequisite after principal Architecture concepts;
-4. `Q004` mutation sensitivity/exhaustive-vs-generated comparison — useful method depth but lower prerequisite urgency than untouched S004;
+4. `Q004` mutation sensitivity/exhaustive-vs-generated comparison — useful method depth but lower prerequisite urgency than untouched release foundations;
 5. return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
 
 ## CHANGE WATCH
-- Python profiling APIs support the bounded S003 fixture only; their semantics/constants are not transferred to Dart/mobile.
-- Android/iOS/Flutter/browser performance tooling and budgets are platform/version sensitive.
+- Dart/pub lockfile/content-hash/advisory behavior and GitHub dependency-review capabilities are version/service sensitive.
+- SLSA 1.2 is the current specification family checked 2026-09-18; recheck for release-governance work.
+- Android/iOS/Flutter/browser build, signing and dependency tooling are platform/version sensitive.
 - NIST SP 800-154 remains draft/planned for finalization; recheck before treating it as final.
-- Android Keystore/attestation guarantees are API/device/version sensitive.
-- ISO/IEC/IEEE 42010:2022 remains current from prior check; DIS 42024 remains draft work.
 
 ## Evidence rule
 No PASS from reading alone. Expected progression where applicable:
