@@ -30,7 +30,7 @@ Canonical reusable research is organized by specialist ownership.
 - `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — **IN STUDY / two integrated migration blocks complete**.
 - `D004` — `research/data/D004_cache_offline_first_data_ownership.md` — **IN STUDY / first integrated Foundation block complete**.
 - `D005` — `research/data/D005_backup_restore_recovery_acceptance.md` — **IN STUDY / two integrated backup-restore blocks complete**.
-- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` — **IN STUDY / first integrated Foundation block complete**.
+- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` — **IN STUDY / two integrated Foundation blocks complete**. Retry/idempotency + concurrent-update conflict, then Q003-derived reorder/delete matrix: naive physical delete resurrected under delayed stale update in 1/2 orders while bounded versioned tombstone preserved deletion in 2/2; real backend/multi-device/tombstone-GC evidence OPEN.
 
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
