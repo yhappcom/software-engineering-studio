@@ -27,50 +27,42 @@ Established mutual exclusion/ordering/progress distinctions, circular-wait preco
 ### F005 — Async execution, event loops, futures, streams and cancellation
 Status: **IN STUDY — two integrated Foundation blocks complete**
 
-Canonical: `research/foundations/F005_async_event_loop_futures_cancellation.md`  
-Fixtures: `research/foundations/fixtures/F005_async_timeout_cancellation_model.py`, `research/foundations/fixtures/F005_async_ordering_cleanup_model.py`
+Canonical: `research/foundations/F005_async_event_loop_futures_cancellation.md`.
 
-Established from current Dart sources plus bounded Python 3.13.5/Linux model evidence:
-- Dart isolate async work is event-loop based; Future/await does not imply generic thread creation;
-- Future completion, caller waiting, timeout and cancellation are distinct semantics;
-- waiter timeout can precede a later underlying side effect when work remains active;
-- cancellation requires the exact API/operation contract;
-- documented queue relations must be distinguished from incidental observed callback/timer order;
-- catching an async failure does not itself perform resource cleanup.
-
-OPEN: direct Dart Future/event/microtask execution, exact Dart cancellation-capable API execution, Flutter scheduler/lifecycle interaction, streams/backpressure, cancellation-during-cleanup and native/process-death behavior.
+Established Future/wait/timeout/cancellation distinctions plus ordering/error/cleanup boundaries from current Dart sources and bounded Python model evidence. Direct Dart/Flutter execution remains OPEN.
 
 ### F006 — OS, file, socket and network foundations
-Status: **IN STUDY — first integrated Foundation block complete**
+Status: **IN STUDY — two integrated Foundation blocks complete**
 
 Canonical: `research/foundations/F006_os_file_socket_network_foundations.md`  
-Fixture: `research/foundations/fixtures/F006_stream_framing_boundary.py`
+Fixtures: `research/foundations/fixtures/F006_stream_framing_boundary.py`, `research/foundations/fixtures/F006_connection_termination_ambiguity.py`
 
-Established from RFC 9293, POSIX/Python socket semantics and bounded Python 3.13.5/Linux socket execution:
-- stream transport bytes and application message/frame boundaries are distinct;
-- a one-byte receive left a two-byte application header incomplete; a buffered length-prefixed parser reconstructed the frame correctly;
-- local send completion, peer receipt, parse, application apply, durable commit and application acknowledgement are distinct claims;
-- framing failure must not be misdiagnosed as transport data loss merely because one receive call returned less than an application frame;
-- the result is local `SOCK_STREAM` evidence, not Dart Socket, real TCP partition, mobile network or production evidence.
+Established from RFC 9293, socket semantics and bounded Python 3.13.5/Linux execution:
+- stream transport bytes and application frame boundaries are distinct;
+- buffered framing is required when protocol messages need explicit boundaries;
+- graceful EOF after `00 05 HE` left a declared five-byte payload incomplete and must not publish a valid frame;
+- an abortive loopback TCP close delivered the complete `00 05 HELLO` frame to the receiver before `ConnectionResetError` in the bounded environment;
+- therefore reset does not prove that zero application bytes were received, and neither reset nor EOF establishes business-operation apply/durable-commit state;
+- local send, peer receive, frame completion, apply, durable commit and application ACK remain separate claims.
 
-OPEN: direct Dart/Flutter socket execution, TCP/reset/half-close/timeout/partition experiments, DNS/IP/routing/UDP contrast, mobile connectivity/background behavior, TLS/security and resource/performance boundaries.
+Evidence limit: local Linux sockets only; abortive-close sequencing is OS/socket-stack dependent. No Dart Socket/Flutter, real network partition, cross-OS/mobile/TLS/multi-device or production claim.
 
 ## Remaining initial queue
 - `F002` — Values, references, memory models, stack/heap and lifetime.
 - `F003` — Data structures, algorithms and complexity.
 - `F004` — IN STUDY / two blocks.
 - `F005` — IN STUDY / two blocks.
-- `F006` — IN STUDY / first socket-framing block.
+- `F006` — IN STUDY / two blocks.
 
 ## Gate requirement
 Foundation PASS requires first-principles explanation, executable examples, representative failure cases, and transfer into at least Dart/Flutter plus one comparison context when useful. Stage 1 remains NOT PASS.
 
 ## Dependencies / handoffs
-- Mobile: direct Dart/Flutter execution and exact mobile networking/background evidence remain required; do not transfer CPython socket behavior as Dart runtime proof.
-- Data: D006 should place logical operation identity/retry above transport framing and distinguish write/receive/parse/apply/durable commit/ACK.
-- Quality: Q005/Q006 should isolate truncated frame, EOF, timeout/reset, late ACK and retry as distinct failure classes.
-- Architecture: framing, timeout, acknowledgement and cancellation are contracts where consumer-visible.
+- Mobile: direct Dart/Flutter execution and exact mobile networking/background evidence remain required; do not transfer Linux socket behavior as Dart/mobile runtime proof.
+- Data: D006 should keep logical operation identity and explicit application ACK/durable state above ambiguous connection failures.
+- Quality: Q005/Q006 should isolate EOF-before-frame, reset-after-complete-frame, timeout and late ACK as distinct failure classes.
+- Architecture: framing, terminal state, timeout and acknowledgement are contracts where consumer-visible.
 - Systems: TLS/authentication, socket/resource exhaustion and network performance remain separate security/performance concerns.
 
 ## Next work
-Use Balance Loop. F006 removed the untouched networking prerequisite at a bounded stream/framing level. The strongest continuation is a second F006 block on connection termination/timeout/partial-delivery ambiguity if it can add executable failure evidence; otherwise Q006 fault injection/recovery governance or M002 lifecycle/process-death evidence may outrank it. Direct Dart/Flutter execution remains the first attempt whenever a trustworthy SDK environment becomes available.
+Use Balance Loop. F006 now covers framing plus graceful/abortive termination ambiguity at a bounded executable level. Further local socket elaboration has diminishing Foundation value until Dart/mobile or real-network transfer is available. Strong independent candidates are `Q006` fault injection/recovery/regression governance, `M002` lifecycle/process-death/background execution with authoritative platform evidence, or untouched `F002/F003` if their prerequisite leverage wins. Direct Dart/Flutter execution remains the first attempt whenever a trustworthy SDK environment becomes available.
