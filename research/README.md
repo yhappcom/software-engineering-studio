@@ -48,6 +48,7 @@ Canonical reusable research is organized by specialist ownership.
 ### Systems
 - `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — **IN STUDY / two integrated executable blocks complete**.
 - `S002` — `research/systems/S002_threat_model_least_privilege_secrets_secure_storage.md` — **IN STUDY / first integrated executable Foundation block complete**. Threat/risk/control separation, principal-resource-operation-lifetime least privilege, ambient-authority failure vs scoped-capability alternative, secrets lifecycle and Android Keystore guarantee limits; real platform/product transfer OPEN.
+- `S003` — `research/systems/S003_resource_cost_models_profiling_foundations.md` — **IN STUDY / first integrated executable Foundation block complete**. Separates wall latency, CPU time, traced allocation and broader I/O/network/resource dimensions; bounded Python 3.13.5/Linux CPU-vs-wait-vs-allocation fixture complete; variance, profiler alternatives, real I/O/network and Dart/Flutter/device transfer OPEN.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS.
