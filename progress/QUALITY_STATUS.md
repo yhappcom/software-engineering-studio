@@ -21,6 +21,21 @@ Build engineering capability to define correctness, design tests with valid orac
 
 Established shared-memory schedule failure plus a deterministic 24-order timeout/complete/cancel/retry matrix. Naive retry violated an at-most-one logical-effect property in 12/24 schedules while stable logical-operation identity + bounded deduplication violated it in 0/24. Exhaustiveness is only for the bounded event alphabet.
 
+### Q004 — Property/model-based testing and invariant checking
+**IN STUDY — SOURCE/MODEL + EXECUTABLE FIXTURE PREPARED; EXECUTION OPEN.**
+
+Canonical: `research/quality/Q004_property_model_based_testing_invariants.md`  
+Fixture: `research/quality/fixtures/Q004_model_property_sequence_shrinking.py`
+
+Established from QuickCheck/model-based-testing literature and current Hypothesis stateful-testing documentation:
+- property/invariant, generator/model transition system, search strategy and counterexample reduction are separate concerns;
+- stateful generated tests can compare a SUT against an independent reference model and check invariants across action sequences;
+- shrinking/reduction preserves a failure while simplifying its reproducer but does not prove root cause or global minimality;
+- passing generated samples is counterexample-search evidence, not proof;
+- bounded exhaustive enumeration remains preferable when the complete relevant state/event space is genuinely tractable.
+
+A stdlib-only fixture was added to generate versioned update/delete delivery sequences, compare a naive arrival-order replica against a version-aware model, and greedily reduce the first violation to a 1-minimal sequence under single-command deletion. **Execution is OPEN:** available execution tools failed with infrastructure `GatewaySelectionError`, so no runtime output/verdict/environment is claimed. Creating executable code is not validation evidence.
+
 ### Q005 — Debugging, fault isolation and observability foundations
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
 
@@ -45,21 +60,21 @@ Evidence limit: deterministic single-process model only; no Dart/Flutter, real p
 ## Initial queue
 - `Q001` — substantial Foundation block complete.
 - `Q002` — first integrated block complete.
-- `Q003` — two integrated blocks complete; harness-vs-SUT flake isolation, larger model/property schedule exploration, runtime transfer OPEN.
-- `Q004` — Property-based/model-based testing and invariant checking.
+- `Q003` — two integrated blocks complete; harness-vs-SUT flake isolation, larger runtime schedule exploration and runtime transfer OPEN.
+- `Q004` — **IN STUDY / source-model block + prepared fixture; execution/mutation evidence OPEN**.
 - `Q005` — first integrated block complete; crash/exception isolation, distributed observability, instrumentation perturbation and runtime transfer OPEN.
-- `Q006` — **IN STUDY / first integrated block complete**; real crash/restart/durable/network fault campaigns, combined faults, resource cleanup and release-gate transfer OPEN.
+- `Q006` — first integrated block complete; real crash/restart/durable/network fault campaigns, combined faults, resource cleanup and release-gate transfer OPEN.
 
 ## Gate requirement
-Quality Stage 1 remains **NOT PASS**. Q001-Q006 now cover correctness/oracles, test-level boundaries, nondeterministic schedule reasoning, debugging/root-cause separation, and a first fault-injection/recovery/regression campaign. Property/model-based testing (Q004), stronger real recovery/crash evidence, and runtime/platform transfer remain open.
+Quality Stage 1 remains **NOT PASS**. Q001-Q006 now all have at least a professional Foundation boundary, but Q004 lacks execution evidence and stronger real recovery/crash/runtime/platform transfer remains open. Reading or an unexecuted fixture cannot close the gate.
 
 ## Dependencies / handoffs
-- Foundations: F004/F005/F006 provide concurrency/async/transport failure mechanisms; F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17.
-- Architecture: A003 contracts/invariants are independent recovery-oracle candidates; terminal-state/recovery behavior remains semantic contract material.
-- Mobile: M002 should inject exact process/lifecycle failure points and judge durable/recovered state rather than callback arrival alone.
-- Data: D005/D006 should reuse the Q006 campaign shape while retaining Data-owned restore/sync semantics and operation identity.
-- Systems: release-gate recovery evidence must bind to exact artifact/build/environment; security fault injection remains separate.
-- Design Studio / Web Manager / Marketing Manager: no current canonical evidence materially changes this bounded Quality method.
+- Foundations: F003 complexity explains state-space growth; F004/F005/F006 provide concurrency/async/transport failure mechanisms; F001 direct Dart/Flutter execution remains OPEN.
+- Architecture: A003 contracts/invariants are independent property/recovery-oracle candidates; terminal-state/recovery behavior remains semantic contract material.
+- Mobile: M002 should inject exact process/lifecycle failure points and judge durable/recovered state rather than callback arrival alone; generated state-machine testing waits for real platform controls.
+- Data: D006 supplies the current stale-update/delete transfer case; future delete/recreate/tombstone-GC semantics should define Data-owned invariants before Q004 generates histories.
+- Systems: generated/release campaigns must bind exact artifact/build/environment, framework/seed and resource budget; security fault injection remains separate.
+- Design Studio / Web Manager / Marketing Manager: considered; no current canonical evidence materially changes this bounded Quality method.
 
 ## Next work
-Use Balance Loop. Q006 removes the untouched fault-injection/recovery/regression Foundation gap at bounded executable level. Strong next candidates are `M002` Android/iOS process lifecycle/background execution because Q006 now supplies a recovery-test method, or untouched `F002/F003` if their prerequisite leverage outranks platform work. `Q004` becomes increasingly valuable once a richer state machine exists. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment becomes available.
+First attempt to execute and mutation-check the prepared Q004 fixture when a trustworthy execution environment is available. If execution remains infrastructure-blocked, do not deepen source-only Q004 merely for continuity; use Balance Loop to advance an independent high-value gap such as Architecture Foundation closure or S002/S003. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment becomes available.
