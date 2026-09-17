@@ -8,63 +8,52 @@ Last sync: 2026-09-18
 ## Current evidence
 
 ### S001 — Trust boundaries, artifact identity and build provenance foundations
-**IN STUDY — two integrated executable trust-boundary blocks complete.**
-
-Canonical: `research/systems/S001_trust_artifact_provenance_foundations.md`  
-Fixtures: `research/systems/fixtures/S001_artifact_identity.py`, `research/systems/fixtures/S001_trust_metadata.py`
-
-Established source/build/artifact/deployment/runtime identity separation; integrity/authenticity/authorization/provenance separation; bounded unsigned-metadata failure and authenticated-metadata/authorization alternatives. Public-key/key lifecycle, CI trust boundary and mobile signing remain open.
+**IN STUDY — two integrated executable trust-boundary blocks complete.** Canonical: `research/systems/S001_trust_artifact_provenance_foundations.md`. Source/build/artifact/deployment/runtime identity plus integrity/authenticity/authorization/provenance separation established. Public-key/key lifecycle, CI trust boundary and mobile signing remain OPEN.
 
 ### S002 — Threat modeling, least privilege, secrets and secure storage
-**IN STUDY — first integrated executable Foundation block complete.**
-
-Canonical: `research/systems/S002_threat_model_least_privilege_secrets_secure_storage.md`  
-Fixture: `research/systems/fixtures/S002_least_privilege_capability_boundary.py`
-
-Established threat/risk/control separation, principal × resource × operation × context/lifetime authority scoping, ambient-authority failure vs scoped-capability alternative, secrets lifecycle, and Android Keystore guarantee limits. Real Android/iOS/Flutter/product secure-storage execution remains OPEN.
+**IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S002_threat_model_least_privilege_secrets_secure_storage.md`. Principal × resource × operation × context/lifetime authority scoping, ambient-authority failure/scoped-capability alternative, secrets lifecycle and Android Keystore guarantee limits established. Real platform/product transfer OPEN.
 
 ### S003 — CPU, memory, I/O, network cost models and profiling
-**IN STUDY — first integrated executable Foundation block complete.**
+**IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S003_resource_cost_models_profiling_foundations.md`. Wall latency/CPU/allocation/I/O/network observables separated; bounded Python CPU-vs-wait-vs-allocation fixture complete. Variance, profiler alternatives, real I/O/network and Dart/Flutter/device transfer OPEN.
 
-Canonical: `research/systems/S003_resource_cost_models_profiling_foundations.md`  
-Fixture: `research/systems/fixtures/S003_resource_cost_profiling.py`
+### S004 — Dependency, supply-chain and build-system fundamentals
+**IN STUDY — first integrated executable Foundation block complete.**  
+Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`  
+Fixture: `research/systems/fixtures/S004_dependency_resolution_integrity.py`
 
 Established:
-- wall latency, CPU time, allocation/retention/peak memory, I/O and network costs are distinct observables;
-- asymptotic complexity predicts growth under a model while profiling observes a bounded workload/runtime/environment;
-- Python 3.13.5/Linux fixture compared CPU arithmetic, an 80 ms wait, and ~5 MiB Python-managed allocation;
-- observed CPU work: 345.435 ms wall / 345.408 ms process CPU; wait: 80.203 ms wall / 0.098 ms CPU; memory workload: 8.542 ms wall / 5319.660 KiB peak traced Python allocation;
-- all broad workload-class assertions passed;
-- low CPU can falsify a CPU-bound explanation for this controlled wait fixture, but cannot by itself prove disk/network root cause in production;
-- `tracemalloc` traced allocation is not total process RSS/native/GPU/platform memory.
-
-Evidence limit: one bounded Python/Linux run; no variance characterization, sampling profiler comparison, real disk/network, Dart/Flutter, mobile device, browser/PWA or product performance evidence.
+- manifest constraints, resolved dependency graph, dependency content/integrity, toolchain/build inputs, build execution/platform, output artifact and provenance/deployment are distinct identities;
+- current Dart/pub docs recommend committing `pubspec.lock` for application packages and document `--enforce-lockfile` validation of exact resolution/content hashes;
+- Python 3.13.5/Linux bounded model showed the same allowed manifest resolving `1.0.0` then `1.1.0` as registry availability changed, while the recorded lock retained `1.0.0`;
+- same-version tampered bytes failed an independent SHA-256 digest oracle;
+- lockfile presence is not dependency safety, advisory absence is not security, and provenance is not functional correctness;
+- direct Dart/pub/build execution remains OPEN because `dart`/`flutter` are unavailable.
 
 ## Queue
-- `S001` — IN STUDY — artifact identity/authenticity/authorization/provenance evidence; public-key/key lifecycle/CI/mobile signing OPEN.
-- `S002` — IN STUDY — first executable security block; real platform/product threat/secure-storage transfer OPEN.
-- `S003` — **IN STUDY / first executable resource-measurement block complete**; variance, profiler alternatives, real I/O/network and Dart/Flutter/device transfer OPEN.
-- `S004` — Dependency/supply-chain and build-system fundamentals.
+- `S001` — IN STUDY; public-key/key lifecycle/CI/mobile signing OPEN.
+- `S002` — IN STUDY; real platform/product threat/secure-storage transfer OPEN.
+- `S003` — IN STUDY; variance/profiler/real I/O-network/runtime transfer OPEN.
+- `S004` — **IN STUDY / first executable dependency-resolution/integrity block complete**; Dart/pub, malicious dependency, native package managers, build scripts/cache/reproducibility OPEN.
 - `S005` — CI/CD, signing, versioning, reproducibility and release evidence.
 - `S006` — Rollback, incident evidence, production change safety and release governance.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S001-S003 now cover trust/provenance, security/authority and first measured resource/profiling boundaries with executable evidence. Dependency/build, release/signing/rollback, stronger profiling practice and real platform/product transfer remain open.
+Systems Stage 1 remains **NOT PASS**. S001-S004 now cover trust/provenance, authority/security, resource measurement and dependency/build identity with bounded executable evidence. Direct Dart/mobile/build-pipeline transfer plus signing/release/rollback and production evidence remain open.
 
 ## HANDOFFS
-- **Foundations/F003:** preserve complexity as a predictive model and profiling as bounded observation; neither substitutes for the other.
-- **Mobile:** transfer-test CPU vs wait, allocation/retention, frame/startup and platform memory pressure using exact Flutter/Android/iOS tooling; Python constants do not transfer.
-- **Data:** index/cache/sync alternatives should report which resource dimension changes; latency improvements can trade memory, writes or network bytes.
-- **Quality:** performance regression evidence needs exact artifact/environment/workload, distributions/noise, product budget oracle and deliberate regression sensitivity where feasible.
-- **Architecture:** performance is architectural when resource budgets depend on cross-boundary structure/ownership.
+- **Foundations:** dependency graphs/build inputs are concrete graph/OS/network boundary applications; comparison-runtime constants do not transfer.
+- **Architecture:** dependency selection creates API/change-pressure/runtime coupling; semantic compatibility is independent of version numbering.
+- **Mobile:** transfer-test `pub get --enforce-lockfile`, transitive dependency inspection and native build dependencies on exact Flutter/Android/iOS toolchains when available.
+- **Data:** bind migration/persistence validation to exact resolved dependencies and artifact identity before attributing regressions.
+- **Quality:** dependency/lock/build-tool changes are test-relevant artifact changes; successful resolution/build is not correctness evidence.
+- **S005:** use `manifest → resolution → content → build inputs/platform → artifact → provenance/deployment` as the release evidence chain.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there is changed by this bounded mechanism block.
 
 ## CHANGE WATCH / OPEN
-- Direct Dart/Flutter execution remains unavailable as rechecked 2026-09-18.
-- Python profiling APIs establish this fixture's measurement domains only; do not transfer their semantics/constants to Dart/mobile.
-- Android/iOS/Flutter/browser profiler behavior and performance budgets are version/platform sensitive.
-- NIST SP 800-154 remains Initial Public Draft with a 2025 planning note that NIST plans to finalize it; recheck before treating terminology as final.
-- Android Keystore/attestation guarantees are device/API/version sensitive; real platform transfer OPEN.
+- Direct Dart/Flutter execution remains unavailable as rechecked 2026-09-18; Python 3.13.5 is available.
+- Dart/pub lockfile/content-hash/advisory behavior and GitHub dependency-review capabilities are version/service sensitive.
+- SLSA 1.2 is the current specification family checked 2026-09-18; recheck before release governance work.
+- Malicious-but-authentic packages, compromised maintainers/registries, git/path/native dependencies, build-script execution, cache poisoning and reproducible-build evidence remain OPEN.
 
 ## Next work
-Return to Balance Loop. S003 removes the untouched performance/profiling Foundation gap at first executable level. Strong independent candidates are `S004` dependency/supply-chain/build-system fundamentals, `M003` sandbox/files/permissions/secure storage if platform evidence can advance beyond reading, and `A006` ADR/evidence-preserving decisions. Return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
+Return to Balance Loop. S004 removes the untouched dependency/build Foundation gap at first executable level. Strong independent candidates are `S005` CI/CD/signing/versioning/release evidence because it directly composes S001-S004, `M003` sandbox/files/permissions/secure storage if platform evidence can advance beyond reading, and `A006` ADR/evidence-preserving decisions. Return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
