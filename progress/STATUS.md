@@ -9,7 +9,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | --- | --- |
 | Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F002-F006 initiated with executable/model evidence |
 | Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 refactoring/debt + A006 evidence-preserving decision lifecycle first integrated blocks complete |
-| Mobile | Stage 1 IN STUDY — M001-M004 first professional/model boundaries complete; direct Flutter/native transfer OPEN |
+| Mobile | Stage 1 IN STUDY — M001-M005 first professional/model boundaries complete; direct Flutter/native/web transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated with persistence/migration/cache/restore/sync evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 executable counterexample/shrinking evidence |
 | Systems | Stage 1 IN STUDY — S001-S006 all initiated with executable/professional evidence |
@@ -18,45 +18,47 @@ No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### A006 — Evidence-preserving architecture decisions and ADR lifecycle
-Canonical: `research/architecture/A006_evidence_preserving_architecture_decisions.md`
+### M005 — Cross-platform architecture, portability and platform divergence
+Canonical: `research/mobile/M005_cross_platform_portability_divergence.md`; fixture: `research/mobile/fixtures/M005_capability_contract_matrix.py`.
 
-Current AWS Prescriptive Guidance and Microsoft Azure Well-Architected guidance establish ADR context/rationale/options/decision/consequences/status and supersession as durable decision-history concerns. Studio synthesis strengthens this for evidence-critical engineering: preserve exact evidence/ref, assumptions/uncertainty, validation status and reconsideration triggers when they materially affect later evaluation.
+Current Flutter/Dart/browser guidance establishes that shared Flutter/Dart source does not erase platform differences: Flutter web lacks `dart:io` filesystem access, has different platform-detection/import mechanisms, and does not currently provide Dart isolate concurrency in the same way as native; web platform integration generally uses JS interoperability rather than native platform channels. Studio synthesis therefore models portability as `semantic contract → capability vector → platform mechanism → failure/fallback → acceptance oracle` rather than code-reuse percentage or matching API names.
 
-Critical separation: `ADR Accepted != validation PASS`. A decision can be accepted under current constraints while transfer/production validation remains OPEN. Accepted decision history should be superseded rather than silently rewritten when later evidence changes the choice, otherwise the repository loses whether the original decision was wrong or its assumptions later changed.
+Python 3.13.5/Linux bounded execution rejected an unsafe native-filesystem assumption for the web model, allowed a download fallback where the higher-level export contract permitted it, and kept required background retry explicitly unsupported when the modeled platform lacked the guarantee. PASS is only for this capability model, not Flutter/browser behavior.
 
-A document-level adversarial oracle now asks whether a future reviewer can reconstruct the decision question, distinguish evidence from judgment/decision, identify assumptions/evidence limits, recover rejected-option rationale, determine current/superseded status and identify reconsideration triggers. This is governance/model evidence, not runtime/product evidence.
+Exact-ref transfer: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-18`. At that ref, product truth explicitly excludes guaranteed automatic PWA P2P without common LAN and immediate transfer while backgrounded/terminated, and the current canonical Makefile exposes a distinct `build-pwa` pipeline. Default branch is not assumed to equal production; no PWA/EFB acceptance claim is made.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN after environment recheck 2026-09-18.
 - **Foundations F002-F006:** alias/lifetime, complexity, concurrency, async and network/termination failure mechanics retained.
-- **Architecture:** A001-A003/A005/A006 now cover change pressure, ownership/dependency, semantic contracts, refactoring/debt and evidence-preserving decision lifecycle.
-- **Mobile:** M001-M004 runtime/state, lifecycle/process/background, storage/permission/security and plugin/native boundaries retained; real runtime/platform transfer OPEN.
+- **Architecture:** A001-A003/A005/A006 cover change pressure, ownership/dependency, semantic contracts, refactoring/debt and evidence-preserving decision lifecycle.
+- **Mobile:** M001-M005 now cover runtime/state, lifecycle/process/background, storage/permission/security, plugin/native boundaries and portability/divergence; real runtime/platform transfer OPEN.
 - **Data:** D001-D006 persistence/migration/cache/restore/sync evidence retained.
 - **Quality:** Q001-Q006 professional boundaries retained; Q004 includes executable generated counterexample/shrinking.
 - **Systems:** S001-S006 trust/security/performance/build/release/rollback evidence retained.
 
 ## Cross-track handoffs
-- **Quality:** ADR status cannot replace a validation verdict; decision records should link evidence with its oracle/environment/limits.
-- **Mobile/Systems:** volatile platform/build/security facts used in decisions need exact version/ref/date plus CHANGE WATCH/TRANSFER VALIDATION.
-- **Data:** migration/sync/recovery decisions should preserve compatibility/failure assumptions and recovery validation dependencies.
-- **Design Studio:** interaction semantics remain Design-owned; Engineering ADRs should link exact design contracts rather than silently redefine them.
-- **Web Manager:** PWA/browser/hosting decisions should link current web requirements and versioned technical evidence; no canonical web files changed.
-- **Marketing Manager:** not materially relevant to this A006 Foundation block.
+- **Architecture:** platform adapters/conditional imports need semantic acceptance criteria; shared API shape is not portability evidence.
+- **Data:** offline/persistence/sync/durability guarantees require per-platform transfer validation.
+- **Quality:** cross-platform contract suites should test explicit unsupported/degraded outcomes and platform-specific failures.
+- **Systems:** PWA/native validation must bind exact source/build/post-build/artifact/deployment/runtime identity.
+- **Design Studio:** no materially relevant PWA/mobile-web search result found this run; Engineering must still return unsupported/degraded implementation states rather than silently redefine interaction semantics.
+- **Web Manager:** no materially relevant LogMate/PWA search result found this run; browser/PWA operational decisions remain Web-owned where applicable.
+- **Marketing Manager:** no materially relevant PWA search result found this run.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. Environment recheck 2026-09-18 found no `dart` or `flutter` executable; Python 3.13.5 is available.
 
-A006 removes the main untouched Architecture decision-governance boundary at first professional level. Current strongest independent candidates are:
-1. `M005` cross-platform architecture, portability and platform divergence — next untouched Mobile boundary with high LogMate/native/PWA leverage, though real transfer remains runtime-constrained;
-2. `Q004` deliberate mutation sensitivity plus exhaustive-vs-generated comparison — executable and capable of strengthening test-method evidence without Dart/Flutter;
-3. `A006` executable ADR-corpus governance checker — useful cross-track reuse, but lower immediate product leverage than M005 unless a live decision-log need appears;
+M005 removes the previously untouched Mobile portability/divergence boundary at first professional/model level. Current strongest independent candidates are:
+1. `M006` native app vs PWA/web boundary and deployment constraints — high direct LogMate/EFB leverage and now the remaining untouched Mobile Foundation block, but requires current browser/platform evidence plus a coherent acceptance/failure boundary rather than a source-only summary;
+2. `Q004` deliberate mutation sensitivity plus exhaustive-vs-generated comparison — executable and strengthens search-method evidence without Dart/Flutter;
+3. `A005` repeated-change/evolution evidence — strengthens architecture closure if a reusable change-pressure experiment can be constructed;
 4. return immediately to direct Dart/Flutter/mobile execution when a trustworthy SDK/device environment becomes available.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
 
 ## CHANGE WATCH
-- Flutter platform-channel/plugin registration, background-isolate, federated-plugin and native API behavior are version-sensitive.
+- Flutter web isolate/Wasm/import behavior, plugin registration and native/web integration are version-sensitive.
+- Browser/PWA install/update/offline/background APIs and iOS/iPadOS PWA behavior are platform/version sensitive.
 - Android storage/permission/backup behavior and Apple Data Protection/Keychain behavior are platform/version sensitive.
 - Deployment-platform rollback semantics and app-store/browser delivery policies are service/version sensitive.
 - GitHub artifact-attestation availability/permissions and Sigstore behavior are service-sensitive.
