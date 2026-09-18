@@ -33,7 +33,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Systems
 - `S001`–`S004`, `S006` — planned Foundation boundaries initiated with executable/professional evidence.
-- `S005` — `research/systems/S005_ci_signing_versioning_release_evidence.md` — release-identity model plus real OpenSSL 3.5.5 asymmetric signature verification. Changed artifact bytes and unrelated verification key are deliberate negative cases. CI/OIDC/attestation, signer authorization/key lifecycle, mobile signing, reproducibility and production delivery remain OPEN.
+- `S005` — `research/systems/S005_ci_signing_versioning_release_evidence.md`, `research/systems/S005_reproducible_build_boundary.md` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC 14.2.0/ld 2.44 reproducible-build comparison. Changed artifact/wrong-key signature negatives retained; naive/time-only/path-only compiler builds provide reproducibility failure isolation, while fixed time + normalized build path produced byte-identical artifacts. CI/OIDC/attestation, authorization/key lifecycle, mobile signing/builds, hermeticity, independent-host reproducibility and production delivery remain OPEN.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS. Do not create files merely to count activity; prefer coherent integrated studies.
