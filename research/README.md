@@ -16,7 +16,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — substantial Foundation block complete.
 - `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — substantial Foundation block complete.
 - `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — substantial Foundation block complete.
-- `A005` — `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md` — first integrated block complete.
+- `A005` — `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md` + `research/architecture/A005_repeated_change_evolution_evidence.md` — **two executable blocks complete**; observer-scoped refactoring plus repeated-change/partial-migration evidence.
 - `A006` — `research/architecture/A006_evidence_preserving_architecture_decisions.md` — first integrated decision-evidence block complete.
 
 ### Mobile
