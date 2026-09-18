@@ -29,10 +29,11 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Quality
 - `Q001`–`Q005` — professional Foundation boundaries initiated; Q004 includes generated shrinking plus mutation/exhaustive-search evidence.
-- `Q006` — `research/quality/Q006_fault_injection_recovery_regression_governance.md` + `research/quality/Q006_real_crash_recovery_oracle_transfer.md` — model fault campaign plus real child-process crash/restart + SQLite persistent-state oracle discrimination. Structural DB health was shown insufficient for semantic recovery in the bounded cursor/effect failure. Dart/Flutter/mobile/backend/production transfer OPEN.
+- `Q006` — model fault campaign plus real child-process crash/restart + SQLite persistent-state oracle discrimination. Dart/Flutter/mobile/backend/production transfer OPEN.
 
 ### Systems
-- `S001`–`S006` — all planned Foundation boundaries initiated with executable/professional evidence. See `progress/SYSTEMS_STATUS.md`.
+- `S001`–`S004`, `S006` — planned Foundation boundaries initiated with executable/professional evidence.
+- `S005` — `research/systems/S005_ci_signing_versioning_release_evidence.md` — release-identity model plus real OpenSSL 3.5.5 asymmetric signature verification. Changed artifact bytes and unrelated verification key are deliberate negative cases. CI/OIDC/attestation, signer authorization/key lifecycle, mobile signing, reproducibility and production delivery remain OPEN.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS. Do not create files merely to count activity; prefer coherent integrated studies.
