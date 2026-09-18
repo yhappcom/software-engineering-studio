@@ -32,8 +32,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — two integrated blocks complete.
 - `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — two integrated migration blocks complete.
 - `D004` — `research/data/D004_cache_offline_first_data_ownership.md` — first integrated block complete.
-- `D005` — `research/data/D005_backup_restore_recovery_acceptance.md` + `research/data/D005_process_crash_transaction_boundary.md` — three executable blocks; real application-process crash/restart evidence added 2026-09-18; OS/power/mobile durability OPEN.
-- `D006` — `research/data/D006_replication_sync_consistency_idempotency_conflicts.md` + `research/data/D006_real_tcp_ambiguous_retry_restart.md` — three integrated blocks; real localhost TCP ACK-loss ambiguity across server process restart + durable dedup comparison added 2026-09-18; remote/multi-host/mobile transfer OPEN.
+- `D005` — `research/data/D005_backup_restore_recovery_acceptance.md` + `research/data/D005_process_crash_transaction_boundary.md` — three executable blocks; real application-process crash/restart evidence; OS/power/mobile durability OPEN.
+- `D006` — base study + `research/data/D006_real_tcp_ambiguous_retry_restart.md` + `research/data/D006_network_namespace_link_interruption.md` — four integrated blocks; real server-death ACK ambiguity and a distinct live-process isolated kernel link-down/timeout/recovery/retry fault with durable-dedup comparison; remote/multi-host/mobile transfer OPEN.
 
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — substantial Foundation block complete.
