@@ -18,7 +18,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
-- `D005` — base recovery + process crash + bounded SQLite `SQLITE_FULL` + syscall `ENOSPC` + syscall sync-EIO + short-write progress + bounded torn-durable-image MODEL + `research/data/D005_wal_crash_checkpoint_backup_boundary.md`. The WAL block executes Python 3.13.5/SQLite 3.46.1: after a child COMMIT and unclean exit with auto-checkpoint disabled, a main-file-only copy was structurally valid but omitted the committed WAL row; normal original+WAL reopen observed it, and explicit checkpoint moved it into a subsequent main-file-only copy. Physical power loss, checkpoint failure/concurrency, live Online Backup API and mobile durability remain OPEN.
+- `D005` — recovery/process crash/storage faults/short-write/torn-image model + real WAL crash/checkpoint/main-file-copy boundary + `research/data/D005_wal_checkpoint_reader_starvation.md`. New Python 3.13.5/SQLite 3.46.1 evidence pins an active reader at an earlier WAL end mark: PASSIVE could not advance in the fixture, TRUNCATE returned busy and could not reset the 16512-byte WAL, then succeeded and truncated to zero after the reader ended. Checkpoint invocation is therefore not unconditional consolidation; reader lifetime and checkpoint mode are progress inputs. Physical power loss, checkpoint interruption, sustained starvation thresholds, Online Backup API and mobile durability remain OPEN.
 - `D006` — base sync + real TCP ambiguous retry + isolated kernel link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync remains OPEN.
 
 ### Quality
