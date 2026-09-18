@@ -16,8 +16,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `A001` — substantial Foundation block complete.
 - `A002` — substantial Foundation block complete.
 - `A003` — substantial Foundation block complete.
-- `A005` — base study + repeated-change evidence — two executable blocks complete.
-- `A006` — evidence-preserving decisions + governance fixture — two integrated blocks; natural-corpus/product transfer OPEN.
+- `A005` — base study + repeated-change executable evidence + `research/architecture/A005_logmate_natural_evolution_transfer.md`. Natural exact-ref LogMate `05b4209... → b551ce4...` contract-to-implementation history refines the synthetic model: coordinated edits across spec/tests/code/status are not by themselves duplicated semantic ownership or technical debt. Direct Flutter runtime and long-horizon repeated product evolution remain OPEN.
+- `A006` — evidence-preserving decisions + governance fixture — two integrated blocks; natural ADR-corpus validation OPEN.
 
 ### Mobile
 - `M001`–`M006` — all planned Foundation boundaries have first professional/model evidence; direct Flutter/native/browser/EFB transfer remains OPEN. See `progress/MOBILE_STATUS.md`.
