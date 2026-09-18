@@ -16,8 +16,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — substantial Foundation block complete.
 - `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — substantial Foundation block complete.
 - `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — substantial Foundation block complete.
-- `A005` — `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md` + `research/architecture/A005_repeated_change_evolution_evidence.md` — **two executable blocks complete**; observer-scoped refactoring plus repeated-change/partial-migration evidence.
-- `A006` — `research/architecture/A006_evidence_preserving_architecture_decisions.md` — first integrated decision-evidence block complete.
+- `A005` — `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md` + `research/architecture/A005_repeated_change_evolution_evidence.md` — two executable blocks complete; observer-scoped refactoring plus repeated-change/partial-migration evidence.
+- `A006` — `research/architecture/A006_evidence_preserving_architecture_decisions.md` + `research/architecture/fixtures/A006_adr_governance_validator.py` — **two integrated blocks**; decision-evidence lifecycle plus bounded executable governance/mutation sensitivity; natural-corpus/product transfer OPEN.
 
 ### Mobile
 - `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — first integrated block complete.
@@ -38,8 +38,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — substantial Foundation block complete.
 - `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — first integrated block complete.
-- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — two integrated blocks complete.
-- `Q004` — `research/quality/Q004_property_model_based_testing_invariants.md` + `research/quality/Q004_mutation_sensitivity_search_strength.md` — **two executable blocks complete**: generated counterexample/shrinking plus deliberate mutation sensitivity and bounded exhaustive-vs-generated comparison.
+- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — two integrated Foundation blocks complete.
+- `Q004` — `research/quality/Q004_property_model_based_testing_invariants.md` + `research/quality/Q004_mutation_sensitivity_search_strength.md` — two executable blocks complete: generated counterexample/shrinking plus deliberate mutation sensitivity and bounded exhaustive-vs-generated comparison.
 - `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — first integrated block complete.
 - `Q006` — `research/quality/Q006_fault_injection_recovery_regression_governance.md` — first integrated block complete.
 
