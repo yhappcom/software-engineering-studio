@@ -6,34 +6,28 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Foundations
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**; direct Dart JIT/AOT and Flutter runtime validation OPEN.
-- `F002` — `research/foundations/F002_values_references_memory_lifetime.md` — first integrated block complete.
-- `F003` — `research/foundations/F003_data_structures_algorithms_complexity.md` — first integrated block complete.
-- `F004` — `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md` — two integrated blocks complete.
-- `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — two integrated blocks complete.
-- `F006` — `research/foundations/F006_os_file_socket_network_foundations.md` — two integrated blocks complete.
+- `F002`–`F006` — initial integrated executable/model Foundation blocks complete; see `progress/FOUNDATIONS_STATUS.md`.
 
 ### Architecture
-- `A001` — substantial Foundation block complete.
-- `A002` — substantial Foundation block complete.
-- `A003` — substantial Foundation block complete.
-- `A005` — base study + repeated-change executable evidence + `research/architecture/A005_logmate_natural_evolution_transfer.md`. Natural exact-ref LogMate `05b4209... → b551ce4...` contract-to-implementation history refines the synthetic model: coordinated edits across spec/tests/code/status are not by themselves duplicated semantic ownership or technical debt. Direct Flutter runtime and long-horizon repeated product evolution remain OPEN.
-- `A006` — evidence-preserving decisions + governance fixture — two integrated blocks; natural ADR-corpus validation OPEN.
+- `A001`–`A003` — substantial Foundation blocks complete.
+- `A005` — base study + repeated-change executable evidence + natural exact-ref LogMate evolution transfer; direct Flutter runtime and long-horizon product evolution OPEN.
+- `A006` — evidence-preserving decisions + governance fixture; natural ADR-corpus validation OPEN.
 
 ### Mobile
-- `M001`–`M006` — all planned Foundation boundaries have first professional/model evidence; direct Flutter/native/browser/EFB transfer remains OPEN. See `progress/MOBILE_STATUS.md`.
+- `M001`–`M006` — all planned Foundation boundaries have first professional/model evidence; direct Flutter/native/browser/EFB transfer remains OPEN.
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
-- `D005` — base recovery + process-crash + bounded SQLite `SQLITE_FULL`; real OS/filesystem ENOSPC, power/device/mobile durability OPEN.
+- `D005` — base recovery + process-crash + bounded SQLite `SQLITE_FULL` + `research/data/D005_syscall_enospc_fault_injection.md`. The new Linux fixture returns `ENOSPC` at target libc `pwrite`/`pwrite64`; SQLite surfaced code 13 `SQLITE_FULL`, the failed transaction did not publish its semantic row, and fresh reopen remained structurally healthy. This is syscall fault injection, not physical filesystem/device exhaustion. Short-write/sync/power/mobile durability remain OPEN.
 - `D006` — base sync + real TCP ambiguous retry + isolated kernel link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync remains OPEN.
 
 ### Quality
 - `Q001`–`Q005` — professional Foundation boundaries initiated; Q004 includes generated shrinking plus mutation/exhaustive-search evidence.
-- `Q006` — model fault campaign plus real child-process crash/restart + SQLite persistent-state oracle discrimination. Dart/Flutter/mobile/backend/production transfer OPEN.
+- `Q006` — model fault campaign plus real child-process crash/restart + SQLite persistent-state oracle discrimination; Dart/Flutter/mobile/backend/production transfer OPEN.
 
 ### Systems
 - `S001`–`S004`, `S006` — planned Foundation boundaries initiated with executable/professional evidence.
-- `S005` — `research/systems/S005_ci_signing_versioning_release_evidence.md`, `research/systems/S005_reproducible_build_boundary.md`, `research/systems/S005_logmate_exact_ref_build_identity_transfer.md` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + natural exact-ref LogMate Flutter-product build-identity transfer. The LogMate ref commits exact hosted dependency versions/hashes and several Android build-tool pins but does not, in inspected repository-visible configuration, identify one exact Flutter SDK/ref; no Flutter build was executed. CI/OIDC/attestation, authorization/key lifecycle, mobile signing/build execution, hermeticity, independent-host reproducibility and production delivery remain OPEN.
+- `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer. CI/OIDC/attestation, authorization/key lifecycle, mobile signing/build execution, hermeticity, independent-host reproducibility and production delivery remain OPEN.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS. Do not create files merely to count activity; prefer coherent integrated studies.
