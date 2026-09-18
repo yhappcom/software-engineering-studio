@@ -18,7 +18,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
-- `D005` — recovery/process crash/storage faults/short-write/torn-image model + real WAL crash/checkpoint/main-file-copy + active-reader checkpoint progress + live Online Backup concurrency + interrupted candidate/publication evidence. File existence/progress are not completion/publication oracles. Systems S006 now separately validates a directory-sync failure after rename visibility; physical power loss and mobile durability remain OPEN.
+- `D005` — recovery/process crash/storage faults/short-write/torn-image model + real WAL crash/checkpoint/main-file-copy + active-reader checkpoint progress + live Online Backup concurrency + interrupted candidate/publication evidence. File existence/progress are not completion/publication oracles. Systems S006 separately validates a directory-sync failure after rename visibility; physical power loss and mobile durability remain OPEN.
 - `D006` — base sync + real TCP ambiguous retry + isolated kernel link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync remains OPEN.
 
 ### Quality
@@ -27,7 +27,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Systems
 - `S001`–`S004` — planned Foundation boundaries initiated with executable/professional evidence.
-- `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer. CI/OIDC/attestation, authorization/key lifecycle, mobile signing/build execution, hermeticity, independent-host reproducibility and production delivery remain OPEN.
+- `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer + `research/systems/S005_real_github_actions_attestation.md`. Exact Studio commit `ab6dbf4307078fc82ddc056029f686dd61eae3a7` executed GitHub-hosted run `35405920497`; checkout, subject creation and `actions/attest@v4` all succeeded. Independent attestation retrieval/verification and identity policy remain OPEN; an immediately prior attestation-step failure has unresolved root cause because action logs were unavailable through the current evidence channel.
 - `S006` — rollback/change-safety foundation plus `research/systems/S006_directory_fsync_publication_boundary.md`. Linux LD_PRELOAD fault injection demonstrates that a final pathname can already be visible after rename when containing-directory `fsync()` then fails with EIO; visibility is not a sufficient oracle for a protocol requiring directory synchronization. Hard-power-loss and platform transfer remain OPEN.
 
 ## Research note minimum contract
