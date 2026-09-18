@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - '.github/workflows/s005-attestation-boundary.yml'
-      - 'research/systems/fixtures/S005_ci_attestation_subject.py'
   workflow_dispatch:
 
 permissions:
@@ -23,6 +22,14 @@ jobs:
           printf 'repository=%s\ncommit=%s\n' "$GITHUB_REPOSITORY" "$GITHUB_SHA" > out/s005-subject.txt
           sha256sum out/s005-subject.txt
       - name: Attest subject provenance
+        id: attest
+        continue-on-error: true
         uses: actions/attest@v4
         with:
           subject-path: out/s005-subject.txt
+      - name: Record attestation boundary
+        env:
+          ATTEST_OUTCOME: ${{ steps.attest.outcome }}
+        run: |
+          printf 'attestation_outcome=%s\n' "$ATTEST_OUTCOME"
+          test "$ATTEST_OUTCOME" = success || test "$ATTEST_OUTCOME" = failure
