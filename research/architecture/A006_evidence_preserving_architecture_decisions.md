@@ -1,12 +1,12 @@
 # A006 — Evidence-Preserving Architecture Decisions & ADR Lifecycle
 
-Status: **IN STUDY — first integrated Foundation block complete / track not passed**  
+Status: **IN STUDY — two integrated Foundation blocks complete / track not passed**  
 Date: 2026-09-18  
 Lead: Architecture
 
 ## Problem and scope
 
-Architecture decisions outlive the conversation that produced them. A decision record must preserve enough context, alternatives, evidence, uncertainty, consequences and supersession history for a later engineer to determine whether the decision still applies. This block treats an ADR as a decision/evidence artifact, not as architecture itself, a design guide, or a permanent command detached from its assumptions.
+Architecture decisions outlive the conversation that produced them. A decision record must preserve enough context, alternatives, evidence, uncertainty, consequences and supersession history for a later engineer to determine whether the decision still applies. This study treats an ADR as a decision/evidence artifact, not as architecture itself, a design guide, or a permanent command detached from its assumptions.
 
 ## SOURCE
 
@@ -58,9 +58,9 @@ Useful near implementation details, but normally too local to preserve cross-cut
 
 **ENGINEERING JUDGMENT:** use ADRs selectively for decisions with material structural, interface, dependency, quality-attribute, construction/release or evolutionary consequences. Recording every trivial implementation choice creates retrieval noise and weakens the decision log.
 
-## VALIDATION — document-level adversarial review
+## VALIDATION 1 — document-level adversarial review
 
-No runtime execution is required to establish the document-lifecycle distinction itself, but reading alone does not justify Architecture PASS. This block therefore uses an adversarial decision-review oracle:
+The first block defined an adversarial decision-review oracle:
 
 - Can a later reviewer identify the original decision question?
 - Can they distinguish SOURCE/VALIDATION from ENGINEERING JUDGMENT and PROJECT DECISION?
@@ -71,42 +71,68 @@ No runtime execution is required to establish the document-lifecycle distinction
 
 A minimal `context/decision/consequences` record can fail these questions while still satisfying a basic template. The Studio's stronger contract is therefore a governance synthesis for evidence-critical engineering, not a claim that AWS/Microsoft mandate every field above.
 
+## VALIDATION 2 — bounded executable ADR-corpus governance check
+
+Fixture: `research/architecture/fixtures/A006_adr_governance_validator.py`.
+
+### Test Evidence Contract
+
+- **CLAIM:** a machine-checkable repository rule can detect selected evidence-lifecycle defects without treating ADR acceptance as correctness proof.
+- **SPEC/PROPERTY:** for the bounded fixture corpus, require non-empty decision question, status, evidence, assumptions, validation and reconsideration trigger; a `SUPERSEDED` record must point to a known successor; deliberately unscoped evidence labels such as `CI passed` are rejected.
+- **TARGET:** a two-record synthetic ADR corpus embedded in the canonical Studio fixture. ADR-001 is superseded by ADR-002; ADR-002 is accepted while runtime acceptance remains explicitly OPEN.
+- **ORACLE:** independent structural predicates implemented by `validate()`. They inspect required fields, allowed status, successor referential integrity and the deliberately bounded unscoped-evidence vocabulary.
+- **ENVIRONMENT:** Python 3.13.5 on Linux, 2026-09-18. `dart` and `flutter` executables were rechecked and unavailable.
+- **FAILURE CASES / deliberate mutations:** remove evidence; blank validation while leaving status Accepted; point supersession to unknown `ADR-999`; replace scoped evidence with `CI passed`.
+- **OBSERVATION:** all two baseline records passed. Each of four deliberate mutants failed for its intended reason: `missing:EVIDENCE`, `missing:VALIDATION`, `broken:SUPERSEDED BY`, `unscoped:EVIDENCE`.
+- **VERDICT:** PASS for the declared bounded governance properties.
+- **ROOT CAUSE:** each failure is a direct structural violation of the declared corpus property; this does not diagnose whether the underlying architecture decision is technically good.
+- **REPRODUCTION:** run `python3 research/architecture/fixtures/A006_adr_governance_validator.py` in a Python 3.13.5-compatible environment.
+- **EVIDENCE LIMIT:** the parser is intentionally tiny, the corpus is synthetic, and the rule cannot judge rationale quality, truth of cited evidence, whether alternatives are adequate, whether a decision is architecturally significant, or whether an Accepted decision works in production. It is not a general ADR linter and is not product evidence.
+
+### SYNTHESIS from the executable block
+
+Governance automation is useful for **mechanically decidable omissions and referential integrity**, but cannot replace architectural review. A schema/linter can require an evidence field; it cannot establish that the evidence supports the decision. This mirrors Q001/Validation Standard: an assertion is a verdict mechanism, not proof that the expected property is correct.
+
+The deliberate `Accepted + empty VALIDATION` mutant is particularly important: decision lifecycle and empirical validation are separate state machines. A repository can mechanically prevent their accidental collapse while leaving substantive acceptance to stronger evidence.
+
 ## CONNECTION TO PRIOR STUDIO EVIDENCE
 
 - **A001:** change pressure determines which decisions deserve durable rationale.
 - **A003:** compatibility assumptions and retained consumers are explicit decision evidence/constraints.
 - **A005:** architecture descriptions are not architecture; debt/refactoring claims need observer/evolution context.
 - **Q001 / VALIDATION_STANDARD:** claims require oracle/environment/evidence limits; ADR status cannot replace a validation verdict.
+- **Q004:** deliberate mutation is reused here to test governance-rule sensitivity rather than application correctness.
 - **S001/S004/S005:** artifact, dependency, build and release evidence must retain exact identity rather than vague `CI passed` rationale.
 - **M003/M004:** platform facts are version-sensitive and should carry CHANGE WATCH/TRANSFER VALIDATION instead of being frozen as timeless architecture facts.
 
 ## RELATED DOMAIN CHECK
 
-- Foundations: F001 direct Dart/Flutter runtime evidence remains OPEN; no execution claim is fabricated here.
+- Foundations: F001 direct Dart/Flutter runtime evidence remains OPEN; environment rechecked 2026-09-18 with no `dart`/`flutter` executable. No execution claim is fabricated.
 - Architecture: A001/A003/A005 directly reused.
-- Mobile: platform/version assumptions are a primary ADR invalidation trigger; M003/M004 transfer remains OPEN.
+- Mobile: platform/version assumptions are a primary ADR invalidation trigger; real transfer remains OPEN.
 - Data: migration, durability, source-of-truth and conflict policies are candidate architecturally significant decisions when they constrain recovery/compatibility.
-- Quality: Validation Standard supplies evidence-contract discipline; Accepted ADR != PASS.
-- Systems: artifact/build/security/performance evidence needs exact provenance and change-watch context.
-- Design Studio: no canonical design files edited. If a decision depends on interaction semantics, link the exact design contract rather than restating it as Engineering truth.
-- Web Manager: no canonical files edited. PWA/browser/hosting decisions should link current web requirements and keep browser/platform evidence versioned.
-- Marketing Manager: not materially relevant to this Foundation block unless a decision depends on measurement/monetization guardrails.
+- Quality: Validation Standard supplies evidence-contract discipline; Q004 deliberate mutation method transferred to governance sensitivity.
+- Systems: artifact/build/security/performance evidence needs exact provenance and change-watch context; `CI passed` is intentionally rejected as insufficiently scoped evidence in the bounded fixture.
+- Design Studio: considered; no design decision is being made or redefined by this internal governance mechanism.
+- Web Manager: considered; no website decision is being made or redefined.
+- Marketing Manager: considered; not materially relevant to this internal governance mechanism.
 - Product source: no product implementation audit was required; no MintTap/LogMate implementation claim is made.
 
 ## HANDOFFS
 
-- **TO Quality:** decision records should reference validation evidence without converting Accepted status into a correctness verdict.
+- **TO Quality:** repository governance checks can use deliberate mutations to demonstrate sensitivity, but a passing linter is not a correctness oracle for the decision itself.
 - **TO Mobile/Systems:** volatile platform/build/security facts used in decisions should carry exact source date/version/ref and explicit revalidation triggers.
 - **TO Data:** migration/sync/recovery ADRs should preserve compatibility and failure assumptions plus rollback/recovery validation dependencies.
 - **TO product teams (advisory):** supersede architecturally significant decisions rather than silently rewriting accepted rationale; preserve exact product/build refs when evidence comes from product validation.
 
 ## OPEN / VALIDATION / CHANGE WATCH
 
-- OPEN: executable repository-level governance check that detects missing status/supersession/evidence references in a bounded ADR corpus.
+- CLOSED at bounded executable level: selected missing-field, accepted-vs-validation, broken-supersession and unscoped-evidence governance defects are mechanically detectable in the fixture corpus.
 - OPEN: exact product transfer against a real MintTap/LogMate architecture decision; requires exact repository/ref/version/evidence date and a live decision question.
-- VALIDATION: Architecture Stage 1 still needs broader transfer/review evidence; this document-level adversarial oracle is not runtime or production evidence.
+- OPEN: validation against a naturally occurring ADR corpus rather than a synthetic corpus.
+- VALIDATION: Architecture Stage 1 still needs broader transfer/review evidence; the linter does not judge architectural correctness or production behavior.
 - CHANGE WATCH: ADR process guidance can evolve; AWS and Microsoft sources were checked 2026-09-18.
 
 ## Current conclusion
 
-An ADR is most useful when it preserves the conditions under which a decision was rational and the evidence needed to reconsider it. It is not architecture itself, not proof that the decision is correct, and not a mutable current-state note. For evidence-critical engineering, decision status and validation status must remain separate, accepted history should be superseded rather than silently rewritten, and volatile assumptions need explicit revalidation triggers.
+An ADR is most useful when it preserves the conditions under which a decision was rational and the evidence needed to reconsider it. It is not architecture itself, not proof that the decision is correct, and not a mutable current-state note. The second block adds executable evidence that selected lifecycle/evidence omissions can be caught mechanically, while also demonstrating the boundary of such automation: repository structure can preserve evidence obligations, but cannot manufacture trustworthy evidence or architectural judgment.
