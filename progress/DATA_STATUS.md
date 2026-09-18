@@ -3,7 +3,7 @@
 Track: Data, Persistence & Distributed Systems  
 Prefix: `D###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
-Last sync: 2026-09-17
+Last sync: 2026-09-18
 
 ## Mission
 Build rigorous knowledge of data representation, integrity, persistence, transactions, schema evolution, migrations, caching, offline-first systems, replication, synchronization, conflict handling, backup/restore, and distributed-system semantics.
@@ -26,50 +26,37 @@ Established: reader/writer/schema compatibility is relational; split publication
 
 Established cache authority/freshness/completeness/confirmation separation plus destructive-refresh failure and pending-vs-confirmed alternative. Real SDK/durable pending/process-death evidence remains OPEN.
 
-### D005 — Backup, restore and recovery acceptance
-**IN STUDY — two integrated executable Foundation blocks complete.** Canonical: `research/data/D005_backup_restore_recovery_acceptance.md`.
+### D005 — Backup, restore, recovery acceptance and crash boundary
+**IN STUDY — three integrated executable blocks; real application-process crash evidence added.**  
+Canonical: `research/data/D005_backup_restore_recovery_acceptance.md`, `research/data/D005_process_crash_transaction_boundary.md`.  
+Fixtures include `research/data/fixtures/D005_process_crash_transaction_boundary.py`.
 
-Established independent physical/schema/semantic recovery acceptance and isolated validate-before-publication safety in bounded SQLite/POSIX fixtures. Power-loss/WAL/mobile behavior remains OPEN.
+Prior blocks established independent physical/schema/semantic recovery acceptance and isolated validate-before-publication safety in bounded SQLite/POSIX fixtures. On 2026-09-18, a stronger Linux/Python/SQLite WAL fixture used separate OS child processes and abrupt `os._exit`: an active uncommitted transaction disappeared after restart while an explicitly committed transaction remained visible to a fresh process, with `integrity_check=ok`. This closes the named **application-process crash/restart** gap only. OS crash, power loss, WAL/checkpoint restore, filesystem/device durability and mobile transfer remain OPEN.
 
 ### D006 — Replication, synchronization, consistency, idempotency and conflicts
-**IN STUDY — two integrated Foundation blocks complete.**  
-Canonical: `research/data/D006_replication_sync_consistency_idempotency_conflicts.md`  
-Fixtures: `research/data/fixtures/D006_retry_conflict_semantics.py`, `research/data/fixtures/D006_reorder_tombstone_semantics.py`
+**IN STUDY — two integrated Foundation blocks complete.** Canonical: `research/data/D006_replication_sync_consistency_idempotency_conflicts.md`.
 
-Established with RFC/current Firestore sources plus Python 3.13.5/Linux model evidence:
-- retry policy and idempotency are distinct; lost acknowledgement + retry duplicated an unsafe effect while stable logical-operation identity + bounded deduplication preserved the modeled effect;
-- delivery, application and acknowledgement are distinct states;
-- whole-record LWW converged while discarding one independent concurrent field update in the bounded model;
-- Q003 schedule-enumeration method transferred into delete/reorder semantics;
-- naive physical deletion followed by a delayed stale update resurrected the record in 1/2 enumerated delivery orders;
-- a bounded versioned-tombstone comparison preserved the newer deletion in 2/2 orders;
-- tombstones are not a universal solution: scalar-version sufficiency, wall-clock ordering, concurrent delete/recreate, retention/GC and real backend semantics remain OPEN.
-
-Evidence limit: deterministic single-process model only; no real network/backend, multi-device, FlutterFire, process-death, tombstone GC, security/replay or production claim.
+Retry/idempotency, delivery/application/ack separation, bounded LWW information loss, reordered stale-update/delete resurrection and versioned-tombstone comparison are established. Real backend/multi-device/process-death/tombstone-GC evidence remains OPEN.
 
 ## Product transfer retained
-Exact ref rechecked 2026-09-17: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → Dart SDK ^3.10.7 → evidence date 2026-09-17`. Default branch is not assumed to equal production. D004-D006 remain transfer candidates rather than existing defect findings. MintTap repository identity remains unresolved; no MintTap implementation claim is made.
+Exact prior LogMate ref: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1`. It remains a transfer candidate, not production evidence. No product repository was audited in the 2026-09-18 D005 crash block, so no new MintTap/LogMate implementation claim is made.
 
-## Queue
-- `D001` — substantial first block complete.
-- `D002` — two integrated mechanism blocks complete; platform/power/performance evidence OPEN.
-- `D003` — two integrated migration blocks complete; actual rollback-release and mobile migration evidence OPEN.
-- `D004` — first integrated cache-offline ownership block complete; real SDK/durable pending/process-death evidence OPEN.
-- `D005` — two integrated backup-restore blocks complete; crash/power-loss/WAL/mobile behavior OPEN.
-- `D006` — **IN STUDY / two integrated blocks complete**; operation-vs-state sync, concurrent delete/recreate, tombstone GC, real multi-writer/backend evidence OPEN.
-
-## Gate requirement
-Foundation PASS requires executable persistence examples, corruption/interruption/failure cases where feasible, explicit durability/consistency semantics, and recovery verification rather than happy-path writes only.
-
-Data Stage 1 remains **NOT PASS**. D001-D006 span authority/durability, representation/transactions, migration, cache/offline ownership, restore, and first replication/idempotency/conflict/delete-order mechanics. Real mobile/backend behavior and stronger distributed failure evidence remain open.
+## Gate assessment
+Data Stage 1 remains **NOT PASS**. D001-D006 cover authority/durability, representation/transactions, migration, cache/offline ownership, restore/recovery and first synchronization/conflict mechanics. D005 now contains actual application-process termination/restart evidence rather than only modeled/pre-publication failure injection. Stronger OS/power/storage faults, real mobile/backend behavior and Dart/Flutter transfer remain incomplete.
 
 ## Dependencies / handoffs
-- **Foundations:** F001 direct Dart/Flutter execution remains OPEN after environment recheck 2026-09-17; F006 network foundations would deepen transport/partition mechanisms.
-- **Architecture:** operation identity, conflict unit, deletion/recreate policy and tombstone lifecycle are semantic contracts.
-- **Mobile:** validate process-death/connectivity/retry/delete behavior on the exact eventual sync stack.
-- **Quality:** Q003 schedule matrices successfully transferred; future Q006 should include delete/recreate and tombstone-GC failure schedules.
-- **Systems:** replay/security identity is distinct from correctness idempotency identity; tombstone retention has privacy/storage implications.
-- **Design Studio:** future sync/conflict/deletion UI must map local/pending/acknowledged/conflicted/deleted states accurately.
+- **Foundations:** F001/F006 process/OS distinctions constrain the new evidence; direct Dart/Flutter execution remains OPEN.
+- **Architecture:** transaction commit, schema compatibility and application acceptance remain separate contracts.
+- **Mobile:** reproduce process-death and storage recovery on the exact Android/iOS/Flutter persistence stack.
+- **Quality:** reuse out-of-process crash injection and fresh-process acceptance oracles; application-process death must not be relabeled power-loss evidence.
+- **Systems:** stronger durability requires fault injection below the application-process boundary and explicit filesystem/device assumptions.
+- **Design Studio:** recovery/pending semantics may consume these distinctions; no canonical design file changed.
+
+## CHANGE WATCH / OPEN
+- Direct Dart/Flutter execution remains unavailable after environment recheck 2026-09-18; Python 3.13.5 is available.
+- D005 OS-crash/power-loss, WAL/checkpoint interruption, storage-full/I/O faults, filesystem durability and Android/iOS transfer remain OPEN.
+- D006 operation-vs-state sync, concurrent delete/recreate, tombstone GC and real multi-writer/backend evidence remain OPEN.
+- No Data Foundation PASS yet.
 
 ## Next work
-Use Balance Loop. D006 now has retry/conflict plus reordered-delete evidence. Further depth should compare operation-based vs state-based synchronization or concurrent delete/recreate/tombstone-GC only if that outranks untouched Foundation gaps. Strong independent candidates are `Q005` debugging/fault-isolation/observability foundations and `F006` OS/socket/network foundations. Direct Dart/Flutter execution remains first-attempt work whenever a trustworthy SDK environment exists.
+Use Balance Loop. Do not repeat synthetic crash models now that real application-process termination has been demonstrated. Prefer a materially stronger available failure boundary—storage/I/O/network/process isolation—or exact-ref product transfer. If no trustworthy stronger infrastructure exists, advance another track rather than relabeling application crash as power-loss evidence. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment becomes available.
