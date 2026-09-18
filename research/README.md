@@ -24,14 +24,15 @@ Canonical reusable research is organized by specialist ownership.
 - `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — **SUBSTANTIAL FOUNDATION BLOCK COMPLETE / track not passed**.
 - `A005` — `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md` — **IN STUDY / first integrated Foundation block complete**.
-- `A006` — `research/architecture/A006_evidence_preserving_architecture_decisions.md` — **IN STUDY / first integrated Foundation decision-evidence block complete**. Separates decision status from validation verdict and preserves evidence/assumptions/supersession lifecycle.
+- `A006` — `research/architecture/A006_evidence_preserving_architecture_decisions.md` — **IN STUDY / first integrated Foundation decision-evidence block complete**.
 
 ### Mobile
 - `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — **IN STUDY / first integrated Foundation block complete**.
 - `M002` — `research/mobile/M002_process_lifecycle_termination_background_execution.md` — **IN STUDY / first source/failure-model block complete**.
 - `M003` — `research/mobile/M003_sandbox_files_permissions_secure_storage_platform_apis.md` — **IN STUDY / first integrated Foundation block + bounded executable classification evidence**.
-- `M004` — `research/mobile/M004_plugin_platform_channel_native_integration_boundaries.md` — **IN STUDY / first integrated Foundation block + bounded executable contract/lifetime evidence**. Separates registration, channel/codec, native failure, semantic result and per-engine plugin lifetime; direct Flutter/native transfer OPEN.
-- `M005` — `research/mobile/M005_cross_platform_portability_divergence.md` — **IN STUDY / first integrated Foundation block + bounded executable capability evidence**. Models portability as semantic contract/capability/mechanism/fallback/acceptance and includes exact-ref LogMate PWA/native transfer; real platform execution OPEN.
+- `M004` — `research/mobile/M004_plugin_platform_channel_native_integration_boundaries.md` — **IN STUDY / first integrated Foundation block + bounded executable contract/lifetime evidence**.
+- `M005` — `research/mobile/M005_cross_platform_portability_divergence.md` — **IN STUDY / first integrated Foundation block + bounded executable capability evidence**.
+- `M006` — `research/mobile/M006_native_pwa_web_deployment_constraints.md` — **IN STUDY / first integrated Foundation block + bounded executable acceptance evidence**. Separates Home Screen installability, offline capability, service-worker lifetime, storage/update state and continuous background guarantees; exact-ref LogMate EFB transfer included, real platform acceptance OPEN.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — **IN STUDY**.
