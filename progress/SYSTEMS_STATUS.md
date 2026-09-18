@@ -20,29 +20,33 @@ Last sync: 2026-09-18
 **IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`. Manifest/resolved graph/content/toolchain/build/artifact/provenance identities separated; bounded resolution-drift and same-version integrity failure evidence complete. Direct Dart/pub/build transfer OPEN.
 
 ### S005 — CI/CD, signing, versioning, reproducibility and release evidence
-**IN STUDY — three integrated executable Foundation blocks; real signature + bounded reproducible-build evidence.** Canonical: `research/systems/S005_ci_signing_versioning_release_evidence.md`, `research/systems/S005_reproducible_build_boundary.md`. Fixtures: `research/systems/fixtures/S005_release_identity_gate.py`, `research/systems/fixtures/S005_real_public_key_signature_boundary.py`, `research/systems/fixtures/S005_reproducible_build_boundary.py`.
+**IN STUDY — three executable Foundation blocks plus exact-ref LogMate build-identity transfer.** Canonical: `research/systems/S005_ci_signing_versioning_release_evidence.md`, `research/systems/S005_reproducible_build_boundary.md`, `research/systems/S005_logmate_exact_ref_build_identity_transfer.md`. Fixtures: `research/systems/fixtures/S005_release_identity_gate.py`, `research/systems/fixtures/S005_real_public_key_signature_boundary.py`, `research/systems/fixtures/S005_reproducible_build_boundary.py`.
 
-The signature block uses actual RSA-2048/OpenSSL verification and deliberate changed-byte/wrong-key negatives. The reproducibility block uses GCC 14.2.0/ld 2.44 to build identical C source in two absolute directories at different wall-clock times. Naive, fixed-time-only, and path-map-only builds differed; `SOURCE_DATE_EPOCH=1700000000` plus per-directory `-ffile-prefix-map=...=/src` produced byte-identical executables with SHA-256 `69c2e47764cc2a982a4a4cc1a535eb06e3a032a6450aee63875ac1fc12395dba`. This is bounded same-host/toolchain reproducibility, not hermeticity or Flutter/mobile build evidence.
+The signature block uses actual RSA-2048/OpenSSL verification and deliberate changed-byte/wrong-key negatives. The reproducibility block uses GCC 14.2.0/ld 2.44 to build identical C source in two absolute directories at different wall-clock times. Naive, fixed-time-only, and path-map-only builds differed; fixed time plus normalized build paths produced byte-identical executables.
+
+Exact-ref LogMate transfer: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-18`; production identity unknown. The ref commits `pubspec.lock` with exact hosted-package versions/hashes and pins Gradle 8.14, AGP 8.11.1, Google Services 4.3.15 and Kotlin 2.2.20, while repository-visible Android configuration obtains Flutter from `local.properties` and the lockfile permits a Flutter SDK range rather than identifying one exact Flutter SDK/ref. This transfer demonstrates that source+lockfile identity does not by itself determine canonical Flutter build identity. No product build was executed.
 
 ### S006 — Rollback, incident evidence, production change safety and release governance
 **IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S006_rollback_incident_change_safety_governance.md`. Rollback is a state-vector transition, not generally the inverse of deployment; bounded schema compatibility failure/restore alternative retained. Real deployment/mobile/incident transfer OPEN.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S001-S006 all have professional Foundation evidence. S005 now has two materially different real mechanisms: asymmetric signature verification and bounded compiler artifact reproducibility with failure isolation. Direct Dart/mobile/build-pipeline transfer plus real CI/OIDC/attestation, signer authorization/key lifecycle, cross-host/toolchain reproducibility, deployment rollback/recovery and production evidence remain open.
+Systems Stage 1 remains **NOT PASS**. S001-S006 all have professional Foundation evidence. S005 now has real asymmetric signature evidence, bounded compiler reproducibility and a natural exact-ref Flutter-product build-identity transfer. Direct Dart/mobile build execution plus real CI/OIDC/attestation, signer authorization/key lifecycle, cross-host/toolchain reproducibility, deployment rollback/recovery and production evidence remain open.
 
 ## HANDOFFS
 - **Foundations:** release/build/signing remains an external process/artifact/state boundary; direct Dart/Flutter execution remains OPEN.
 - **Architecture:** A003/A006 compatibility and evidence-preservation rules apply to release signer/artifact/build-input identity.
-- **Mobile:** transfer-test canonical Flutter build twice with exact toolchain/lock/build/post-build provenance; separate unsigned reproducibility from Android/iOS signing/package identity.
+- **Mobile:** when a trustworthy SDK exists, transfer-test exact LogMate source ref + exact Flutter SDK/ref + lockfile policy + platform build inputs + build flags/post-build transforms + artifact hash/signing identity.
 - **Data:** migration/recovery evidence should bind to an authorized exact release artifact, not merely a version label or rebuilt source label.
-- **Quality:** reproducibility needs its own byte-identity oracle and deliberate input-drift negatives; byte equality is not functional correctness. Signature negatives should include changed artifact and wrong verification-key cases.
-- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there changes these bounded build/signature mechanisms.
+- **Quality:** product reproducibility needs its own byte/digest oracle and deliberate Flutter/toolchain/input-drift negatives.
+- **LogMate / release engineering:** when canonical release automation is defined, preserve exact Flutter SDK identity and accepted artifact identity in addition to source ref and lockfile; no product canonical file was edited.
+- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there changes this build-input identity question.
 
 ## CHANGE WATCH / OPEN
 - Direct Dart/Flutter execution remains unavailable as rechecked 2026-09-18; Python 3.13.5, OpenSSL 3.5.5, GCC 14.2.0 and GNU ld 2.44 are available.
 - GitHub artifact-attestation availability/permissions and Sigstore behavior are service-sensitive.
 - OpenSSL/provider and compiler/linker reproducibility behavior are version-sensitive; local evidence must not be generalized to platform package signing/builds.
+- Exact Flutter SDK/ref used by any real LogMate release is unknown from the inspected ref; production identity is also unknown.
 - Real CI/OIDC/workflow permissions, key compromise/revocation, certificate policy, Android/iOS signing, app-store delivery, independent-host/container reproducibility, hermeticity, staged deployment and rollback remain OPEN.
 
 ## Next work
-Return to Balance Loop. S005's prior named reproducible-build gap is now closed only for a bounded GCC/Linux same-host fixture, so do not repeat local compiler variants. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment becomes available. Otherwise prefer a genuinely stronger evidence rung such as real CI/attestation, independent-environment/canonical-product rebuild, natural exact-ref product transfer, or another track's higher-value real boundary.
+Return to Balance Loop. S005 now has a natural product transfer showing why exact Flutter SDK identity is part of build evidence, but no Flutter executable is available, so do not simulate the build. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment becomes available. Otherwise prefer real CI/attestation, an independent build environment, a natural release/ADR corpus, or another track's stronger evidence boundary rather than another local compiler model.
