@@ -16,40 +16,25 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `A001` — `research/architecture/A001_information_hiding_change_pressure.md` — substantial Foundation block complete.
 - `A002` — `research/architecture/A002_dependency_direction_state_ownership.md` — substantial Foundation block complete.
 - `A003` — `research/architecture/A003_interfaces_contracts_api_evolution.md` — substantial Foundation block complete.
-- `A005` — `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md` + `research/architecture/A005_repeated_change_evolution_evidence.md` — two executable blocks complete.
-- `A006` — `research/architecture/A006_evidence_preserving_architecture_decisions.md` + fixture — two integrated blocks; natural-corpus/product transfer OPEN.
+- `A005` — base study + repeated-change evidence — two executable blocks complete.
+- `A006` — evidence-preserving decisions + governance fixture — two integrated blocks; natural-corpus/product transfer OPEN.
 
 ### Mobile
-- `M001` — `research/mobile/M001_flutter_runtime_widget_lifecycle_platform_boundary.md` — first integrated block complete.
-- `M002` — `research/mobile/M002_process_lifecycle_termination_background_execution.md` — first source/failure-model block complete.
-- `M003` — `research/mobile/M003_sandbox_files_permissions_secure_storage_platform_apis.md` — first integrated block + bounded executable evidence.
-- `M004` — `research/mobile/M004_plugin_platform_channel_native_integration_boundaries.md` — first integrated block + bounded executable evidence.
-- `M005` — `research/mobile/M005_cross_platform_portability_divergence.md` — first integrated block + bounded executable capability evidence.
-- `M006` — `research/mobile/M006_native_pwa_web_deployment_constraints.md` — first integrated block + bounded executable acceptance evidence; real platform acceptance OPEN.
+- `M001`–`M006` — all planned Foundation boundaries have first professional/model evidence; direct Flutter/native/browser/EFB transfer remains OPEN. See `progress/MOBILE_STATUS.md` for canonical per-topic state.
 
 ### Data
 - `D001` — `research/data/D001_state_persistence_durability_source_of_truth.md` — substantial first block complete.
 - `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — two integrated blocks complete.
 - `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — two integrated migration blocks complete.
 - `D004` — `research/data/D004_cache_offline_first_data_ownership.md` — first integrated block complete.
-- `D005` — base recovery study + `research/data/D005_process_crash_transaction_boundary.md` + `research/data/D005_bounded_sqlite_full_transaction_boundary.md` — four executable blocks; real application-process crash/restart and bounded SQLite `SQLITE_FULL` capacity failure; real OS/filesystem ENOSPC, power/device/mobile durability OPEN.
-- `D006` — base study + `research/data/D006_real_tcp_ambiguous_retry_restart.md` + `research/data/D006_network_namespace_link_interruption.md` — four integrated blocks; real server-death ACK ambiguity and distinct live-process isolated kernel link-down/timeout/recovery/retry fault; remote/multi-host/mobile transfer OPEN.
+- `D005` — base recovery study + process-crash + bounded SQLite `SQLITE_FULL` studies — real application-process crash/restart and bounded capacity evidence; real OS/filesystem ENOSPC, power/device/mobile durability OPEN.
+- `D006` — base sync study + real TCP ambiguous-retry + isolated kernel link interruption + `research/data/D006_logmate_inbound_cursor_atomicity_transfer.md` — exact-ref LogMate product-spec transfer now adds process-death evidence for inbound semantic-apply/cursor publication atomicity; actual LogMate persistence/Sync remains OPEN.
 
 ### Quality
-- `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — substantial Foundation block complete.
-- `Q002` — `research/quality/Q002_test_levels_evidence_boundaries.md` — first integrated block complete.
-- `Q003` — `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md` — two integrated Foundation blocks complete.
-- `Q004` — `research/quality/Q004_property_model_based_testing_invariants.md` + `research/quality/Q004_mutation_sensitivity_search_strength.md` — two executable blocks complete.
-- `Q005` — `research/quality/Q005_debugging_fault_isolation_observability.md` — first integrated block complete.
-- `Q006` — `research/quality/Q006_fault_injection_recovery_regression_governance.md` — first integrated block complete.
+- `Q001`–`Q006` — all professional Foundation boundaries initiated; Q004 includes generated shrinking plus mutation/exhaustive-search evidence. See `progress/QUALITY_STATUS.md`.
 
 ### Systems
-- `S001` — `research/systems/S001_trust_artifact_provenance_foundations.md` — two integrated executable blocks complete.
-- `S002` — `research/systems/S002_threat_model_least_privilege_secrets_secure_storage.md` — first integrated executable block complete.
-- `S003` — `research/systems/S003_resource_cost_models_profiling_foundations.md` — first integrated executable block complete.
-- `S004` — `research/systems/S004_dependency_supply_chain_build_system_foundations.md` — first integrated executable block complete.
-- `S005` — `research/systems/S005_ci_signing_versioning_release_evidence.md` — first integrated executable block complete.
-- `S006` — `research/systems/S006_rollback_incident_change_safety_governance.md` — first integrated executable block complete.
+- `S001`–`S006` — all planned Foundation boundaries initiated with executable/professional evidence. See `progress/SYSTEMS_STATUS.md`.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS. Do not create files merely to count activity; prefer coherent integrated studies.
