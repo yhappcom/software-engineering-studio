@@ -18,7 +18,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
-- `D005` — base recovery + process crash + bounded SQLite `SQLITE_FULL` + syscall `ENOSPC` + syscall sync-EIO + short-write progress + `research/data/D005_torn_write_recovery_model.md`. The new bounded executable MODEL constructs a 4096-byte page with only 3/8 sectors durably replaced: it is neither accepted old nor new atomic state; complete pre-image recovery passes while a deliberate partial-pre-image mutant fails. SQLite primary material independently documents non-atomic page/sector assumptions and crash-VFS simulation. This is not Studio execution of SQLite crash VFS, physical power loss, WAL/checkpoint or mobile durability.
+- `D005` — base recovery + process crash + bounded SQLite `SQLITE_FULL` + syscall `ENOSPC` + syscall sync-EIO + short-write progress + bounded torn-durable-image MODEL + `research/data/D005_wal_crash_checkpoint_backup_boundary.md`. The WAL block executes Python 3.13.5/SQLite 3.46.1: after a child COMMIT and unclean exit with auto-checkpoint disabled, a main-file-only copy was structurally valid but omitted the committed WAL row; normal original+WAL reopen observed it, and explicit checkpoint moved it into a subsequent main-file-only copy. Physical power loss, checkpoint failure/concurrency, live Online Backup API and mobile durability remain OPEN.
 - `D006` — base sync + real TCP ambiguous retry + isolated kernel link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync remains OPEN.
 
 ### Quality
