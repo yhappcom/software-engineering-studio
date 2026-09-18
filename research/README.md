@@ -32,8 +32,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `D002` — `research/data/D002_representation_files_database_indexes_transactions.md` — two integrated blocks complete.
 - `D003` — `research/data/D003_schema_evolution_migration_rollback_compatibility.md` — two integrated migration blocks complete.
 - `D004` — `research/data/D004_cache_offline_first_data_ownership.md` — first integrated block complete.
-- `D005` — `research/data/D005_backup_restore_recovery_acceptance.md` + `research/data/D005_process_crash_transaction_boundary.md` — three executable blocks; real application-process crash/restart evidence; OS/power/mobile durability OPEN.
-- `D006` — base study + `research/data/D006_real_tcp_ambiguous_retry_restart.md` + `research/data/D006_network_namespace_link_interruption.md` — four integrated blocks; real server-death ACK ambiguity and a distinct live-process isolated kernel link-down/timeout/recovery/retry fault with durable-dedup comparison; remote/multi-host/mobile transfer OPEN.
+- `D005` — base recovery study + `research/data/D005_process_crash_transaction_boundary.md` + `research/data/D005_bounded_sqlite_full_transaction_boundary.md` — four executable blocks; real application-process crash/restart and bounded SQLite `SQLITE_FULL` capacity failure; real OS/filesystem ENOSPC, power/device/mobile durability OPEN.
+- `D006` — base study + `research/data/D006_real_tcp_ambiguous_retry_restart.md` + `research/data/D006_network_namespace_link_interruption.md` — four integrated blocks; real server-death ACK ambiguity and distinct live-process isolated kernel link-down/timeout/recovery/retry fault; remote/multi-host/mobile transfer OPEN.
 
 ### Quality
 - `Q001` — `research/quality/Q001_correctness_specification_oracle_reproducibility.md` — substantial Foundation block complete.
