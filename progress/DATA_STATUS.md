@@ -28,35 +28,36 @@ Established cache authority/freshness/completeness/confirmation separation plus 
 
 ### D005 — Backup, restore, recovery acceptance and crash boundary
 **IN STUDY — three integrated executable blocks; real application-process crash evidence added.**  
-Canonical: `research/data/D005_backup_restore_recovery_acceptance.md`, `research/data/D005_process_crash_transaction_boundary.md`.  
-Fixtures include `research/data/fixtures/D005_process_crash_transaction_boundary.py`.
+Canonical: `research/data/D005_backup_restore_recovery_acceptance.md`, `research/data/D005_process_crash_transaction_boundary.md`.
 
-Prior blocks established independent physical/schema/semantic recovery acceptance and isolated validate-before-publication safety in bounded SQLite/POSIX fixtures. On 2026-09-18, a stronger Linux/Python/SQLite WAL fixture used separate OS child processes and abrupt `os._exit`: an active uncommitted transaction disappeared after restart while an explicitly committed transaction remained visible to a fresh process, with `integrity_check=ok`. This closes the named **application-process crash/restart** gap only. OS crash, power loss, WAL/checkpoint restore, filesystem/device durability and mobile transfer remain OPEN.
+Prior blocks established independent physical/schema/semantic recovery acceptance and isolated validate-before-publication safety in bounded SQLite/POSIX fixtures. A Linux/Python/SQLite WAL fixture uses separate OS child processes and abrupt `os._exit`: an active uncommitted transaction disappears after restart while an explicitly committed transaction remains visible to a fresh process, with `integrity_check=ok`. This closes the application-process crash/restart gap only; OS crash, power loss, filesystem/device durability and mobile transfer remain OPEN.
 
 ### D006 — Replication, synchronization, consistency, idempotency and conflicts
-**IN STUDY — two integrated Foundation blocks complete.** Canonical: `research/data/D006_replication_sync_consistency_idempotency_conflicts.md`.
+**IN STUDY — three integrated blocks; real TCP + process-restart ambiguous-retry evidence added.**  
+Canonical: `research/data/D006_replication_sync_consistency_idempotency_conflicts.md`, `research/data/D006_real_tcp_ambiguous_retry_restart.md`.  
+Fixture: `research/data/fixtures/D006_real_tcp_ambiguous_retry_restart.py`.
 
-Retry/idempotency, delivery/application/ack separation, bounded LWW information loss, reordered stale-update/delete resurrection and versioned-tombstone comparison are established. Real backend/multi-device/process-death/tombstone-GC evidence remains OPEN.
+Prior model blocks established retry/idempotency, delivery/application/ACK separation, bounded LWW information loss and stale-update/delete resurrection. The 2026-09-18 Linux/Python fixture now uses real localhost TCP, separate server processes and SQLite durable state. Server 1 commits `op-1:+10` then terminates via `os._exit(33)` before ACK bytes; the client sees EOF. After server restart, stable operation identity + durable dedup returns 10 and leaves one effect/one op record. Under the same failure schedule without dedup, retry produces 20. This advances D006 from modeled ambiguous ACK loss to real socket/process/persistent-state evidence. It is not WAN, multi-host, mobile, Firestore, Flutter or exactly-once evidence.
 
 ## Product transfer retained
-Exact prior LogMate ref: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1`. It remains a transfer candidate, not production evidence. No product repository was audited in the 2026-09-18 D005 crash block, so no new MintTap/LogMate implementation claim is made.
+Exact prior LogMate ref: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1`. It remains a transfer candidate, not production evidence. No product repository was audited in the latest D006 block, so no new MintTap/LogMate implementation claim is made.
 
 ## Gate assessment
-Data Stage 1 remains **NOT PASS**. D001-D006 cover authority/durability, representation/transactions, migration, cache/offline ownership, restore/recovery and first synchronization/conflict mechanics. D005 now contains actual application-process termination/restart evidence rather than only modeled/pre-publication failure injection. Stronger OS/power/storage faults, real mobile/backend behavior and Dart/Flutter transfer remain incomplete.
+Data Stage 1 remains **NOT PASS**. D001-D006 cover authority/durability, representation/transactions, migration, cache/offline ownership, restore/recovery and first synchronization/conflict mechanics. D005 contains actual application-process termination/restart evidence; D006 now contains actual TCP ACK-loss ambiguity across server restart with durable dedup comparison. Stronger OS/power/storage faults, remote/multi-host network behavior, real mobile/backend behavior and Dart/Flutter transfer remain incomplete.
 
 ## Dependencies / handoffs
-- **Foundations:** F001/F006 process/OS distinctions constrain the new evidence; direct Dart/Flutter execution remains OPEN.
-- **Architecture:** transaction commit, schema compatibility and application acceptance remain separate contracts.
-- **Mobile:** reproduce process-death and storage recovery on the exact Android/iOS/Flutter persistence stack.
-- **Quality:** reuse out-of-process crash injection and fresh-process acceptance oracles; application-process death must not be relabeled power-loss evidence.
-- **Systems:** stronger durability requires fault injection below the application-process boundary and explicit filesystem/device assumptions.
-- **Design Studio:** recovery/pending semantics may consume these distinctions; no canonical design file changed.
+- **Foundations:** F006 transport/apply/commit/ACK distinctions are now reproduced with real TCP/process restart; F001 direct Dart/Flutter remains OPEN.
+- **Architecture:** operation identity and dedup retention are protocol/state-ownership contracts; commit and acknowledgement remain separate.
+- **Mobile:** reproduce process/network interruption and retry on the exact Android/iOS/Flutter persistence/sync stack.
+- **Quality:** reuse commit → kill-before-ACK → restart → retry with a fresh semantic oracle.
+- **Systems:** hostile replay/authorization is separate from correctness idempotency; stronger durability still requires lower-layer faults.
+- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there changes this bounded mechanism.
 
 ## CHANGE WATCH / OPEN
 - Direct Dart/Flutter execution remains unavailable after environment recheck 2026-09-18; Python 3.13.5 is available.
 - D005 OS-crash/power-loss, WAL/checkpoint interruption, storage-full/I/O faults, filesystem durability and Android/iOS transfer remain OPEN.
-- D006 operation-vs-state sync, concurrent delete/recreate, tombstone GC and real multi-writer/backend evidence remain OPEN.
+- D006 real remote/network-namespace interruption, concurrent retry, dedup retention/GC, external side effects, operation-id collision, concurrent delete/recreate, tombstone GC and real multi-writer/backend evidence remain OPEN.
 - No Data Foundation PASS yet.
 
 ## Next work
-Use Balance Loop. Do not repeat synthetic crash models now that real application-process termination has been demonstrated. Prefer a materially stronger available failure boundary—storage/I/O/network/process isolation—or exact-ref product transfer. If no trustworthy stronger infrastructure exists, advance another track rather than relabeling application crash as power-loss evidence. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment becomes available.
+Use Balance Loop. Do not repeat localhost retry schedules merely for volume. Prefer a materially stronger boundary: controllable network namespace/interruption or storage/I/O fault if privileges make it trustworthy; otherwise exact-ref product transfer or another track's stronger real evidence gap. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment becomes available.
