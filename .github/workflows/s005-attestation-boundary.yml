@@ -1,0 +1,28 @@
+name: S005 Attestation Boundary
+
+on:
+  push:
+    paths:
+      - '.github/workflows/s005-attestation-boundary.yml'
+      - 'research/systems/fixtures/S005_ci_attestation_subject.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  attest-subject:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create deterministic subject
+        run: |
+          mkdir -p out
+          printf 'repository=%s\ncommit=%s\n' "$GITHUB_REPOSITORY" "$GITHUB_SHA" > out/s005-subject.txt
+          sha256sum out/s005-subject.txt
+      - name: Attest subject provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: out/s005-subject.txt
