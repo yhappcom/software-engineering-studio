@@ -23,45 +23,49 @@ Build deep Flutter/Dart and mobile-platform engineering capability while preserv
 **IN STUDY — first integrated Foundation block + bounded executable contract/lifetime evidence complete.** Canonical: `research/mobile/M004_plugin_platform_channel_native_integration_boundaries.md`. Registration/channel/codec/native failure/semantic acceptance and per-engine lifetime separated; direct Flutter/native transfer OPEN.
 
 ### M005 — Cross-platform architecture, portability and platform divergence
-**IN STUDY — first integrated Foundation block + bounded executable capability evidence complete.**  
-Canonical: `research/mobile/M005_cross_platform_portability_divergence.md`  
-Fixture: `research/mobile/fixtures/M005_capability_contract_matrix.py`
+**IN STUDY — first integrated Foundation block + bounded executable capability evidence complete.** Canonical: `research/mobile/M005_cross_platform_portability_divergence.md`. Shared code/API shape does not imply equivalent capability; portability is semantic contract → capability → mechanism → failure/fallback → oracle. Exact-ref LogMate transfer retained; real native/web execution OPEN.
 
-Current Flutter/Dart/MDN source evidence plus Python 3.13.5/Linux model evidence establish:
-- shared Dart source/API shape does not imply equivalent platform capability or guarantee;
-- portability is modeled as semantic contract → capability vector → platform mechanism → failure/fallback → acceptance oracle;
-- Flutter web differs materially in filesystem, platform detection, isolate/concurrency and integration mechanisms; conditional imports select implementations but do not prove semantic equivalence;
-- bounded fixture rejected a native-filesystem assumption on the web model, allowed a user-level export fallback where the semantic contract permitted it, and kept required background retry explicitly unsupported rather than silently weakening the guarantee;
-- exact-ref LogMate evidence already excludes guaranteed automatic PWA P2P without common LAN and immediate background/terminated transfer, while its canonical current Makefile has a distinct `build-pwa` path.
+### M006 — Native app vs PWA/web boundary and deployment constraints
+**IN STUDY — first integrated Foundation block + bounded executable acceptance evidence complete.**  
+Canonical: `research/mobile/M006_native_pwa_web_deployment_constraints.md`  
+Fixture: `research/mobile/fixtures/M006_native_pwa_acceptance_matrix.py`
 
-Evidence limit: model + exact-ref product requirement/build-path evidence only. No Flutter/native/browser/EFB execution or production claim.
+Current WebKit/MDN evidence plus bounded Python 3.13.5/Linux model evidence establish:
+- Home Screen installability, offline capability, authoritative-data durability, service-worker event execution and continuous background execution are separate claims;
+- service workers may be terminated/restarted and their global state is not persistent; Background Sync is not a portable baseline across major browsers;
+- service-worker install/wait/activate/client-control state makes deployed PWA runtime identity more specific than source version alone;
+- iOS/iPadOS 26 changed Home Screen behavior so sites added to Home Screen open as web apps by default unless the user disables that behavior; manifest/service-worker features remain separable enhancements;
+- bounded fixture shows an installability-only gate can falsely accept a stronger contract requiring guaranteed continuous background execution;
+- exact-ref LogMate product truth already refuses to guarantee immediate Sync while backgrounded/terminated without separate validation.
+
+Evidence limit: no Flutter/browser/iPad/EFB/native execution. Storage eviction, service-worker update/control, actual offline launch, background events and canonical LogMate PWA build remain TRANSFER VALIDATION.
 
 ## Product transfer scope
-Exact LogMate ref: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-18`. Default branch is not assumed to equal production. M005 inspected `MASTER.md` and `Makefile` only for portability/build-boundary transfer; it does not claim current PWA acceptance or production deployment.
+Exact LogMate ref: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-18`. Default branch is not assumed to equal production. M005-M006 use product requirements/build boundaries only; they do not claim current PWA acceptance or production deployment. Product truth states canonical ledger/persistence/backup/server Sync are not yet implemented.
 
 ## Queue
 - `M001` — IN STUDY; real Flutter execution OPEN.
 - `M002` — IN STUDY; Android/iOS process/background execution OPEN.
 - `M003` — IN STUDY; real sandbox/permission/backup/secure-storage transfer OPEN.
 - `M004` — IN STUDY; raw-channel/Pigeon/native/multi-engine transfer OPEN.
-- `M005` — **IN STUDY / first integrated block complete**; real native/web capability contract transfer OPEN.
-- `M006` — Native app vs PWA/web boundary and mobile deployment constraints.
+- `M005` — IN STUDY; real native/web capability contract transfer OPEN.
+- `M006` — **IN STUDY / first integrated block complete**; real PWA/native install/offline/update/storage/background/EFB transfer OPEN.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. M001-M005 now cover runtime/state, lifecycle/process/background, storage/permission/security, plugin/native integration and cross-platform portability/divergence at first professional/model level. Representative Flutter execution, real Android/iOS/browser behavior, native-vs-PWA deployment constraints and physical/EFB transfer remain open.
+Mobile Stage 1 remains **NOT PASS**. M001-M006 now cover every planned Foundation boundary at first professional/model level: runtime/state, lifecycle/process/background, storage/permission/security, plugin/native integration, portability/divergence and native-vs-PWA delivery constraints. Representative Flutter execution and real Android/iOS/browser/EFB behavior remain absent, so the gate cannot close.
 
 ## Dependencies / handoffs
 - **Foundations:** F001/F005/F006 reused; direct Dart/Flutter execution remains toolchain-blocked.
-- **Architecture:** shared interfaces/adapters must preserve semantic contracts; API shape or conditional import alone is insufficient.
-- **Data:** offline/persistence/sync guarantees require per-platform transfer validation.
-- **Quality:** cross-platform contract suites should admit explicit unsupported/degraded outcomes where specified and test failure paths per implementation.
-- **Systems:** exact source/build/post-build/artifact/deployment/runtime identity determines which PWA/native implementation was validated.
-- **Design Studio:** no materially relevant PWA/mobile-web search result found this run; unsupported/degraded states must not be hidden in interaction semantics.
+- **Architecture:** shared interfaces/adapters must preserve semantic contracts; installability or API shape is not semantic equivalence.
+- **Data:** PWA authoritative persistence, eviction/recovery and queued sync require per-platform transfer validation.
+- **Quality:** cross-platform acceptance should inject service-worker update/control, offline, storage, termination and retry failures and admit explicit unsupported/degraded outcomes.
+- **Systems:** exact source/build/post-build/artifact/deployment origin/browser/service-worker client-control identity determines what PWA was validated.
+- **Design Studio:** no materially relevant PWA/mobile-web search result found this run; unsupported/degraded sync states must not be hidden in interaction semantics.
 - **Web Manager:** no materially relevant LogMate/PWA search result found this run; browser/PWA operational decisions remain Web-owned where applicable.
 - **Marketing Manager:** no materially relevant PWA search result found this run.
 
 ## CHANGE WATCH / OPEN
-Flutter web isolate/Wasm/import guidance, plugin/platform behavior, browser/PWA APIs, iOS/iPadOS install/update/background behavior and store/browser delivery constraints are version-sensitive. `dart` and `flutter` executables remained unavailable on environment recheck 2026-09-18; Python 3.13.5 is available. Real platform execution remains OPEN.
+Flutter web build/service-worker behavior, browser/PWA APIs, iOS/iPadOS Home Screen/install/update/background/storage behavior and store/browser delivery constraints are version-sensitive. `dart` and `flutter` executables remained unavailable on environment recheck 2026-09-18; Python 3.13.5 is available. Real platform execution remains OPEN. Exact company EFB iPadOS/Safari policy/version and production LogMate deployment identity remain dependencies for acceptance.
 
 ## Next work
-Use Balance Loop. M005 removes the untouched portability/divergence boundary at first professional/model level. `M006` native-vs-PWA/web deployment constraints now has high direct LogMate/EFB leverage, but should be pursued only if current primary/platform evidence can produce a coherent failure/acceptance boundary rather than another source-only summary. `Q004` mutation sensitivity/search-strength remains a strong executable alternative. Direct Dart/Flutter/mobile execution remains first-attempt work whenever a trustworthy SDK/device environment exists.
+Use Balance Loop. M006 removes the final untouched Mobile Stage-1 block at first professional/model level; do not deepen Mobile merely for symmetry while real platform execution is unavailable. `Q004` deliberate mutation sensitivity plus exhaustive-vs-generated comparison is now the strongest independent executable evidence gap. `A005` repeated-change/evolution evidence is another strong closure candidate. Return immediately to direct Dart/Flutter/mobile transfer when a trustworthy SDK/device environment becomes available.
