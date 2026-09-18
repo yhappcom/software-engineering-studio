@@ -8,47 +8,46 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Specialist | Current state |
 | --- | --- |
 | Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F002-F006 initiated with executable/model evidence |
-| Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005/A006 first integrated blocks complete |
+| Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 now has refactoring + repeated-change executable evidence; A006 first decision-evidence block complete |
 | Mobile | Stage 1 IN STUDY — M001-M006 all have first professional/model boundaries; direct Flutter/native/browser/EFB transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated with persistence/migration/cache/restore/sync evidence |
-| Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 now has generated shrinking plus mutation/exhaustive-search evidence |
+| Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 has generated shrinking plus mutation/exhaustive-search evidence |
 | Systems | Stage 1 IN STUDY — S001-S006 all initiated with executable/professional evidence |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### Q004 — Deliberate mutation sensitivity + exhaustive-vs-generated comparison
-Canonical: `research/quality/Q004_mutation_sensitivity_search_strength.md`; fixture: `research/quality/fixtures/Q004_mutation_exhaustive_generated_comparison.py`.
+### A005 — repeated-change / evolutionary architecture evidence
+Canonical: `research/architecture/A005_repeated_change_evolution_evidence.md`; fixture: `research/architecture/fixtures/A005_repeated_change_pressure.py`.
 
-Python 3.13.5/Linux bounded evidence enumerated the complete 3-event sequence space for lengths 1..4: 120 sequences. Against an independent highest-version-wins/delete-semantic oracle, an arrival-order mutant failed 61/120 sequences and an ignore-delete mutant failed 86/120. A deliberately small deterministic generated campaign (seed `20260919`, 3 cases) killed ignore-delete once but missed arrival-order entirely; the retained deterministic `delete_v3 → update_v2` regression killed arrival-order.
+Python 3.13.5/Linux bounded evidence exercised three successive policy requirements—rate only, add cap, add minimum—across three observers. Complete duplicated and single-owner implementations both matched an independent oracle across declared cases. A deliberate partial R2 migration changed the quote path but left export/alert on old policy semantics; at principal 2000 it produced `(120, '200.00', True)` versus expected `(120, '120.00', True)`.
 
-This closes Q004's named bounded gaps for deliberate mutation sensitivity and exhaustive-vs-generated comparison. It does **not** establish global test adequacy, mutation-score sufficiency, real synchronization correctness, or Dart/Flutter behavior. Exhaustiveness applies only to the declared 3-event alphabet and length ≤4.
+The bounded root cause is incomplete propagation of one semantic decision across independently editable copies. This closes A005's named repeated-change model gap and strengthens `change pressure → semantic ownership → coordination obligation → partial-change risk`. It does **not** prove duplication is always technical debt, centralization universally superior, edit count an architecture oracle, or any MintTap/LogMate/Dart/Flutter behavior.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN after environment recheck 2026-09-18.
 - **Foundations F002-F006:** alias/lifetime, complexity, concurrency, async and network/termination failure mechanics retained.
-- **Architecture:** A001-A003/A005/A006 cover change pressure, ownership/dependency, semantic contracts, refactoring/debt and evidence-preserving decision lifecycle.
+- **Architecture:** A001-A003/A005/A006 cover change pressure, ownership/dependency, semantic contracts, refactoring/debt/evolution and evidence-preserving decision lifecycle.
 - **Mobile:** M001-M006 cover all planned Foundation boundaries at first professional/model level; real runtime/platform transfer OPEN.
 - **Data:** D001-D006 persistence/migration/cache/restore/sync evidence retained.
-- **Quality:** Q001-Q006 professional boundaries retained; Q004 now separates property/oracle strength from search strength with deliberate mutants and bounded enumeration.
+- **Quality:** Q001-Q006 professional boundaries retained; Q004 separates property/oracle strength from search strength with deliberate mutants and bounded enumeration.
 - **Systems:** S001-S006 trust/security/performance/build/release/rollback evidence retained.
 
 ## Cross-track handoffs
-- **Data:** use exact bounded enumeration when a synchronization submodel is genuinely tractable; generated search remains useful for larger spaces, and known failures should become deterministic regressions.
-- **Architecture:** machine-checkable contracts/invariants can supply independent properties without exposing implementation representation.
-- **Mobile:** transfer only the test-design method; no lifecycle/PWA/platform behavior follows from the Python model.
-- **Systems:** mutation/generated CI campaigns require exact artifact/environment/seed/framework identity and resource budgets; mutation score is not a release oracle.
-- **Design Studio / Web Manager / Marketing Manager:** considered; no materially relevant canonical evidence changes this bounded Quality method.
+- **Quality:** evolutionary refactoring tests should inject partial migrations across duplicated semantic owners, not rely only on present-state green tests.
+- **Data:** duplicated reader/writer/schema policy is a candidate transfer context; exact schema/version/ref and recovery oracle remain required.
+- **Product teams:** technical-debt records should identify plausible future coordinated-change obligations and observer-visible consequence rather than label duplication/smell alone.
+- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical decision there changes this bounded internal evolution mechanism.
 
 ## Current Balance Loop
 F001 direct Dart/Flutter execution remains toolchain-blocked and is not simulated. Environment recheck 2026-09-18 found no `dart` or `flutter` executable; Python 3.13.5 is available.
 
-Q004's two explicit executable gaps—deliberate mutation sensitivity and exhaustive-vs-generated comparison—are now closed at bounded model level. The strongest independent candidates are:
-1. `A005` repeated-change/evolution evidence — closes a stated Architecture gap with high reuse across product maintenance;
-2. `A006` executable ADR-corpus governance validation — strengthens evidence-preserving decisions across all tracks;
-3. targeted real platform/product transfer when trustworthy Dart/Flutter SDK, browser/EFB or device infrastructure becomes available;
-4. direct F001 Dart JIT/AOT + Flutter runtime execution immediately when a trustworthy SDK environment becomes available.
+Q004's named bounded mutation/search gaps and A005's named repeated-change model gap are now closed. The strongest independent candidates are:
+1. `A006` executable ADR-corpus governance validation — tests whether evidence/ref/status/supersession requirements survive real repository documents rather than reading alone;
+2. targeted real platform/product transfer when trustworthy Dart/Flutter SDK, browser/EFB or device infrastructure becomes available;
+3. direct F001 Dart JIT/AOT + Flutter runtime execution immediately when a trustworthy SDK environment becomes available;
+4. broader real crash/restart/durable/network evidence for Quality/Data when suitable infrastructure is available.
 
 Selection remains prerequisite/risk/evidence driven rather than rotational.
 
