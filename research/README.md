@@ -18,7 +18,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
-- `D005` — base recovery + process-crash + bounded SQLite `SQLITE_FULL` + syscall `ENOSPC` write denial + syscall `fsync/fdatasync=EIO` + `research/data/D005_short_write_progress_boundary.md`. New Linux fixture distinguishes a positive-progress 512→256 short `pwrite64`, which the Unix VFS completed and committed, from a zero-progress 512→0 return, which surfaced `SQLITE_FULL` and preserved baseline semantic state. This is syscall/VFS progress handling, not torn durable-write, physical power-loss/device, WAL/checkpoint, or mobile durability evidence.
+- `D005` — base recovery + process crash + bounded SQLite `SQLITE_FULL` + syscall `ENOSPC` + syscall sync-EIO + short-write progress + `research/data/D005_torn_write_recovery_model.md`. The new bounded executable MODEL constructs a 4096-byte page with only 3/8 sectors durably replaced: it is neither accepted old nor new atomic state; complete pre-image recovery passes while a deliberate partial-pre-image mutant fails. SQLite primary material independently documents non-atomic page/sector assumptions and crash-VFS simulation. This is not Studio execution of SQLite crash VFS, physical power loss, WAL/checkpoint or mobile durability.
 - `D006` — base sync + real TCP ambiguous retry + isolated kernel link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync remains OPEN.
 
 ### Quality
