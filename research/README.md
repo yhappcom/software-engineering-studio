@@ -18,7 +18,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
-- `D005` — base recovery + process-crash + bounded SQLite `SQLITE_FULL` + `research/data/D005_syscall_enospc_fault_injection.md`. The new Linux fixture returns `ENOSPC` at target libc `pwrite`/`pwrite64`; SQLite surfaced code 13 `SQLITE_FULL`, the failed transaction did not publish its semantic row, and fresh reopen remained structurally healthy. This is syscall fault injection, not physical filesystem/device exhaustion. Short-write/sync/power/mobile durability remain OPEN.
+- `D005` — base recovery + process-crash + bounded SQLite `SQLITE_FULL` + syscall `ENOSPC` write denial + `research/data/D005_syscall_fsync_eio_fault_injection.md`. New Linux fixture injects `EIO` at selected target `fsync`/`fdatasync` calls in rollback-journal FULL mode; three failure placements surfaced `SQLITE_IOERR_FSYNC` and fresh reopen preserved only baseline semantic state, while no-fault/too-late controls committed. This is syscall fault injection, not physical power-loss/device evidence or proof of truthful successful fsync. Short/torn-write, WAL/checkpoint, real power and mobile durability remain OPEN.
 - `D006` — base sync + real TCP ambiguous retry + isolated kernel link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync remains OPEN.
 
 ### Quality
