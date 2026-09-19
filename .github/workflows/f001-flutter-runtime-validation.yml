@@ -1,0 +1,38 @@
+name: F001 Flutter runtime validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/f001-flutter-runtime-validation.yml'
+      - 'research/foundations/fixtures/f001_flutter_runtime/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install exact observed Flutter stable checkout
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Record Flutter Dart and engine identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          dart --version 2>&1 | tee dart-version.txt
+
+      - name: Resolve fixture
+        working-directory: research/foundations/fixtures/f001_flutter_runtime
+        run: flutter pub get
+
+      - name: Execute Flutter widget runtime boundary
+        working-directory: research/foundations/fixtures/f001_flutter_runtime
+        run: flutter test --reporter expanded test/runtime_boundary_test.dart
