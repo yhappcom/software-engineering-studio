@@ -3,7 +3,7 @@
 Track: Software Architecture & Design  
 Prefix: `A###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
-Last sync: 2026-09-18
+Last sync: 2026-09-20
 
 ## Current evidence
 
@@ -18,43 +18,43 @@ Last sync: 2026-09-18
 
 ### A005 — Architecture/design/implementation, refactoring, technical debt and evolutionary change pressure
 **IN STUDY — two executable Foundation blocks + natural exact-ref product evolution transfer.**  
-Canonical: `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md`, `research/architecture/A005_repeated_change_evolution_evidence.md`, `research/architecture/A005_logmate_natural_evolution_transfer.md`.  
-Fixtures: `research/architecture/fixtures/A005_refactoring_behavior_boundary.py`, `research/architecture/fixtures/A005_repeated_change_pressure.py`.
+Canonical: `research/architecture/A005_refactoring_technical_debt_evolutionary_boundaries.md`, `research/architecture/A005_repeated_change_evolution_evidence.md`, `research/architecture/A005_logmate_natural_evolution_transfer.md`.
 
-Observer-scoped refactoring, contingent future-change debt, and repeated-change/partial-migration failure evidence are established. Natural LogMate history now transfer-tests the model across `05b4209... → b551ce4...`: a confirmed Customize V1 contract was implemented in the immediately following commit through coordinated spec/code/test/status edits. This refines the synthetic result: multi-file change is not itself duplicated semantic ownership or debt; spec, tests, implementation and evidence records can legitimately change together because they carry different responsibilities. Direct Dart/Flutter runtime validation and long-horizon repeated product evolution remain OPEN.
+Observer-scoped refactoring, contingent future-change debt, repeated-change/partial-migration failure evidence and the natural LogMate `05b4209... → b551ce4...` evolution transfer are retained. Multi-file change is not itself duplicated semantic ownership or debt; spec, tests, implementation and evidence records can legitimately change together because they carry different responsibilities.
 
 ### A006 — Evidence-preserving architecture decisions and ADR lifecycle
-**IN STUDY — two integrated Foundation blocks complete; bounded executable governance sensitivity added.**  
-Canonical: `research/architecture/A006_evidence_preserving_architecture_decisions.md`; fixture: `research/architecture/fixtures/A006_adr_governance_validator.py`.
+**IN STUDY — executable governance sensitivity + natural LogMate decision-state transfer.**  
+Canonical: `research/architecture/A006_evidence_preserving_architecture_decisions.md`, `research/architecture/A006_logmate_natural_decision_state_transfer.md`; fixture: `research/architecture/fixtures/A006_adr_governance_validator.py`.
 
-The first block established that ADRs preserve architecturally significant context/rationale/consequences/status but are not architecture or correctness proof; accepted decisions should be superseded rather than silently rewritten; Studio evidence-critical decisions preserve evidence/ref, assumptions, validation status and reconsideration triggers where applicable.
+The synthetic executable block rejects missing evidence, blank validation on Accepted records, broken supersession targets and unscoped `CI passed` evidence. The new natural transfer inspects `yhappcom/logmate → 05b4209e609ec7e9a524010339c4e0cbce0d4bb1 → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence 2026-09-20`.
 
-The second block adds Python 3.13.5/Linux executable governance evidence over a two-record synthetic ADR corpus. Four deliberate mutations—missing evidence, Accepted with blank validation, broken supersession target, and unscoped `CI passed` evidence—were each rejected for the intended structural reason. This closes the named bounded executable-governance gap, but not substantive architecture correctness: the validator cannot establish truth/relevance of evidence, rationale quality, architectural significance or production behavior. Natural ADR-corpus validation remains OPEN. The new A005 LogMate history is a natural decision/evolution corpus but is not automatically an ADR and has not been relabeled as one.
+**TRANSFER VALIDATION:** LogMate's `MASTER.md` naturally separates product-decision states (`CONFIRMED`, `OPEN`, `DEFERRED`, `OUT OF SCOPE`, `SUPERSEDED`) from implementation/evidence states. Across the one-commit Customize V1 implementation transition, the product contract remains confirmed while bounded presentation behavior moves from not implemented to implemented; persistence/Sync/schema/calculation/runtime questions remain explicitly OPEN or NOT IMPLEMENTED. This supports separate decision and implementation/evidence dimensions and reinforces that coordinated spec/code/test/status changes are not themselves duplicated ownership.
+
+**REFINEMENT:** this is a natural product decision-governance corpus, not an ADR corpus. It must not be relabeled as ADR evidence. Natural ADR lifecycle validation with explicit rationale/alternatives/consequences/supersession semantics remains OPEN.
 
 ## Queue
 - `A001` — substantial Foundation block complete.
 - `A002` — substantial Foundation block complete; concurrency intentionally deferred.
 - `A003` — substantial Foundation block complete; broader product evolution transfer remains available when a semantic API change is implemented.
 - `A004` — patterns and misuse; useful but not required as a pattern catalog for Foundation closure.
-- `A005` — **two executable blocks + natural exact-ref LogMate evolution transfer**; named exact-ref product-transfer gap advanced, direct Flutter execution and repeated long-horizon product evolution OPEN.
-- `A006` — two integrated blocks; bounded executable governance gap closed; natural ADR corpus remains OPEN.
+- `A005` — executable blocks + natural exact-ref LogMate evolution transfer; direct Flutter execution and repeated long-horizon product evolution OPEN.
+- `A006` — executable governance sensitivity + natural product decision-state transfer; natural ADR lifecycle corpus and long-horizon supersession transfer OPEN.
 
 ## Gate assessment
-Architecture Stage 1 remains **NOT PASS**. A001-A003/A005/A006 cover the roadmap's principal Foundation concepts and include repeated-change failure evidence, executable decision-governance sensitivity, and now a natural exact-ref product evolution transfer. The new product history corrects a possible overgeneralization from the synthetic fixture but is repository evidence, not runtime correctness. Direct Flutter/product execution and broader naturally occurring evolution/decision validation remain open.
+Architecture Stage 1 remains **NOT PASS**. A001-A003/A005/A006 cover the roadmap's principal Foundation concepts and now include both synthetic executable decision-governance sensitivity and natural exact-ref product decision-state transfer. Repository history is not runtime correctness, and the LogMate master is not automatically an ADR corpus. Direct Flutter/product execution, natural ADR lifecycle evidence and broader repeated evolution remain open.
 
 ## HANDOFFS
-- **Data:** persisted schema/data evolution is not ordinary internal refactoring; migration/sync/recovery ADRs should preserve compatibility/failure assumptions and validation dependencies.
-- **Quality:** exact LogMate head tests should be executed when Flutter is available and deliberate contract mutants should verify oracle sensitivity; test-file growth alone is not quality evidence.
+- **Data:** persisted schema/data evolution is not ordinary internal refactoring; the natural LogMate corpus correctly leaves persistence/Sync/schema questions separate from presentation implementation.
+- **Quality:** exact LogMate tests require execution evidence; a changed test file is not a passing test.
 - **Mobile:** lifecycle/plugin/platform behavior can be externally relevant; exact-ref LogMate UI behavior still requires Flutter/runtime transfer.
-- **Systems:** performance/security/artifact properties belong in observer sets when contractual/risk-significant; vague evidence labels such as `CI passed` are insufficient for evidence-critical decisions.
-- **Product teams:** do not infer technical debt from changed-file count. Distinguish independently editable semantic duplication from legitimate coordination among spec, tests, implementation and evidence/status artifacts.
+- **Systems:** source decision history is not release provenance; artifact/toolchain/deployment identity remains separate.
+- **Product teams:** preserve decision status separately from implementation/evidence status when contracts can be confirmed before implementation; do not infer technical debt from changed-file count.
 
 ## CHANGE WATCH / OPEN
-- Direct Dart/Flutter transfer remains blocked: environment rechecked 2026-09-18; neither `dart` nor `flutter` executable is available, Python 3.13.5 is available.
 - A005 long-horizon repeated natural product evolution and runtime validation remain OPEN.
-- A006 natural ADR-corpus validation remains OPEN.
-- AWS/Microsoft ADR guidance checked 2026-09-18; recheck when operational guidance changes.
+- A006 natural ADR lifecycle corpus with explicit alternatives/rationale/consequences/supersession remains OPEN.
+- Exact-ref Flutter runtime/test execution for the inspected LogMate head remains outside the current evidence.
 - ISO/IEC/IEEE 42010:2022 remains current from prior check; DIS 42024 remains CHANGE WATCH.
 
 ## Next work
-Return to Balance Loop. A005 now has the natural exact-ref product transfer its prior study explicitly requested, so do not repeat commit-count/diff-size audits. Direct Dart/Flutter execution remains first if a trustworthy SDK appears. Otherwise prefer an evidence rung that changes materially: natural ADR/release corpus, real CI/attestation, independent product build, or a platform/storage/network boundary not already represented.
+Return to Balance Loop. Do not force ordinary product decision ledgers into ADR schemas merely to close A006. Prefer a materially stronger evidence class: natural ADR/release corpus, exact mobile/browser product runtime, authorized independent product build, storage/network/platform boundary, or another track's stronger gap.
