@@ -29,3 +29,7 @@ jobs:
         timeout-minutes: 2
         working-directory: research/mobile/fixtures/m006_browser_service_worker
         run: node validate.mjs
+      - name: Execute browser restart persistence oracle
+        timeout-minutes: 2
+        working-directory: research/mobile/fixtures/m006_browser_service_worker
+        run: node validate_restart.mjs
