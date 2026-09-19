@@ -1,0 +1,30 @@
+name: F005 Dart async validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'research/foundations/fixtures/F005_dart_async_timeout_ordering.dart'
+      - '.github/workflows/f005-dart-async-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install exact Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.13.3'
+      - name: Record environment
+        run: |
+          set -euxo pipefail
+          dart --version
+          uname -a
+          git rev-parse HEAD
+      - name: Execute F005 async boundary
+        run: dart run research/foundations/fixtures/F005_dart_async_timeout_ordering.dart
