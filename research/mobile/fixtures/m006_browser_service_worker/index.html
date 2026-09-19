@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8"><title>M006 SW fixture</title><script>
+window.fixtureReady = (async () => {
+  if (!('serviceWorker' in navigator)) throw new Error('serviceWorker unavailable');
+  await navigator.serviceWorker.register('/sw.js');
+  await navigator.serviceWorker.ready;
+  if (!navigator.serviceWorker.controller) {
+    await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve, {once:true}));
+  }
+  const text = await (await fetch('/payload.txt?online=1')).text();
+  document.body.dataset.payload = text;
+  return text;
+})();
+</script>
