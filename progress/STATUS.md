@@ -12,24 +12,24 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Mobile | Stage 1 IN STUDY — M001-M006 first professional/model boundaries; direct Flutter/native/browser/EFB transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 mutation/search; Q006 real crash recovery-oracle transfer |
-| Systems | Stage 1 IN STUDY — S001-S006 initiated; S005 now includes real hosted GitHub Actions attestation generation; S006 directory-sync publication failure evidence |
+| Systems | Stage 1 IN STUDY — S001-S006 initiated; S005 hosted generation + online verification; offline verification attempted but blocked at input export |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### S005 — real hosted CI + GitHub artifact-attestation generation
-Canonical: `research/systems/S005_real_github_actions_attestation.md`; workflow: `.github/workflows/s005-attestation-boundary.yml`.
+### S005 — offline attestation verification attempt exposed an input-export boundary
+Canonical: `research/systems/S005_offline_attestation_verification_attempt.md`; workflow: `.github/workflows/s005-offline-attestation-verification.yml`.
 
-F001 was attempted first on 2026-09-19: no `dart` or `flutter` executable was found; direct Dart/Flutter validation remains OPEN rather than simulated.
+F001 was attempted first on 2026-09-19: no `dart` or `flutter` executable was available. Direct Dart/Flutter validation remains OPEN rather than simulated.
 
-The Studio itself now supplies a real hosted-CI evidence rung. Exact commit `ab6dbf4307078fc82ddc056029f686dd61eae3a7` triggered GitHub Actions run `35405920497`, job `105795544174` on `ubuntu-latest`. Checkout, deterministic exact-commit subject creation and `actions/attest@v4` each concluded `success`. The subject reconstructs to SHA-256 `9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071`.
+The prior S005 evidence is retained and now correctly reflected globally: exact subject digest retrieval and hosted `gh attestation verify` succeeded in run `35409747108` / job `105806806534`; wrong repository identity and mutated subject bytes were rejected. Offline verification is a distinct higher rung.
 
-**VALIDATION:** real GitHub-hosted CI and artifact-attestation generation are now demonstrated for this bounded Studio artifact/context. This supersedes the prior evidence limit that there was no real CI/attestation execution.
+The new offline workflow attempted `online export of bundle/trusted roots → network-isolated verification`. Run `35412950674` failed at subject reconstruction because the new fixture used bytes that did not match the asserted prior digest. Comparison with the successful verification workflow established the root cause; the fixture was corrected.
 
-**EVIDENCE LIMIT:** generation success is not independent attestation verification, signer/workflow authorization policy, release acceptance, Flutter/mobile build evidence, deployment or production evidence. Current GitHub documentation explicitly requires verification/policy use for security benefit.
+After correction, runs `35412968384`, `35412983659`, and `35413003999` reconstructed the exact subject successfully but failed before offline verification at bundle/input export. The latter attempts used materially different export approaches. The available evidence channel did not expose command stderr, so no permission/service/CLI/network explanation is assigned.
 
-**CONTRADICTION / OPEN DEBUG:** immediately prior run `35405881832` at `eab2972843130b0e997203d5ba5b8c108cb67dde` failed specifically at the attestation step after checkout/subject generation succeeded. The available evidence channel did not expose the failed action log, so root cause is not assigned. The subsequent successful attestation disproves categorical unavailability in this repository context.
+**VALIDATION:** online hosted verification does not itself establish offline verification or even operational availability of the explicit bundle/root export path in the same CI context. **CONTRADICTION/DEBUG:** one failure was root-caused to a defective test fixture; later export failures remain causally OPEN. No PASS awarded.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN.
@@ -37,19 +37,19 @@ The Studio itself now supplies a real hosted-CI evidence rung. Exact commit `ab6
 - **Mobile:** M001-M006 cover planned Foundation boundaries at first professional/model level; real runtime/platform transfer OPEN.
 - **Data:** D005 rollback/storage/WAL/checkpoint/live backup/interruption evidence; D006 transport faults + exact-ref inbound progress transfer.
 - **Quality:** Q001-Q006 professional boundaries; Q004 mutation/search-strength and Q006 semantic recovery-oracle discrimination retained.
-- **Systems:** S001-S006 retained; S005 asymmetric signing/reproducibility/product identity plus real hosted attestation generation; S006 directory-sync publication failure evidence.
+- **Systems:** S001-S006 retained; S005 now spans asymmetric signing, reproducibility, real hosted attestation generation, hosted retrieval/verification/negative identity cases, and a failed higher-rung offline attempt; S006 directory-sync publication failure evidence.
 
 ## Cross-track handoffs
-- **Architecture:** evidence-critical decisions should preserve exact workflow run/job/commit/subject identity; `CI passed` remains insufficient.
-- **Quality:** distinguish overall workflow green from exact attestation-generation and independent verification-policy predicates; negative wrong-identity verification remains required.
-- **Mobile / products:** Studio text-subject attestation is not Flutter/mobile release evidence. Product transfer requires exact product ref/version, canonical build/toolchain/lock, artifact digest, attestation, verification policy and delivered artifact identity.
+- **Architecture:** evidence-critical decisions should preserve exact workflow run/job/commit/subject and distinguish online verification from offline-input availability.
+- **Quality:** preserve defective verification fixtures as oracle failures; do not assign root cause to later bundle-export failures without command-level evidence.
+- **Mobile / products:** Studio text-subject attestation is not Flutter/mobile release evidence. Product transfer requires exact product ref/version, canonical build/toolchain/lock, artifact digest, attestation, executed verification policy and delivered artifact identity.
 - **Data:** bind migration/backup release evidence to exact artifact/provenance when used as a release gate.
-- **Design Studio / Web Manager / Marketing Manager:** considered under cross-repo contract; no canonical files edited and no owned decision changed.
+- **Design Studio / Web Manager / Marketing Manager:** considered under cross-repo contract; not materially relevant to this bounded mechanism; no canonical files edited.
 
 ## Current Balance Loop
-Direct Dart/Flutter execution remains the highest-prerequisite target whenever a trustworthy SDK appears. The runtime still has no `dart`/`flutter`; Python/Linux are available.
+Direct Dart/Flutter execution remains the highest-prerequisite target whenever a trustworthy SDK appears. The runtime still has no `dart`/`flutter`.
 
-S005's named real CI/attestation-generation gap is now materially advanced. Do not repeat green-workflow variants. If Dart/Flutter remains unavailable, prefer a higher/different rung: independent attestation retrieval/verification + identity-policy negative cases, canonical product build/attestation, independent-host reproducibility, physical/platform publication durability, natural ADR/release evidence, or another track's stronger gap.
+Do not repeat offline bundle-export variants until command-level failure evidence is available. If that debugging channel becomes available, resume S005 at the exact input-export failure. Otherwise prefer a materially different higher rung: canonical product build/attestation, independent-host reproducibility, physical/platform publication durability, natural ADR/release evidence, or another track's stronger gap.
 
 ## CHANGE WATCH
 - Flutter/Dart runtime/build behavior is version-sensitive; exact SDK/ref matters.
@@ -57,7 +57,7 @@ S005's named real CI/attestation-generation gap is now materially advanced. Do n
 - Filesystem publication durability depends on OS/filesystem/device and synchronization semantics; current EIO injection is not hard-power-loss evidence.
 - SQLite WAL/backup behavior depends on SQLite version, wrapper, VFS/OS/filesystem/device and synchronization mode.
 - LogMate Sync and backup consistency/publication mechanisms remain OPEN product decisions.
-- GitHub Actions/`actions/attest`/OIDC/private-repository availability and verification semantics are service/version/plan sensitive.
+- GitHub Actions/CLI/attestation API/Sigstore roots/OIDC/hosted-runner behavior are service/tool/version sensitive.
 - OpenSSL/provider and compiler/linker behavior are toolchain sensitive.
 
 ## Evidence rule
