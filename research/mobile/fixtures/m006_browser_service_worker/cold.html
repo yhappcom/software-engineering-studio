@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>M006 cold start</title><body>M006 cold shell<script>
+window.fixtureReady = (async () => {
+  await navigator.serviceWorker.register('/cold-sw.js');
+  await navigator.serviceWorker.ready;
+  if (!navigator.serviceWorker.controller) {
+    await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve, {once:true}));
+  }
+  const response = await fetch('/payload.txt?cold-setup=1');
+  return (await response.text()).trim();
+})();
+</script></body>
