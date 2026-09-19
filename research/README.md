@@ -6,9 +6,10 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Foundations
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**; direct Dart JIT/AOT process/I/O transfer and first Flutter framework/test-binding execution are successful on hosted Linux; native/browser/product transfer remains OPEN.
-- `F004` — base concurrency/synchronization study plus `research/foundations/F004_direct_dart_isolate_transfer.md`; direct Dart 3.13.3 hosted execution now validates isolate-owned mutable state through message requests and rejection of an explicitly unsendable `ReceivePort`; external-resource/native/browser/product transfer remains OPEN.
+- `F004` — base concurrency/synchronization study plus `research/foundations/F004_direct_dart_isolate_transfer.md`; direct Dart 3.13.3 hosted execution validates isolate-owned mutable state through message requests and rejection of an explicitly unsendable `ReceivePort`; external-resource/native/browser/product transfer remains OPEN.
 - `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — direct Dart 3.13.3 transfer validates the documented microtask→zero-delay-event relation, waiter-timeout ≠ source-cancellation, and API-specific StreamSubscription cancellation at bounded hosted-Linux scope.
-- `F002`, `F003`, `F006` — initial integrated executable/model Foundation blocks complete; direct Dart/runtime transfer remains selectively OPEN; see `progress/FOUNDATIONS_STATUS.md`.
+- `F006` — base OS/socket/network study plus `research/foundations/F006_direct_dart_socket_transfer.md`; direct Dart loopback validation currently reproduces a fixture-step hang, falsifies the first close-order root-cause hypothesis, and adds independent CI job/step deadlines. Socket correctness verdict remains OPEN.
+- `F002`, `F003` — initial integrated executable/model Foundation blocks complete; direct Dart/runtime transfer remains selectively OPEN; see `progress/FOUNDATIONS_STATUS.md`.
 
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
