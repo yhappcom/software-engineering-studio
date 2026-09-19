@@ -8,46 +8,44 @@ Last sync: 2026-09-19
 ## Current evidence
 
 ### S001 — Trust boundaries, artifact identity and build provenance foundations
-**IN STUDY — two integrated executable trust-boundary blocks complete.** Canonical: `research/systems/S001_trust_artifact_provenance_foundations.md`. Source/build/artifact/deployment/runtime identity plus integrity/authenticity/authorization/provenance separation established.
+**IN STUDY — two integrated executable trust-boundary blocks complete.** Canonical: `research/systems/S001_trust_artifact_provenance_foundations.md`.
 
 ### S002 — Threat modeling, least privilege, secrets and secure storage
-**IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S002_threat_model_least_privilege_secrets_secure_storage.md`. Authority scoping, ambient-authority failure/scoped-capability alternative, secrets lifecycle and Android Keystore guarantee limits established. Real platform/product transfer OPEN.
+**IN STUDY — first integrated executable Foundation block complete.** Real platform/product transfer OPEN.
 
 ### S003 — CPU, memory, I/O, network cost models and profiling
-**IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S003_resource_cost_models_profiling_foundations.md`. Wall latency/CPU/allocation/I/O/network observables separated; bounded Python fixture complete. Dart/Flutter/device transfer OPEN.
+**IN STUDY — first integrated executable Foundation block complete.** Dart/Flutter/device transfer OPEN.
 
 ### S004 — Dependency, supply-chain and build-system fundamentals
-**IN STUDY — executable Foundation block + exact-ref LogMate static transfer + lock-enforcement execution in progress.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`, `research/systems/S004_logmate_lockfile_toolchain_transfer.md`, `research/systems/S004_logmate_lock_enforcement_execution.md`.
+**IN STUDY — executable Foundation + exact-ref LogMate static transfer + product-derived lock-enforcement transfer completed.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`, `research/systems/S004_logmate_lockfile_toolchain_transfer.md`, `research/systems/S004_logmate_lock_enforcement_execution.md`.
 
-Manifest/resolved graph/content/toolchain/build/artifact/provenance identities remain separated. Exact-ref LogMate audit confirms committed hosted package versions/content hashes but no exact Flutter SDK/engine identity in inspected product-repository evidence. A new Studio-hosted transfer copies the dependency-relevant manifest semantics plus complete lockfile from `yhappcom/logmate@b551ce434ad72b1895033e0f3617c73b026d40ea` and runs them under exact Flutter release `3.47.0`. Workflow head `d093377358944937edf9333842f0a8ee46a72b82`, run `35443174123`, job `105897460229` is currently in progress. Its positive oracle requires `flutter pub get --enforce-lockfile` plus unchanged lockfile; its negative oracle deliberately mutates one hosted-package SHA-256 and requires fail-closed rejection. No verdict is claimed until those steps complete. This is dependency-metadata transfer, not a canonical LogMate source build.
+Product identity: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-19`; production identity unknown, main not assumed production.
+
+Run `35443257511` at workflow head `0426836a14866f00dd9de4811c7083bb1f1c0675` demonstrated exact-toolchain sensitivity. Flutter 3.38.10 / framework `c6f67dede3d4aa1aa7a69dd56a3494a5cde6cc80` / engine `cafcda5721a78a7884db92f13c5e89f7643d52dd` / Dart 3.10.9 accepted the copied committed lock unchanged. Deliberate one-nibble `cupertino_icons 1.0.9` content-hash corruption failed closed with exit 65 and explicit hash mismatch. Flutter 3.47.0 / framework `4cf24164269a5ebf0c16a028a00727d0e77bbb05` / engine `5f77625673248ee5846fbcaf5d3e1a3878386fd7` / Dart 3.13.0 rejected the unchanged lock because seven SDK-coupled/transitive dependencies would change. This validates `SDK range != exact toolchain != demonstrated lock acceptance`; it does not identify LogMate's canonical toolchain.
 
 ### S005 — CI/CD, signing, versioning, reproducibility and release evidence
-**IN STUDY — real hosted generation + one successful online retrieval/verification + contradictory later verifier failures; offline verification OPEN.** Canonical S005 research retained. Successful hosted attestation generation/retrieval/verification and negative subject/repository cases remain evidence; later repository-only baseline verification contradicted the earlier success. No service/permission/CLI root cause is assigned without command-level failure output. Do not spend further Actions minutes varying signer/ref/digest or offline-export flags without stronger diagnostics or an independent verifier path.
+**IN STUDY.** Real hosted generation + one successful online retrieval/verification + contradictory later verifier failures retained. Offline verification OPEN; do not spend further Actions minutes on flag permutations without stronger diagnostics or an independent verifier path.
 
 ### S006 — Rollback, incident evidence, production change safety and publication durability
-**IN STUDY — two integrated executable Foundation blocks.** Canonical: `research/systems/S006_rollback_incident_change_safety_governance.md`, `research/systems/S006_directory_fsync_publication_boundary.md`. Linux LD_PRELOAD evidence distinguishes rename visibility from successful containing-directory synchronization; hard-power-loss transfer remains OPEN.
+**IN STUDY — two integrated executable Foundation blocks.** Linux rename/directory-sync failure evidence retained; hard-power-loss transfer OPEN.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S001-S006 have professional Foundation evidence. S004 now has an executable product-derived lock-enforcement validation in progress, but no result is yet awarded and no canonical product build has occurred. S005 retains contradictory hosted-verifier evidence. Physical power-loss/filesystem durability, mobile signing, independent-host reproducibility, deployment rollback/recovery and production evidence remain OPEN.
+Systems Stage 1 remains **NOT PASS**. S004 now has an executable product-derived dependency-lock rung with a positive acceptance, deliberate integrity-negative oracle, and exact-toolchain alternative failure. It still lacks canonical product toolchain identity, canonical source build, artifact digest, signing/attestation, independent-host reproducibility, deployment and production evidence. S005 retains contradictory hosted-verifier evidence. Physical power-loss/filesystem durability and mobile signing/rollback remain OPEN.
 
 ## HANDOFFS
-- **Foundations:** hosted Dart/Flutter execution is now available at bounded Studio scope; F006 socket correctness remains separate and OPEN.
-- **Architecture:** build/toolchain identity is an externally relevant release contract when reproducibility/provenance is required.
-- **Mobile:** selected Flutter 3.47.0 is a controlled Studio validation toolchain, not evidence of LogMate's canonical release toolchain. Canonical transfer still requires product toolchain identity → source build → artifact identity.
-- **Data:** migration/backup release evidence should bind exact artifact/provenance when used as a release gate.
-- **Quality:** S004 now includes an explicit deliberate content-hash mutation so lock enforcement must demonstrate failure sensitivity, not only a green resolution.
-- **LogMate / release engineering:** transfer identity remains `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-19`; production identity unknown. No product files were edited and no canonical LogMate build has been executed.
+- **Foundations:** hosted Dart/Flutter execution is available at bounded Studio scope; F006 socket correctness remains separate and OPEN.
+- **Architecture:** exact build/toolchain identity is a release contract when reproducibility/provenance is required.
+- **Mobile:** 3.38.10 acceptance is not authority to choose it as LogMate policy; canonical transfer requires product-owned toolchain identity before source build.
+- **Quality:** retain the 3.38.10 positive+hash-mutation pair and the 3.47.0 resolver rejection as distinct regression evidence classes.
+- **LogMate / release engineering:** exact product ref above; no product files edited. Product/CI/operator toolchain pin remains unknown.
 - **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded dependency-resolution mechanism; no canonical files edited.
 
 ## CHANGE WATCH / OPEN
-- Final result and recorded exact Flutter/Dart/engine identity for S004 run `35443174123`.
-- Exact canonical Flutter SDK/engine and any external CI/operator toolchain pin for LogMate remain unknown from inspected product repository evidence.
+- Exact canonical Flutter SDK/engine and any external CI/operator toolchain pin for LogMate remain unknown.
 - Canonical LogMate source build, target artifact digest, signing/attestation and independent-host reproducibility remain OPEN.
 - Dart/pub lockfile enforcement and Flutter SDK behavior are tool/version sensitive.
-- GitHub Actions/CLI/attestation API/Sigstore roots and hosted-runner behavior are service/tool-version sensitive.
 - Hosted S005 verifier stability/root cause, stronger authorization policy and offline verification remain OPEN.
-- Linux/filesystem publication evidence does not establish hard-power-loss survival, lying-successful fsync, APFS/mobile behavior or network-filesystem semantics.
 - Android/iOS signing, staged deployment and production rollback remain OPEN.
 
 ## Next work
-First recover run `35443174123`. If both positive lock enforcement and deliberate hash-mutation rejection pass, close only the product-derived dependency-lock execution rung and move to canonical LogMate toolchain/source build only when a trustworthy product build identity/access path exists. Do not call the Studio-selected Flutter 3.47.0 environment canonical product tooling. If the run fails, preserve the exact failure class and debug before changing toolchain/version. S005 flag permutations and F006 close-order variants remain deprioritized.
+Do not repeat the lockfile matrix. First seek trustworthy product-owned toolchain identity; if unavailable, Balance Loop should move to the highest independent evidence class rather than labeling 3.38.10 canonical. A canonical source build is justified only after toolchain identity is bounded. F002/F003 and other cross-track evidence remain alternatives; F006 close-order variants and S005 policy-flag permutations remain deprioritized.
