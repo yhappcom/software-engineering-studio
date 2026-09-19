@@ -18,7 +18,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
-- `D005` — recovery/process crash/storage faults/short-write/torn-image model + real WAL crash/checkpoint/main-file-copy + active-reader checkpoint progress + live Online Backup concurrency + interrupted candidate/publication evidence. File existence/progress are not completion/publication oracles. Systems S006 separately validates a directory-sync failure after rename visibility; physical power loss and mobile durability remain OPEN.
+- `D005` — recovery/process crash/storage faults/short-write/torn-image model + real WAL crash/checkpoint/main-file-copy + active-reader checkpoint progress + live Online Backup concurrency + interrupted candidate/publication evidence. Systems S006 separately validates directory-sync failure after rename visibility; physical power loss and mobile durability remain OPEN.
 - `D006` — base sync + real TCP ambiguous retry + isolated kernel link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync remains OPEN.
 
 ### Quality
@@ -27,8 +27,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Systems
 - `S001`–`S004` — planned Foundation boundaries initiated with executable/professional evidence.
-- `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer + real GitHub Actions attestation generation and `research/systems/S005_attestation_retrieval_verification_boundary.md`. Exact subject digest retrieval and `gh attestation verify` succeeded in run `35409747108`; executed negative cases rejected wrong repository identity and mutated subject bytes. An immediately prior positive verifier run failed with unresolved root cause. Stronger workflow/signer policy, offline/independent verification and product/mobile transfer remain OPEN.
-- `S006` — rollback/change-safety foundation plus `research/systems/S006_directory_fsync_publication_boundary.md`. Linux LD_PRELOAD fault injection demonstrates that a final pathname can already be visible after rename when containing-directory `fsync()` then fails with EIO; visibility is not a sufficient oracle for a protocol requiring directory synchronization. Hard-power-loss and platform transfer remain OPEN.
+- `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer + real GitHub Actions attestation generation + hosted retrieval/verification/negative identity evidence. `research/systems/S005_offline_attestation_verification_attempt.md` records the next-rung attempt: one root-caused subject-fixture defect followed by three exact-subject runs that failed before offline verification at bundle/input export. Offline bundle + trusted-root verification remains OPEN; do not assign an infrastructure root cause without command-level stderr.
+- `S006` — rollback/change-safety foundation plus directory-sync publication failure evidence; hard-power-loss and platform transfer remain OPEN.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS. Do not create files merely to count activity; prefer coherent integrated studies.
