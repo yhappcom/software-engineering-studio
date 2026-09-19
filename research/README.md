@@ -15,11 +15,11 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
 - `A005` — repeated-change executable evidence + natural exact-ref LogMate evolution transfer; runtime/long-horizon transfer OPEN.
-- `A006` — evidence-preserving decisions + governance fixture; natural ADR-corpus validation OPEN.
+- `A006` — evidence-preserving decisions + executable governance fixture + `research/architecture/A006_logmate_natural_decision_state_transfer.md`. Natural LogMate history validates separate decision vs implementation/evidence states without relabeling the product master as an ADR corpus; natural ADR lifecycle and long-horizon supersession remain OPEN.
 
 ### Mobile
 - `M001`–`M005` — planned Foundation boundaries have professional/model evidence; M001 has first direct Flutter framework execution.
-- `M006` — `research/mobile/M006_real_browser_service_worker_transfer.md` now contains four exact-Chromium evidence classes: same-session controlled-cache offline, browser-restart/persistent-profile persistence, service-worker update/waiting/activation/client-controller transition, and second-process offline-before-navigation cold start. Run `35473544016` also establishes exact Chromium `140.0.7339.16` / Playwright build `v1187`. Storage eviction/physical network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer remain OPEN.
+- `M006` — `research/mobile/M006_real_browser_service_worker_transfer.md` contains four exact-Chromium evidence classes: same-session controlled-cache offline, browser-restart/persistent-profile persistence, service-worker update/waiting/activation/client-controller transition, and second-process offline-before-navigation cold start. Run `35473544016` establishes exact Chromium `140.0.7339.16` / Playwright build `v1187`. Storage eviction/physical network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer remain OPEN.
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
