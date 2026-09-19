@@ -26,34 +26,35 @@ Build deep Flutter/Dart and mobile-platform engineering capability while preserv
 **IN STUDY — first integrated Foundation block + bounded executable capability evidence complete.** Exact-ref LogMate transfer retained; real native/web capability transfer OPEN.
 
 ### M006 — Native app vs PWA/web boundary and deployment constraints
-**IN STUDY — REAL CHROMIUM OFFLINE + RESTART PERSISTENCE + UPDATE/CLIENT-CONTROL TRANSFER VALIDATED.** Canonical: `research/mobile/M006_real_browser_service_worker_transfer.md`.
+**IN STUDY — REAL CHROMIUM OFFLINE + RESTART + UPDATE/CONTROL + OFFLINE COLD-START TRANSFER VALIDATED.** Canonical: `research/mobile/M006_real_browser_service_worker_transfer.md`.
 
-Prior runs validate same-session controlled-cache offline behavior and browser-restart/persistent-profile cache/control persistence. New run `35470979806`, job `105971774906`, exact head `73e6aad0e59c27719652a0cc22c3a5b519edc917` completed success on `ubuntu-24.04`; all prior regressions plus the distinct service-worker update-transition oracle succeeded.
+Prior runs validate same-session controlled-cache offline behavior, browser-restart/persistent-profile cache/control persistence and service-worker update/waiting/activation/client-control transition. New run `35473544016`, job `105978759910`, exact head `3eef4e22b993018ea6b1787df0b82a819e545cdc` completed success on GitHub Actions Ubuntu 24.04.
 
-**VALIDATION:** a changed v2 worker reached installed/waiting while the existing client remained controlled by v1. Explicit `skipWaiting()` then caused bounded `controllerchange`, after which an independent MessageChannel version oracle identified the controller as v2. Thus `update installed ≠ current client controller` is executable evidence, not only lifecycle documentation.
+**VALIDATION:** a dedicated shell/payload cache was established online, the first browser process closed, a second persistent context launched against the same profile, and that second context was set offline before navigation. Navigation to the cached shell succeeded under service-worker control, the exact shell and payload oracles passed, and a never-cached request failed. Earlier M006 regressions also passed.
 
-**EVIDENCE LIMIT:** generic Chromium + loopback; synthetic Studio worker. This is not Flutter web, LogMate post-build service worker, deployed HTTPS, Safari/WebKit/iPadOS/EFB, offline cold start, storage eviction, real connectivity loss or production behavior. Exact Chromium build remains unavailable through the current connector evidence channel.
+**ENVIRONMENT:** Playwright 1.55.0 downloaded exact Chromium `140.0.7339.16`, Playwright build `v1187`; runner image `ubuntu-24.04` version `20260907.300.1`. This closes the prior exact-Chromium-identity OPEN for the current M006 evidence.
+
+**EVIDENCE LIMIT:** generic Chromium + loopback + Playwright offline emulation; synthetic Studio worker. Origin server remained running while browser networking was forced offline. This is not physical connectivity loss, Flutter web, LogMate post-build service worker, deployed HTTPS, Safari/WebKit/iPadOS/EFB, storage eviction or production behavior.
 
 ## Product transfer scope
 Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. Browser fixtures are Studio validation, not LogMate builds or production evidence.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. M001 has direct Flutter framework execution and M006 now has three real generic-browser lifecycle evidence classes: offline controlled fetch, restart persistence, and update/client-control transition. Representative Android/iOS lifecycle/process/storage/plugin execution, Safari/iPadOS/EFB, canonical LogMate browser artifact/runtime, release/device evidence, offline cold start and eviction remain materially absent.
+Mobile Stage 1 remains **NOT PASS**. M001 has direct Flutter framework execution and M006 now has four real generic-browser lifecycle evidence classes: offline controlled fetch, restart persistence, update/client-control transition and second-process offline-before-navigation cold start. Representative Android/iOS lifecycle/process/storage/plugin execution, Safari/iPadOS/EFB, canonical LogMate browser artifact/runtime, release/device evidence, storage eviction and physical connectivity-loss transfer remain materially absent.
 
 ## Dependencies / handoffs
 - **Foundations:** F001-F005 bounded direct Dart/Flutter evidence is available; do not generalize hosted/framework semantics to OS/platform behavior. F006 remains OPEN.
-- **Architecture:** active service-worker/controller version is an externally observable deployment state.
-- **Data:** CacheStorage/service-worker lifecycle evidence is not authoritative logbook durability, backup or recovery evidence.
-- **Quality:** PWA update acceptance must distinguish update discovery/install, waiting, activation and actual controller transition; registration success is insufficient.
-- **Systems:** product acceptance must bind browser/runtime, Flutter SDK/engine, dependency lock, LogMate build/post-build artifact, origin and active service-worker/controller identity.
+- **Architecture:** active service-worker/controller version and offline shell availability are externally observable deployment states.
+- **Data:** CacheStorage/service-worker lifecycle evidence is not authoritative logbook durability, backup/recovery or eviction resistance.
+- **Quality:** PWA acceptance should distinguish warm offline, restart persistence, update/controller transition and offline cold start; negative uncached requests help detect false offline passes.
+- **Systems:** current M006 evidence now binds exact Chromium `140.0.7339.16` / Playwright build `v1187`; product acceptance still must bind Flutter SDK/engine, dependency lock, LogMate build/post-build artifact, origin and active worker/controller identity.
 - **Design Studio / Web Manager / Marketing Manager:** RELATED DOMAIN CHECK performed; no canonical decisions changed and no files edited there.
 
 ## CHANGE WATCH / OPEN
 - Flutter/Dart/browser/service-worker behavior is version-sensitive; preserve exact runtime/build identity.
-- Exact Chromium build identity remains OPEN through current connector evidence.
 - Android/iOS and Safari/iPadOS/EFB platform execution remain OPEN.
-- Offline cold start, CacheStorage/IndexedDB eviction, real connectivity loss and deployed-origin behavior remain OPEN.
-- Flutter-generated/LogMate-postprocessed service-worker update behavior remains OPEN pending canonical artifact access.
+- CacheStorage/IndexedDB eviction, physical/real connectivity loss and deployed-origin behavior remain OPEN.
+- Flutter-generated/LogMate-postprocessed service-worker update/cold-start behavior remains OPEN pending canonical artifact access.
 
 ## Next work
-Do not repeat same-session offline, restart/profile reuse or synthetic update-transition variants. Balance Loop should prefer a stronger/different evidence class: Safari/iPadOS/EFB or Android/iOS execution, canonical LogMate PWA runtime when exact-ref source access exists, offline cold start, storage eviction, or real connectivity loss. Preserve exact browser identity as OPEN until trustworthy evidence exposes it.
+Do not repeat same-session offline, restart/profile reuse, synthetic update-transition or generic Chromium cold-start variants. Balance Loop should prefer a stronger/different evidence class: Safari/iPadOS/EFB or Android/iOS execution, canonical LogMate PWA runtime when exact-ref source access exists, storage eviction, or real connectivity loss. Current Chromium runtime identity is no longer an OPEN item for these M006 runs.
