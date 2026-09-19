@@ -1,0 +1,27 @@
+name: F006 Dart Socket Boundary
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/foundations/fixtures/F006_dart_socket_boundary.dart'
+      - '.github/workflows/f006-dart-socket-boundary.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.13.3'
+      - name: Record environment
+        run: |
+          dart --version
+          uname -a
+          git rev-parse HEAD
+      - name: Run F006 Dart socket boundary fixture
+        run: dart run research/foundations/fixtures/F006_dart_socket_boundary.dart
