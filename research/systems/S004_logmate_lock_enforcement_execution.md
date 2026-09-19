@@ -2,7 +2,7 @@
 
 Date: 2026-09-19
 Lead: Systems
-Status: VALIDATION IN PROGRESS — exact-ref dependency metadata transferred to exact Flutter release fixture
+Status: IN STUDY — first exact-toolchain execution failed positive lock oracle; controlled alternative comparison in progress
 
 ## Problem / Balance Loop selection
 
@@ -17,63 +17,66 @@ Production identity is unknown. The default branch is not assumed production.
 ## SOURCE
 
 Checked 2026-09-19:
-
-- Dart `pub get` documentation: `--enforce-lockfile` fails when the lockfile does not exactly specify a valid resolution of the manifest or when a hosted package content hash changed: https://dart.dev/tools/pub/cmd/pub-get
-- Dart glossary: hosted dependency content hashes are stored in the lockfile and `--enforce-lockfile` converts a discrepancy into an error: https://dart.dev/resources/glossary
-- Flutter SDK archive: releases expose version, architecture, exact ref, release date, bundled Dart version and provenance; a moving channel label is not an exact toolchain identity: https://docs.flutter.dev/install/archive
-- Flutter current release documentation records Flutter 3.47 as released 2026-08-12: https://docs.flutter.dev/release/whats-new
+- Dart `pub get`: `--enforce-lockfile` fails when the lockfile does not exactly specify a valid resolution of the manifest or a hosted package content hash changed: https://dart.dev/tools/pub/cmd/pub-get
+- Dart glossary: hosted dependency content hashes are recorded in the lockfile and enforcement converts mismatch into failure: https://dart.dev/resources/glossary
+- Flutter SDK archive exposes release version, architecture, exact ref, release date, bundled Dart version and provenance: https://docs.flutter.dev/install/archive
+- Flutter current release documentation records Flutter 3.47 released 2026-08-12: https://docs.flutter.dev/release/whats-new
 
 ## Product-derived fixture
 
-Canonical fixture directory: `research/systems/fixtures/s004_logmate_lock_enforcement/`.
-
-The fixture copies the dependency-relevant manifest semantics and the complete `pubspec.lock` from the exact LogMate ref above. The product lockfile records exact hosted package versions/content hashes and SDK compatibility ranges (`dart >=3.10.7 <4.0.0`, `flutter >=3.27.0`). The fixture is evidence input, not a LogMate source checkout or application build.
+`research/systems/fixtures/s004_logmate_lock_enforcement/` copies the dependency-relevant manifest semantics and complete `pubspec.lock` from the exact LogMate ref. The product lockfile records exact hosted package versions/content hashes and SDK compatibility ranges (`dart >=3.10.7 <4.0.0`, `flutter >=3.27.0`). It is evidence input, not a LogMate source checkout/application build.
 
 ## VALIDATION design
 
-Workflow: `.github/workflows/s004-logmate-lock-enforcement.yml`
-Workflow head: `d093377358944937edf9333842f0a8ee46a72b82`
-Run: `35443174123`
-Job: `105897460229`
-Environment requested: GitHub-hosted `ubuntu-latest`; Flutter exact release tag `3.47.0` cloned from `flutter/flutter`.
+Workflow: `.github/workflows/s004-logmate-lock-enforcement.yml`.
 
-Claim A: the exact-ref LogMate dependency manifest/lock pair is accepted by pub lock enforcement under the selected exact Flutter release.
+Positive oracle: `flutter pub get --enforce-lockfile` exits zero and `cmp` proves the lockfile was not rewritten.
 
-Oracle A:
-1. `flutter pub get --enforce-lockfile` exits zero;
-2. `cmp` confirms the lockfile is not rewritten.
+Negative oracle: mutate exactly one nibble of locked `cupertino_icons 1.0.9` SHA-256; enforcement must exit non-zero and output must identify a hash/content/lock condition.
 
-Claim B: a deliberate hosted-package content-hash mutation is rejected fail-closed.
+A negative case is mandatory because green dependency resolution alone does not establish control sensitivity to integrity drift.
 
-Oracle B:
-1. mutate exactly one nibble of the locked `cupertino_icons 1.0.9` SHA-256;
-2. `flutter pub get --enforce-lockfile` must exit non-zero;
-3. failure output must identify a hash/content/lock condition.
+## First execution — Flutter 3.47.0
 
-This negative case is required because a green resolution alone would not establish that the enforcement control is sensitive to the integrity failure class it claims to catch.
+Workflow head `d093377358944937edf9333842f0a8ee46a72b82`; run `35443174123`; job `105897460229`.
 
-## Current observation
+Observed step evidence:
+- checkout: success;
+- exact Flutter 3.47.0 install: success;
+- toolchain identity recording: success;
+- positive LogMate lock enforcement: **failure**;
+- deliberate hash-mutation negative case: skipped because the prior step failed;
+- overall job: failure, completed 2026-09-19T12:33:41Z.
 
-At the evidence checkpoint, run `35443174123` is `in_progress`. Checkout completed successfully and the exact Flutter-release installation step is running. Toolchain recording, positive lock enforcement and the deliberate hash-mutation negative case have not yet produced verdicts.
+**VALIDATION:** the copied exact-ref dependency metadata is not accepted by `--enforce-lockfile` under this selected exact Flutter 3.47.0 environment.
 
-**VERDICT:** INCONCLUSIVE / IN PROGRESS. No PASS is awarded.
+**OPEN / ROOT CAUSE:** current GitHub evidence access exposes step verdicts but not command-level stdout/stderr, so the precise incompatibility is not assigned. Possible dependency-resolution/toolchain causes are hypotheses only and are not recorded as root cause.
+
+**EVIDENCE LIMIT:** this is not evidence that the product is broken, because Flutter 3.47.0 is Studio-selected and was never established as LogMate's canonical toolchain.
+
+## ALTERNATIVE comparison
+
+Workflow revision `0426836a14866f00dd9de4811c7083bb1f1c0675` changes the validation into a fail-fast-disabled matrix over exact Flutter `3.38.10` and `3.47.0`. Flutter 3.38.10 is a materially relevant alternative because it satisfies the product lockfile's Dart lower bound via Dart 3.10.x-era tooling while remaining an exact release rather than a moving channel. The comparison is intended to test toolchain sensitivity, not to infer which version the product historically used.
+
+The matrix preserves the positive unchanged-lock oracle and deliberate content-hash mutation negative oracle independently for each exact release. Final matrix verdict is pending.
 
 ## SYNTHESIS
 
-The prior static conclusion remains: `manifest constraint != resolved dependency/content identity != exact SDK/toolchain != build artifact`. This workflow adds an executable bridge between the first three identities, but even a successful result will not be a canonical LogMate build because the private product source is not being built in this Studio workflow.
+The first execution already strengthens the static model: a lockfile that records package versions/hashes plus broad SDK compatibility ranges is not equivalent to demonstrated acceptance under an arbitrary later SDK inside those broad conceptual constraints. Exact toolchain identity remains operationally relevant.
+
+It does **not** yet establish why 3.47.0 rejected the lock, which alternative accepts it, or what LogMate's canonical toolchain should be.
 
 ## ENGINEERING JUDGMENT
 
-An exact Flutter release chosen by the Studio is a controlled validation environment, not evidence that LogMate was or should be released with that toolchain. A future canonical product release needs its own declared/pinned toolchain identity before reproducibility/provenance claims are defensible.
+A Studio-selected exact Flutter release is a controlled validation environment, not release-policy authority. A future canonical product release needs a product-owned declared/pinned toolchain before reproducibility/provenance claims are defensible.
 
 ## RELATED DOMAIN CHECK
-
-- Foundations: trustworthy hosted Dart/Flutter execution now exists; F001 no longer blocks this bounded transfer.
-- Architecture: toolchain/dependency identity is an externally relevant release contract only when release/reproducibility policy makes it so.
-- Mobile: exact Flutter release identity matters, but this is dependency resolution rather than Android/iOS/browser runtime evidence.
-- Data: no persistence semantics are exercised.
-- Quality: deliberate hash mutation provides oracle-sensitivity/failure evidence rather than relying on a green dependency resolution alone.
-- Systems: lead track; S004 directly advanced and S005 consumes resulting build/artifact identity later.
+- Foundations: trustworthy hosted Dart/Flutter execution exists; F001 no longer blocks this bounded transfer.
+- Architecture: toolchain/dependency identity becomes an externally relevant release contract when reproducibility/provenance is required.
+- Mobile: exact Flutter release identity matters; this is dependency resolution, not Android/iOS/browser runtime evidence.
+- Data: no persistence semantics exercised.
+- Quality: positive/negative oracles plus exact-version alternative comparison directly relevant.
+- Systems: lead track; S004 advanced; S005 consumes build/artifact identity later.
 - Design Studio: not materially relevant.
 - Web Manager: not materially relevant; no web deployment/runtime claim.
 - Marketing Manager: not materially relevant.
@@ -82,15 +85,14 @@ An exact Flutter release chosen by the Studio is a controlled validation environ
 ## HANDOFFS
 
 ### Systems → Quality
-If the run succeeds, retain the positive lock resolution and deliberate content-hash rejection as separate oracles. Do not relabel either as artifact reproducibility.
+Preserve the 3.47.0 positive-oracle failure as evidence rather than tuning it away. Compare exact toolchains under the same fixture/oracle; only a successful positive case should proceed to the deliberate hash-mutation sensitivity case.
 
 ### Systems → Mobile / LogMate release engineering
-This fixture can show that a selected exact Flutter release can enforce the recorded product lock metadata. It cannot choose the canonical LogMate release toolchain. Product/release tooling must supply that identity before canonical build evidence.
+The failure demonstrates why a broad SDK range and committed lockfile do not identify a canonical release environment. Do not select 3.38.10 or 3.47.0 as product policy from this experiment; product/release tooling must own that decision.
 
 ## OPEN / CHANGE WATCH
-
-- Final result of run `35443174123`.
-- Exact Flutter git/Dart/engine identity observed by the run.
+- Final result of the `3.38.10` vs `3.47.0` matrix at workflow revision `0426836a...`.
+- Command-level cause of the 3.47.0 positive-oracle failure.
 - Canonical LogMate toolchain identity remains unknown from inspected product repository evidence.
 - Canonical LogMate source build, tests, target artifact digest, signing/attestation and independent-host reproducibility remain OPEN.
-- Flutter/pub behavior is version-sensitive; preserve exact release/ref for every future verdict.
+- Flutter/pub behavior is version-sensitive; preserve exact release/ref for every verdict.
