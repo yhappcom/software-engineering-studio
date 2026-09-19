@@ -1,6 +1,6 @@
 # F003 — Data Structures, Algorithms & Complexity
 
-Status: **IN STUDY — CPython evidence + direct Dart transfer harness executing**  
+Status: **IN STUDY — CPython evidence + DIRECT DART QUEUE TRANSFER VALIDATED**  
 Evidence date: 2026-09-20
 
 ## Problem / scope
@@ -11,16 +11,14 @@ Prior CPython evidence remains valid for its bounded runtime only; it is not tra
 
 Current authoritative Dart API evidence checked 2026-09-20:
 - `dart:collection ListQueue` documents a cyclic-buffer representation with constant-time peek/remove operations and amortized constant-time add operations: https://api.dart.dev/dart-collection/ListQueue-class.html
-- `ListBase.removeAt` specifies that removal moves all later objects down one position; its implementation closes the resulting gap: https://api.dart.dev/dart-collection/ListBase/removeAt.html
+- `ListBase.removeAt` specifies that removal moves all later objects down one position and its implementation closes the resulting gap: https://api.dart.dev/dart-collection/ListBase/removeAt.html
 - `ListQueue.removeFirst` advances the queue head in its cyclic table: https://api.dart.dev/dart-collection/ListQueue/removeFirst.html
 - `List` documents the default growable list as an internal buffer and guarantees amortized constant time for a sequence of adds, while warning other implementations may differ: https://api.dart.dev/dart-core/List-class.html
 
-**SOURCE boundary:** the Dart complexity statement used here is specifically the documented `ListQueue` contract. The fixture does not infer a universal complexity contract for every `List` implementation from elapsed time.
+**SOURCE boundary:** the complexity statement credited here is the documented `ListQueue` contract. The fixture does not infer a universal complexity contract for every `List` implementation from elapsed time.
 
 ## SYNTHESIS — semantic contract vs cost model
 A FIFO contract does not prescribe representation. Both a growable `List` repeatedly using `removeAt(0)` and a `ListQueue` using `removeFirst()` can return the same sequence while exercising materially different representation mechanics.
-
-Useful separation:
 
 `abstract operation/invariant → representation → primitive-operation cost → workload composition → measured resource behavior`
 
@@ -31,24 +29,28 @@ Fixture: `research/foundations/fixtures/F003_queue_structure_complexity.py`.
 
 Recorded environment: CPython 3.13.5 / Linux 6.18.44 x86_64. Both list-front removal and deque-front removal satisfied the independent checksum `n(n-1)/2` at n=5,000/10,000/20,000/40,000, while measured timings diverged materially. Exact timing ratios remain observations, not portable guarantees.
 
-## TRANSFER VALIDATION — direct Dart harness
+## TRANSFER VALIDATION — direct Dart
 Fixture: `research/foundations/fixtures/F003_dart_queue_structure.dart`  
 Workflow: `.github/workflows/f003-dart-structures-complexity-validation.yml`  
-Requested runtime: Dart 3.13.3 / GitHub-hosted Ubuntu, with a 3-minute job bound and 1-minute fixture-step bound.  
+Runtime request: Dart 3.13.3 / GitHub-hosted Ubuntu, 3-minute job bound and 1-minute fixture-step bound.  
 Exact fixture head: `68d5b64c12f8a201a64e8c8332fae73c498242db`  
-Workflow run: `35458320697`; job `105937470606`.
+Run: `35458320697`; job: `105937470606`.
 
-### Claim / property / oracle
-- **CLAIM:** the semantic FIFO result can be preserved across two Dart representations while the source-defined primitive mechanics differ.
+### Test Evidence Contract
+- **CLAIM:** the semantic FIFO result is preserved across two Dart representations while the authoritative source-defined primitive mechanics differ.
+- **SPEC/PROPERTY:** Dart API contracts above plus FIFO sequence/checksum invariant.
 - **INPUT:** n = 5,000, 10,000, 20,000, 40,000 with values `0..n-1`.
-- **ORACLE:** both implementations must equal independently derived checksum `n(n-1)/2`; a small explicit front-removal case must produce identical remaining FIFO sequence `1,2,3`.
-- **OBSERVATION:** run is currently executing; no PASS/FAIL is recorded until the fixture step reaches a terminal verdict.
-- **TIMING:** Stopwatch measurements are emitted as diagnostics only. There is deliberately no timing-ratio PASS threshold because shared CI timing is not an independent complexity oracle.
+- **ORACLE:** both implementations must equal independently derived checksum `n(n-1)/2`; a small explicit front-removal case must leave sequence `1,2,3` in both structures.
+- **ENVIRONMENT:** requested Dart 3.13.3 on GitHub-hosted Ubuntu; workflow recorded `dart --version`, `uname -a`, and exact Git head.
+- **OBSERVATION:** run and job completed `success`; checkout, Dart setup, environment recording and fixture execution all completed successfully.
+- **VERDICT:** **PASS at bounded direct-Dart semantic-transfer scope.**
+- **TIMING BOUNDARY:** Stopwatch measurements are emitted only as diagnostics. There is deliberately no timing-ratio PASS threshold because shared CI timing is not an independent complexity oracle.
+- **FAILURE MODEL:** catches semantic divergence between representations and accidental front-removal behavior changes in the bounded fixture; does not prove asymptotic complexity from timing.
 
-This design avoids the invalid shortcut `one benchmark ⇒ complexity proof`. If the fixture succeeds, it transfer-validates Dart semantic equivalence and executable use of the two structures while complexity remains grounded in the authoritative operation contracts. If it fails, preserve the failure before changing the oracle.
+**TRANSFER VALIDATION:** the earlier language-independent conclusion survives direct Dart execution: semantic equivalence does not imply equivalent representation mechanics or cost model. The Dart-specific complexity evidence comes from the Dart API contract, not from copying CPython claims.
 
 ## FAILURE / ROOT CAUSE MODEL
-Failure class: selecting a representation because it satisfies the abstract API while ignoring the dominant workload operation. Repeated front removal from an indexed growable list can require later elements to change positions; `ListQueue` is explicitly designed as a cyclic queue with constant-time remove operations. The engineering defect is representation/workload mismatch, not a FIFO semantic violation.
+Failure class: selecting a representation because it satisfies the abstract API while ignoring the dominant workload operation. Repeated front removal from an indexed growable list changes later element positions; `ListQueue` is explicitly designed as a cyclic queue with constant-time remove operations. The engineering defect is representation/workload mismatch, not a FIFO semantic violation.
 
 Rejected shortcuts:
 - `same output ⇒ same engineering behavior`;
@@ -61,7 +63,6 @@ Rejected shortcuts:
 For Dart FIFO workloads dominated by end operations, `ListQueue` is the source-supported queue representation. This is not a universal ranking: representation choice follows invariants and operation mix. At product scale the cost model should include time, space, mutation/copy cost, locality/serialization constraints, persistence/index maintenance, and recovery effects where relevant.
 
 ## OPEN / VALIDATION / CHANGE WATCH
-- **VALIDATION:** recover terminal result for run `35458320697`; do not claim direct Dart PASS while it is nonterminal.
 - **OPEN:** memory/space measurement and allocator/cache effects.
 - **OPEN:** broader search/index/hash behavior and adversarial equality/hash distributions.
 - **OPEN:** Flutter frame-budget/UI-jank transfer and product-runtime resource budgets.
@@ -69,7 +70,7 @@ For Dart FIFO workloads dominated by end operations, `ListQueue` is the source-s
 - **CHANGE WATCH:** Dart collection implementation/docs are version-sensitive; preserve SDK/API evidence date and exact execution identity.
 
 ## RELATED DOMAIN CHECK
-- **Foundations:** F001 direct Dart execution is now available; F002 direct alias/resource evidence checked. This block uses the same hosted-Dart evidence discipline without transferring CPython costs.
+- **Foundations:** F001 direct Dart execution and F002 direct alias/resource evidence checked. F003 now has direct Dart transfer without transferring CPython costs.
 - **Architecture:** representation may be hidden, but resource behavior can become contractual under an SLO/budget.
 - **Mobile:** operation growth can consume frame/startup/background budgets; direct Flutter/product performance transfer remains OPEN.
 - **Data:** D002 indexing and D004 cache structures depend on workload-sensitive cost models; this note supplies the prerequisite model, not a database conclusion.
@@ -89,4 +90,4 @@ Keep semantic correctness oracles separate from timing observations. Production 
 Use this model when selecting product-relevant queues, but require Flutter/device/browser execution before asserting frame or lifecycle budget impact.
 
 ## Gate assessment
-F003 remains **IN STUDY / NOT PASS**. It has SOURCE + MODEL + retained executable failure/comparison evidence and now a direct Dart transfer harness with an explicit non-timing oracle. Direct Dart execution must reach a terminal verdict before that rung is credited; space complexity, broader algorithms and product/platform resource transfer remain OPEN.
+F003 remains **IN STUDY / NOT PASS**. It now has SOURCE + MODEL + retained executable failure/comparison evidence + direct Dart semantic transfer with a source-backed Dart cost-model boundary. Space complexity, broader algorithms/search/hash behavior and product/platform resource transfer remain OPEN.
