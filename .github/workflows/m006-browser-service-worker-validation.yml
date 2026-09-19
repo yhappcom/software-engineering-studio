@@ -1,0 +1,31 @@
+name: M006 Browser Service Worker Validation
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/mobile/fixtures/m006_browser_service_worker/**'
+      - '.github/workflows/m006-browser-service-worker-validation.yml'
+concurrency:
+  group: m006-browser-service-worker-validation
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record environment
+        run: |
+          node --version
+          python3 --version
+          uname -a
+      - name: Install pinned Playwright Chromium
+        working-directory: research/mobile/fixtures/m006_browser_service_worker
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Execute browser service-worker offline oracle
+        timeout-minutes: 2
+        working-directory: research/mobile/fixtures/m006_browser_service_worker
+        run: node validate.mjs
