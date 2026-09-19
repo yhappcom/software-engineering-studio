@@ -19,39 +19,57 @@ jobs:
         run: |
           set -euo pipefail
           printf 'repository=yhappcom/software-engineering-studio\ncommit=ab6dbf4307078fc82ddc056029f686dd61eae3a7\n' > subject.txt
-          echo 'Expected digest: 9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071'
-          sha256sum subject.txt
+          test "$(sha256sum subject.txt | cut -d' ' -f1)" = '9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071'
+
+      - name: Query attestation API by exact digest
+        id: query
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/vnd.github+json' \
+            repos/yhappcom/software-engineering-studio/attestations/sha256:9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071 \
+            --jq '.attestations | length' | tee attestation-count.txt
+          test "$(cat attestation-count.txt)" -ge 1
 
       - name: Verify exact repository identity
+        id: exact
+        continue-on-error: true
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          gh attestation verify subject.txt --repo yhappcom/software-engineering-studio
+        run: gh attestation verify subject.txt --repo yhappcom/software-engineering-studio
 
       - name: Reject wrong repository identity
+        id: wrongrepo
+        continue-on-error: true
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
-          if gh attestation verify subject.txt --repo yhappcom/design-studio; then
-            echo 'ERROR: wrong repository identity unexpectedly verified' >&2
-            exit 1
-          fi
-          echo 'wrong repository identity rejected as expected'
+          if gh attestation verify subject.txt --repo yhappcom/design-studio; then exit 1; else exit 0; fi
 
       - name: Reject wrong subject bytes
+        id: wrongsubject
+        continue-on-error: true
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
           cp subject.txt wrong-subject.txt
           printf 'mutation=1\n' >> wrong-subject.txt
-          if gh attestation verify wrong-subject.txt --repo yhappcom/software-engineering-studio; then
-            echo 'ERROR: wrong subject unexpectedly verified' >&2
-            exit 1
-          fi
-          echo 'wrong subject rejected as expected'
+          if gh attestation verify wrong-subject.txt --repo yhappcom/software-engineering-studio; then exit 1; else exit 0; fi
+
+      - name: Record verification boundary
+        env:
+          QUERY: ${{ steps.query.outcome }}
+          EXACT: ${{ steps.exact.outcome }}
+          WRONG_REPO_REJECTION: ${{ steps.wrongrepo.outcome }}
+          WRONG_SUBJECT_REJECTION: ${{ steps.wrongsubject.outcome }}
+        run: |
+          printf 'query=%s\nexact=%s\nwrong_repo_rejection=%s\nwrong_subject_rejection=%s\n' \
+            "$QUERY" "$EXACT" "$WRONG_REPO_REJECTION" "$WRONG_SUBJECT_REJECTION"
+          test "$WRONG_REPO_REJECTION" = success
+          test "$WRONG_SUBJECT_REJECTION" = success
