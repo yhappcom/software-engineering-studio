@@ -12,26 +12,24 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Mobile | Stage 1 IN STUDY — M001-M006 first professional/model boundaries; direct Flutter/native/browser/EFB transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 mutation/search; Q006 real crash recovery-oracle transfer |
-| Systems | Stage 1 IN STUDY — S001-S006 initiated; S005 hosted generation + one successful online verification, later verifier contradiction; offline/strong authorization OPEN |
+| Systems | Stage 1 IN STUDY — S004 exact-ref LogMate dependency/toolchain transfer; S005 hosted verification contradiction; direct Flutter build/strong authorization OPEN |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### S005 — stronger authorization policy attempt reproduced hosted verifier instability
-Canonical: `research/systems/S005_attestation_authorization_policy_attempt.md`; workflow: `.github/workflows/s005-attestation-authorization-policy.yml`.
+### S004 — exact-ref LogMate lockfile/toolchain identity transfer
+Canonical: `research/systems/S004_logmate_lockfile_toolchain_transfer.md`.
 
 F001 was attempted first on 2026-09-19: no `dart` or `flutter` executable was available. Direct Dart/Flutter validation remains OPEN rather than simulated.
 
-Current GitHub CLI primary documentation supports narrowing attestation verification with signer-workflow, source-ref and source-digest predicates. A hosted workflow attempted that next policy rung against the same fixed subject digest previously verified successfully.
+Product evidence: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-19`; production identity unknown and default branch is not assumed production.
 
-Run `35415715727` first exposed a workflow oracle/reporting defect: `continue-on-error` allowed job-step conclusions to look successful while expression outcomes caused the final classifier to fail. The workflow was revised to fail closed.
+At that exact ref, `pubspec.yaml` declares Dart `^3.10.7` and ranged hosted dependencies while committed `pubspec.lock` records exact selected hosted versions and SHA-256 content hashes. Concrete examples: `cloud_functions ^6.0.0 → 6.4.0` and `cupertino_icons ^1.0.8 → 1.0.9`. The lockfile records Dart `>=3.10.7 <4.0.0` and Flutter `>=3.27.0`, but does not identify one exact Flutter SDK/engine revision. Repository search found no `flutter-version` or `fvm` pin and `.github/workflows` was absent at the exact ref through the contents API; external CI/operator configuration remains unknown.
 
-Run `35415743203` then failed the combined exact authorization policy before negative cases. To isolate the predicate, run `35415769301` placed the previously successful repository-only verifier first. Subject reconstruction succeeded, but the repository-only baseline itself failed, so finer signer/ref/digest predicates were skipped.
+**SYNTHESIS:** `manifest constraints != resolved package graph/content != exact SDK/toolchain != build artifact`. The committed lockfile materially strengthens package reproducibility, but it is not sufficient evidence for exact Flutter build reproducibility/provenance.
 
-**CONTRADICTION:** the same fixed subject/repository pair succeeded in prior hosted run `35409747108` but later failed the repository-only baseline in `35415769301`. This reproduces the earlier unexplained verifier-failure class. Available evidence still lacks command-level stderr, so no permission/service/CLI/attestation root cause is assigned.
-
-**VALIDATION:** stronger workflow/ref/source authorization remains OPEN. The correct engineering response is not more flag permutations; the baseline verifier must first become diagnosable/stable or be replaced by an independent verification path. No PASS awarded.
+**VALIDATION:** no Flutter/Dart executable was available, so lockfile enforcement, package-content retrieval, canonical LogMate build, independent-host comparison and artifact digest/signing/attestation remain OPEN. No PASS awarded.
 
 ## Retained evidence
 - **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN.
@@ -39,28 +37,28 @@ Run `35415743203` then failed the combined exact authorization policy before neg
 - **Mobile:** M001-M006 cover planned Foundation boundaries at first professional/model level; real runtime/platform transfer OPEN.
 - **Data:** D005 rollback/storage/WAL/checkpoint/live backup/interruption evidence; D006 transport faults + exact-ref inbound progress transfer.
 - **Quality:** Q001-Q006 professional boundaries; Q004 mutation/search-strength and Q006 semantic recovery-oracle discrimination retained.
-- **Systems:** S001-S006 retained; S005 spans asymmetric signing, reproducibility, hosted attestation generation, one successful hosted retrieval/verification/negative identity run, failed offline input export, and now a reproduced hosted-verifier contradiction during stronger authorization-policy work; S006 directory-sync publication failure evidence.
+- **Systems:** S001-S006 retained; S004 now has exact-ref Flutter-application dependency/toolchain transfer. S005 retains hosted attestation generation, one successful retrieval/verification/negative identity run and later verifier contradiction; S006 retains directory-sync publication failure evidence.
 
 ## Cross-track handoffs
-- **Architecture:** evidence-critical release decisions should preserve exact workflow run/job/commit/subject, verifier policy inputs and contradictory evidence.
-- **Quality:** preserve run `35415715727` as an oracle/reporting failure; do not conflate it with the later system-under-test baseline failure in `35415769301`.
-- **Mobile / products:** Studio text-subject attestation is not Flutter/mobile release evidence. Product transfer requires exact product ref/version, canonical build/toolchain/lock, artifact digest, attestation, executed verification policy and delivered artifact identity.
+- **Architecture:** build/toolchain identity becomes an externally relevant contract when reproducibility/provenance is required; evidence-critical release decisions should preserve exact artifact/toolchain/provenance identity.
+- **Quality:** future product reproducibility validation should inject toolchain drift separately from lockfile/content-hash drift.
+- **Mobile / LogMate:** when canonical build tooling becomes available, capture exact Flutter SDK/engine, enforce the committed lockfile, execute the canonical build, then bind artifact digest/signing/attestation. Current static source evidence does not establish a reproducible mobile artifact.
 - **Data:** bind migration/backup release evidence to exact artifact/provenance when used as a release gate.
 - **Design Studio / Web Manager / Marketing Manager:** considered under cross-repo contract; not materially relevant to this bounded mechanism; no canonical files edited.
 
 ## Current Balance Loop
 Direct Dart/Flutter execution remains the highest-prerequisite target whenever a trustworthy SDK appears. The runtime still has no `dart`/`flutter`.
 
-Do not repeat S005 offline-export or signer/ref/digest flag variants until command-level verifier failure evidence or an independent verifier path is available. Otherwise prefer a materially different higher rung: canonical product build/attestation, independent-host reproducibility, physical/platform publication durability, natural ADR/release evidence, or another track's stronger gap.
+The S004 static product-transfer boundary is now explicit; do not repeat manifest/lockfile audits. The next product rung is executable lockfile enforcement + exact toolchain capture + canonical build. Do not repeat S005 offline-export or signer/ref/digest flag variants until command-level verifier failure evidence or an independent verifier path is available. Otherwise prefer a materially different higher rung: independent-host reproducibility, physical/platform publication durability, natural ADR/release evidence, or another track's stronger gap.
 
 ## CHANGE WATCH
-- Flutter/Dart runtime/build behavior is version-sensitive; exact SDK/ref matters.
+- Flutter/Dart runtime/build and pub lockfile behavior are version-sensitive; exact SDK/ref matters.
+- Exact Flutter SDK/engine and any external CI/operator toolchain pin for inspected LogMate remain unknown.
 - Browser/PWA and Android/iOS storage/background/backup behavior is platform/version sensitive.
 - Filesystem publication durability depends on OS/filesystem/device and synchronization semantics; current EIO injection is not hard-power-loss evidence.
 - SQLite WAL/backup behavior depends on SQLite version, wrapper, VFS/OS/filesystem/device and synchronization mode.
 - LogMate Sync and backup consistency/publication mechanisms remain OPEN product decisions.
 - GitHub Actions/CLI/attestation API/Sigstore roots/OIDC/hosted-runner behavior are service/tool/version sensitive; hosted verification currently has contradictory success/failure evidence.
-- OpenSSL/provider and compiler/linker behavior are toolchain sensitive.
 
 ## Evidence rule
 No PASS from reading alone. Expected progression where applicable: `SOURCE → MODEL → EXECUTABLE EXAMPLE → FAILURE → DEBUG/ROOT CAUSE → ALTERNATIVE → TRANSFER → PRODUCTION EVIDENCE`.
