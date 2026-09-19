@@ -1,0 +1,25 @@
+name: F001 Dart JIT AOT validation
+on:
+  push:
+    paths:
+      - 'research/foundations/fixtures/F001_dart_jit_aot_boundary.dart'
+      - '.github/workflows/f001-dart-jit-aot-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Record Dart identity
+        run: dart --version
+      - name: JIT execution
+        run: dart run research/foundations/fixtures/F001_dart_jit_aot_boundary.dart
+      - name: Compile AOT executable
+        run: dart compile exe research/foundations/fixtures/F001_dart_jit_aot_boundary.dart -o /tmp/f001-aot
+      - name: AOT execution
+        run: /tmp/f001-aot
