@@ -26,7 +26,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `Q006` — model fault campaign plus real child-process crash/restart + SQLite persistent-state oracle discrimination; Dart/Flutter/mobile/backend/production transfer OPEN.
 
 ### Systems
-- `S001`–`S004` — planned Foundation boundaries initiated with executable/professional evidence.
+- `S001`–`S003` — planned Foundation boundaries initiated with executable/professional evidence.
+- `S004` — base dependency/supply-chain/build-system study plus `research/systems/S004_logmate_lockfile_toolchain_transfer.md`: exact-ref LogMate transfer confirms committed package versions/content hashes while exact Flutter SDK/engine identity remains unbound in inspected repository evidence; Dart/pub/build execution OPEN.
 - `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer + real GitHub Actions attestation generation + one successful hosted retrieval/verification/negative identity run. `research/systems/S005_offline_attestation_verification_attempt.md` records blocked offline input export. `research/systems/S005_attestation_authorization_policy_attempt.md` records the stronger signer/ref/source policy attempt and a reproduced contradiction: the fixed subject/repository pair that previously verified successfully later failed even the repository-only hosted baseline. Strong authorization policy and verifier root cause remain OPEN; do not spend further Actions variants without command-level failure evidence.
 - `S006` — rollback/change-safety foundation plus directory-sync publication failure evidence; hard-power-loss and platform transfer remain OPEN.
 
