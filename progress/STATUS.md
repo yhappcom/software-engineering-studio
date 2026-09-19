@@ -12,45 +12,47 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Mobile | Stage 1 IN STUDY — M001 first direct Flutter framework execution; native/browser/EFB/product transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 mutation/search; Q006 real crash recovery-oracle transfer |
-| Systems | Stage 1 IN STUDY — S004 exact-ref LogMate dependency/toolchain transfer; S005 hosted verification contradiction; canonical Flutter product build/strong authorization OPEN |
+| Systems | Stage 1 IN STUDY — S004 exact-ref LogMate dependency metadata now under executable lock-enforcement transfer; S005 hosted verification contradiction; canonical product build/artifact identity OPEN |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### F006 — outer CI containment validated; socket verdict remains OPEN
-Bounded workflow head `835104ea9dac410b4f0a4d17f748882710f5921c`, run `35437455712`, job `105882433731`, completed with `failure`. Checkout, Dart setup and environment recording succeeded. The fixture step ran from `10:27:43Z` to `10:28:56Z` and terminated as failure; the job completed at `10:28:58Z`.
+### S004 — exact-ref LogMate dependency lock enforcement transfer started
+Product evidence identity: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-19`; production identity remains unknown and `main` is not assumed production.
 
-**VALIDATION:** the independent CI deadline now converts the previously runaway fixture into a terminal bounded failure. This advances Quality/Systems evidence-pipeline control.
+The Studio now carries a product-derived fixture containing the dependency-relevant manifest semantics and complete lockfile from that exact ref. Workflow head `d093377358944937edf9333842f0a8ee46a72b82`, run `35443174123`, job `105897460229` uses exact Flutter release `3.47.0`. Positive acceptance requires `flutter pub get --enforce-lockfile` and byte-unchanged lockfile; a separate negative oracle mutates one nibble of the locked `cupertino_icons` SHA-256 and requires fail-closed rejection.
 
-**OPEN:** command-level fixture output remains unavailable through the current evidence channel, so the exact internal blocking/resource-retention phase is not identified. The result is not a Dart socket semantic failure and does not satisfy the intended framing/EOF oracle. F006 direct-Dart socket correctness therefore remains OPEN.
+**VALIDATION:** at the current checkpoint checkout and exact Flutter-release installation have succeeded; toolchain recording and both lock oracles are still pending/in progress. No PASS is awarded.
 
-**CONTRADICTION retained:** the earlier close-order hypothesis remains falsified because changing close ordering and adding target-level five-second Future timeouts did not prevent the hang. Application-level timeout ≠ validation-harness execution bound.
+**BOUNDARY:** this is executable product-derived dependency metadata transfer, not a canonical LogMate source checkout/build. The Studio-selected Flutter 3.47.0 toolchain must not be relabeled as the product's canonical release toolchain.
 
 ## Retained evidence
 - F001: direct Dart JIT/AOT and first Flutter framework/test-binding execution successful.
 - F004/F005: direct Dart isolate and async transfers successful at bounded hosted-Linux scope.
+- F006: reproduced hang, falsified close-order hypothesis and successful outer CI containment; socket correctness/root cause OPEN.
 - Architecture: A001-A003/A005/A006 cover change pressure, ownership/dependency, semantic contracts, evolution and evidence-preserving decisions.
 - Mobile: M001 direct framework execution; M002-M006 model/professional boundaries; native/browser/EFB transfer OPEN.
 - Data: D005 rollback/storage/WAL/checkpoint/live backup/interruption evidence; D006 transport faults + exact-ref inbound progress transfer.
 - Quality: Q001-Q006 professional boundaries; Q004 mutation/search-strength and Q006 semantic recovery-oracle discrimination retained.
-- Systems: S001-S006 retained; S004 exact-ref Flutter-application dependency/toolchain transfer; S005 hosted attestation evidence plus verifier contradiction; S006 directory-sync publication failure evidence.
+- Systems: S001-S006 retained; S005 hosted attestation evidence plus verifier contradiction; S006 directory-sync publication failure evidence.
 
 ## Cross-track handoffs
-- **Quality / Systems:** F006 now provides executable evidence that an outer CI deadline can contain a target whose own timeout logic does not terminate the validation step.
-- **Data / Architecture:** F006 still provides no Dart socket correctness verdict; transport termination remains distinct from application completion/ACK/durable effect.
-- **Mobile:** `dart:io` evidence cannot transfer to browser/PWA; native/browser platform behavior remains independent.
-- **Systems / LogMate:** hosted Studio Dart/Flutter execution is not a canonical LogMate build. S004 still requires exact product toolchain capture + committed-lock enforcement + canonical build + artifact identity.
-- **Design Studio / Web Manager / Marketing Manager:** considered under the cross-repository contract; this harness-containment result does not alter their canonical decisions; no files edited there.
+- **Systems / Quality:** S004 deliberately pairs a positive lock-resolution oracle with a content-hash mutation negative oracle; a green resolution alone is insufficient control-sensitivity evidence.
+- **Systems / Mobile / LogMate:** exact Flutter 3.47.0 is a controlled Studio validation environment only. Canonical release evidence still needs product-declared toolchain identity → source build → artifact digest/identity.
+- **Quality / Systems:** F006 outer deadline containment remains reusable validation-harness evidence.
+- **Data / Architecture:** F006 provides no Dart socket correctness verdict; transport termination remains distinct from application completion/ACK/durable effect.
+- **Design Studio / Web Manager / Marketing Manager:** considered under the cross-repository contract; this dependency-resolution block does not alter their canonical decisions; no files edited there.
 
 ## Current Balance Loop
-The named F006 bounded-run question is resolved: the outer deadline works, while socket root cause/correctness remains OPEN. Do not spend another runner cycle on close-order permutations. If F006 resumes, require independently observable phases or an external supervisor capable of preserving phase-level evidence. Re-rank toward a materially stronger evidence class. The strongest current candidate is exact canonical LogMate toolchain capture → committed-lock enforcement → canonical Flutter build → artifact identity because it crosses Systems, Mobile and Quality and advances a live product boundary; F002/F003 remain independent Foundation alternatives.
+The prior highest-leverage candidate is now active: S004 exact-ref product-derived lock enforcement. First recover run `35443174123`. If both positive and deliberate-negative oracles pass, close only that dependency-lock rung and reassess whether a trustworthy canonical LogMate toolchain/source-build path exists. If not, move to the highest independent evidence class rather than simulating a product build. F002/F003 remain Foundation alternatives; F006 close-order variants and S005 policy-flag permutations remain deprioritized.
 
 ## CHANGE WATCH
-- Flutter/Dart runtime/build behavior is version-sensitive; exact SDK/ref/engine identity matters.
+- Flutter/Dart runtime/build/pub behavior is version-sensitive; exact SDK/ref/engine identity matters.
 - A moving Flutter `stable` label is not sufficient artifact identity.
-- Exact Flutter SDK/engine and any external CI/operator toolchain pin for inspected LogMate remain unknown from product repository evidence.
-- F006 direct Dart socket root cause/verdict is OPEN; current evidence is reproduced hang + falsified hypothesis + successful outer containment, not transport correctness.
+- Exact canonical Flutter SDK/engine and any external CI/operator toolchain pin for inspected LogMate remain unknown from product repository evidence.
+- S004 run `35443174123` has no lock-enforcement verdict yet.
+- F006 direct Dart socket root cause/verdict is OPEN.
 - Browser/PWA and Android/iOS storage/background/backup behavior is platform/version sensitive.
 - Filesystem publication durability and SQLite WAL/backup behavior remain OS/filesystem/device/wrapper sensitive.
 - GitHub Actions/CLI/attestation API/Sigstore roots/OIDC/hosted-runner behavior are service/tool-version sensitive; hosted verification has contradictory success/failure evidence.
