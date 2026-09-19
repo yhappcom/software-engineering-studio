@@ -14,10 +14,10 @@ Build language- and framework-independent understanding of how programs execute,
 Status: **IN STUDY — DIRECT DART JIT/AOT + FIRST FLUTTER FRAMEWORK EXECUTION VALIDATED**. Hosted run `35423963687` validates Dart JIT, AOT compilation and AOT execution after fixture root-cause/fix/regression. Run `35426881450` validates first Flutter framework/test-binding execution. Native/browser/product runtime remains separate.
 
 ### F002 — Values, references, memory models, stack/heap and lifetime
-Status: **IN STUDY — DIRECT DART IDENTITY/ALIAS/FINAL-BINDING + EXPLICIT RESOURCE-CLOSE TRANSFER VALIDATED.** Canonical base: `research/foundations/F002_values_references_memory_lifetime.md`; direct transfer: `research/foundations/F002_direct_dart_identity_resource_lifetime_transfer.md`. Run `35455279567`, job `105929339080`, exact head `d6bc8629f18b2ec8b7f8fb86849e7682f7ff36c2` succeeded on requested Dart 3.13.3 hosted Ubuntu. The fixture validates direct alias identity/mutation, `final` binding versus mutable object, shallow outer-copy/nested-alias failure, explicit bounded nested-copy isolation, and explicit `dart:io` file-handle close followed by rejected use. GC/finalizer timing, JIT/AOT equivalence, native mobile/browser and product transfer remain OPEN.
+Status: **IN STUDY — DIRECT DART IDENTITY/ALIAS/FINAL-BINDING + EXPLICIT RESOURCE-CLOSE TRANSFER VALIDATED.** Canonical base: `research/foundations/F002_values_references_memory_lifetime.md`; direct transfer: `research/foundations/F002_direct_dart_identity_resource_lifetime_transfer.md`. Run `35455279567`, job `105929339080`, exact head `d6bc8629f18b2ec8b7f8fb86849e7682f7ff36c2` succeeded on requested Dart 3.13.3 hosted Ubuntu. GC/finalizer timing, JIT/AOT equivalence, native mobile/browser and product transfer remain OPEN.
 
 ### F003 — Data structures, algorithms and complexity
-Status: **IN STUDY**. Bounded queue/complexity evidence retained; direct Dart structures/complexity, space cost and broader product/runtime transfer remain OPEN.
+Status: **IN STUDY — DIRECT DART QUEUE/REPRESENTATION TRANSFER VALIDATED.** Canonical: `research/foundations/F003_data_structures_algorithms_complexity.md`. Run `35458320697`, job `105937470606`, exact fixture head `68d5b64c12f8a201a64e8c8332fae73c498242db` succeeded on requested Dart 3.13.3 hosted Ubuntu. The fixture validates FIFO semantic equivalence for growable `List.removeAt(0)` versus `ListQueue.removeFirst()` across a bounded size sweep using an independent closed-form checksum. Dart API source separately establishes `ListQueue` cyclic-buffer constant-time remove semantics and `ListBase.removeAt` later-element movement. Timing output is diagnostic only and is not used as a complexity oracle. Space cost, broader search/hash behavior and Flutter/product performance transfer remain OPEN.
 
 ### F004 — Processes, threads, scheduling, synchronization and concurrency hazards
 Status: **IN STUDY — DIRECT DART ISOLATE TRANSFER ADDED.** Run `35432075163`, job `105868357618`, exact head `491887c4f20b2146026629984f43d25f19e949f4` succeeded with Dart 3.13.3, isolate-owned mutable state and a negative sendability case.
@@ -29,23 +29,23 @@ Status: **IN STUDY — DIRECT DART TRANSFER ADDED.** Run `35429564591`, job `105
 Status: **IN STUDY — DIRECT DART SOCKET HARNESS FAILURE CONTAINED; SOCKET VERDICT/ROOT CAUSE OPEN.** Canonical: `research/foundations/F006_direct_dart_socket_transfer.md`. Run `35437455712`, job `105882433731`, validates independent CI containment after the first close-order hypothesis was falsified. Command-level fixture output remains unavailable; exact blocking/resource-retention phase and socket correctness remain OPEN.
 
 ## Gate assessment
-Foundation PASS is **not** awarded. F001 has direct Dart JIT/AOT plus first Flutter framework execution; F002 now has direct Dart identity/alias/final-binding/explicit-close transfer; F004/F005 have direct Dart transfer. F006 has failure→hypothesis→falsification plus executable outer containment but no transport verdict. F003 direct Dart/runtime transfer and native mobile/browser/product evidence remain open.
+Foundation PASS is **not** awarded. F001-F005 now each have bounded direct Dart and/or Flutter execution evidence appropriate to their current claim, while F006 has failure→hypothesis→falsification plus executable outer containment but no transport verdict. Native mobile/browser/product transfer remains materially open, and F003 still lacks space/broader algorithm/product-resource evidence.
 
 ## Dependencies / handoffs
-- **Architecture/Data:** F002 now directly demonstrates in Dart that binding immutability and shallow outer copying do not establish deep ownership isolation.
+- **Architecture/Data:** F002 directly demonstrates binding immutability/shallow-copy ownership boundaries; F003 supplies the source-backed `operation → representation → primitive cost → workload` model for structure/index/cache choices.
+- **Mobile:** F003 does not establish Flutter frame-budget impact; require Flutter/device/browser execution for performance claims.
+- **Systems/Quality:** F003 deliberately separates semantic correctness from timing observations; CI timing is not a complexity proof or production profile.
 - **Mobile/Systems:** F002 explicit `dart:io` close is a bounded hosted-native resource contract; do not transfer it to lifecycle cleanup, browser behavior or GC/finalizer timing.
-- **Mobile:** consume direct Flutter/Dart evidence only at stated boundaries; `dart:io` cannot transfer to browser/PWA and F006 has no socket PASS.
 - **Quality:** preserve F006 as failure→hypothesis→falsification→outer-containment evidence; target-level timeouts are not sufficient harness controls.
 - **Data:** do not infer application completion from transport termination.
-- **Systems:** exact workflow/run/job/toolchain identity belongs with executable evidence; independent CI termination is an evidence-pipeline control.
 
 ## CHANGE WATCH / OPEN
-- Flutter/Dart toolchain behavior is version-sensitive; preserve exact ref/SDK/run identity.
+- Flutter/Dart toolchain and collection behavior are version-sensitive; preserve exact ref/SDK/run identity.
 - Hosted Linux evidence is not release-AOT native app, Android/iOS lifecycle, browser/PWA or physical-device evidence.
-- F002 WeakReference/Finalizer timing, JIT/AOT equivalence and platform transfer remain OPEN; do not use nondeterministic GC timing as a PASS oracle.
-- F003 still has direct Dart/runtime transfer gaps where runtime semantics materially matter.
+- F002 WeakReference/Finalizer timing, JIT/AOT equivalence and platform transfer remain OPEN.
+- F003 space cost, broader search/hash behavior and product/platform performance transfer remain OPEN.
 - F006 direct Dart socket verdict/root cause is OPEN; exact blocking phase is not isolated.
 - F004 external-resource/process-failure/fairness/platform transfer and F005 backpressure/error/concrete I/O cancellation/platform transfer remain OPEN.
 
 ## Next work
-Do not repeat the F002 alias/final/shallow-copy fixture merely to accumulate passes. S004 exact LogMate source build remains blocked by cross-private-repository source acquisition in the Studio runner; do not repeat unauthenticated clone attempts. Balance Loop should compare F003 direct Dart structures/complexity against materially stronger native/browser/product transfer and resume S004 immediately if an authorized exact-ref execution path becomes available.
+Do not repeat F002 alias variants or F003 queue timing sweeps merely to accumulate passes. S004 exact LogMate source build remains blocked by cross-private-repository source acquisition in the Studio runner; resume it immediately if authorized exact-ref execution becomes available. Balance Loop should now favor a materially stronger evidence class: native/browser/product runtime transfer, F006 phase-isolated root cause only if a better harness is available, or another high-risk cross-track prerequisite.
