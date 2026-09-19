@@ -19,7 +19,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Mobile
 - `M001`–`M005` — planned Foundation boundaries have professional/model evidence; M001 has first direct Flutter framework execution.
-- `M006` — base `research/mobile/M006_native_pwa_web_deployment_constraints.md` plus `research/mobile/M006_real_browser_service_worker_transfer.md`. Same-session run `35461424265` validates controlled-cache offline behavior; restart run `35464672061`, job `105954736630`, head `c4d45429c45617f127a6502de4bc241371617c55` validates service-worker control + cached-payload persistence across browser restart/persistent-profile reuse with a negative uncached-fetch oracle. Offline cold start, storage eviction/update, Safari/iPadOS/EFB, Flutter web, LogMate artifact and production transfer remain OPEN.
+- `M006` — `research/mobile/M006_real_browser_service_worker_transfer.md` now contains three real Chromium evidence classes: same-session controlled-cache offline, browser-restart/persistent-profile persistence, and run `35470979806` service-worker update/waiting/explicit activation/client-controller transition. Offline cold start, eviction/real network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer remain OPEN.
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
