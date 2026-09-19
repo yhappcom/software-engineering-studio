@@ -1,6 +1,6 @@
 # M006 — Real-browser Service Worker Offline Transfer
 
-Status: **IN STUDY — executable browser transfer pending hosted verdict**  
+Status: **IN STUDY — first real Chromium service-worker/offline transfer VALIDATED**  
 Evidence date: 2026-09-20
 
 ## Why this block
@@ -19,21 +19,27 @@ Balance Loop comparison favored Mobile M006 over another Dart-only Foundation va
 
 **ORACLE:** (1) online payload equals independent literal `M006-CACHED-PAYLOAD-v1`; (2) page has a non-null `navigator.serviceWorker.controller`; (3) after offline transition, query-varied `/payload.txt?offline=1` returns the same cached literal because the handler intentionally matches by pathname and serves the canonical cache key; (4) `/never-cached.txt` rejects while offline. The negative uncached case prevents a false PASS caused by network still being available.
 
-**ENVIRONMENT:** GitHub Actions `ubuntu-24.04`; Node/Python identities recorded by workflow; Playwright package pinned to 1.55.0 and its Chromium installed by Playwright. Exact browser build must be recovered from execution evidence before a completed verdict is recorded.
+**ENVIRONMENT:** GitHub Actions `ubuntu-24.04`; Node/Python identities recorded by workflow; Playwright package pinned to 1.55.0 and its Chromium installed by Playwright. The Actions summary proves the pinned browser-install step and browser-oracle step executed successfully, but command stdout/browser build number is not exposed by the current connector evidence channel; exact Chromium build identity therefore remains OPEN rather than fabricated.
 
 **FAILURE MODEL:** registration/control failure, cache population failure, fetch-handler mismatch, offline emulation not preventing network access, or accidental broad offline fallback.
 
 **EVIDENCE LIMIT:** this is generic Chromium service-worker execution, not Flutter web, LogMate source, product post-build transform, deployed HTTPS origin, real network loss, browser restart, storage eviction, Safari/WebKit/iPadOS, Home Screen installation, EFB policy, release artifact, or production evidence. Playwright offline emulation is not physical connectivity loss.
 
-## EXECUTION STATE
-Workflow: `.github/workflows/m006-browser-service-worker-validation.yml`. Run `35461424265`, job `105945868263`, head `754ed4f86be25ffd32c85665d42a78c88988452e` was **in progress** when this note was persisted. Checkout and environment-recording steps had succeeded; pinned Playwright Chromium installation was still running. No PASS/FAIL is awarded until the browser oracle reaches a terminal verdict.
+## VALIDATION / TRANSFER VALIDATION
+Workflow `.github/workflows/m006-browser-service-worker-validation.yml`, run `35461424265`, job `105945868263`, head `754ed4f86be25ffd32c85665d42a78c88988452e` completed **success**. Checkout, environment recording, pinned Playwright Chromium installation and the browser service-worker offline oracle all completed successfully; the oracle step ran from 18:31:05Z to 18:31:06Z on 2026-09-19 UTC.
+
+**VALIDATION:** the real browser accepted service-worker registration/control, served the explicit cached payload under emulated offline state, and also satisfied the negative uncached-fetch failure oracle.
+
+**TRANSFER VALIDATION:** M006's earlier model-level distinction `install/offline mechanism ≠ general network availability or authoritative-data durability` now survives transfer into one actual Chromium service-worker runtime. This closes the generic-browser-execution gap only at this bounded scope. It does not establish Safari/iPadOS/EFB or LogMate behavior.
+
+No Mobile Stage 1 PASS is awarded from this single browser runtime.
 
 ## RELATED DOMAIN CHECK
 - Foundations: F005 async/event distinction and F006 network-boundary discipline apply; this does not resolve F006.
 - Architecture: service-worker/cache behavior is an externally observable deployment contract, not merely implementation detail.
-- Mobile: lead track; advances M006 from model-only toward real browser execution.
+- Mobile: lead track; advances M006 from model-only to first real browser execution.
 - Data: CacheStorage delivery is not authoritative-record durability, backup or recovery evidence.
-- Quality: independent positive/negative oracles and bounded workflow timeout are required; terminal result pending.
+- Quality: independent positive/negative oracles and bounded workflow timeout were exercised; restart/update/storage/network fault classes remain open.
 - Systems: browser/runtime/artifact/origin identity must be bound before product/release claims.
 - Design Studio: no design contract is changed; degraded/offline state semantics remain a future handoff if product behavior is validated.
 - Web Manager: no website/PWA operational decision is changed by a local generic fixture.
@@ -41,11 +47,11 @@ Workflow: `.github/workflows/m006-browser-service-worker-validation.yml`. Run `3
 - Product: LogMate exact product evidence retained from canonical M006/S004; no product files edited and this fixture is not a LogMate build.
 
 ## HANDOFFS
-- **Mobile → Quality:** if terminal execution succeeds, reuse the positive controlled-cache + negative uncached oracle shape for deployed-browser acceptance, but add restart/update/storage/network failure classes.
+- **Mobile → Quality:** reuse the positive controlled-cache + negative uncached oracle shape for deployed-browser acceptance, but add restart/update/storage/network failure classes.
 - **Mobile → Systems:** bind future product transfer to exact browser version, LogMate build/post-build artifact digest, deployment origin and active service-worker/controller identity.
 - **Mobile → Data:** do not treat successful CacheStorage offline fetch as proof of canonical logbook-record persistence or recoverability.
 
 ## OPEN / CHANGE WATCH
-- Hosted browser verdict and exact Chromium build identity pending.
+- Exact Chromium build identity is not exposed by the current evidence channel and remains OPEN.
 - Safari/iPadOS/EFB, Flutter web, LogMate canonical artifact, service-worker update/client-control transitions, storage eviction/restart and deployed-origin behavior remain OPEN.
 - W3C Service Workers and browser implementations remain CHANGE WATCH.
