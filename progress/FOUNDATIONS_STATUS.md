@@ -28,7 +28,11 @@ Status: **IN STUDY — first integrated Foundation block complete**. Python alia
 Status: **IN STUDY — first integrated Foundation block complete**. Bounded queue/complexity evidence retained; direct Dart structures/complexity, space cost and broader product/runtime transfer remain OPEN.
 
 ### F004 — Processes, threads, scheduling, synchronization and concurrency hazards
-Status: **IN STUDY — two integrated Foundation blocks complete**. Mutual exclusion/ordering/progress, circular wait and durable-predicate signaling boundaries retained; direct Dart isolate/concurrency transfer remains OPEN.
+Status: **IN STUDY — DIRECT DART ISOLATE TRANSFER ADDED.** Canonical: `research/foundations/F004_processes_threads_scheduling_synchronization_hazards.md`, `research/foundations/F004_direct_dart_isolate_transfer.md`; direct fixture: `research/foundations/fixtures/F004_dart_isolate_boundary.dart`.
+
+Prior CPython evidence retains mutual exclusion/ordering/progress, circular-wait and durable-predicate signaling boundaries. GitHub-hosted run `35432075163`, job `105868357618`, exact source/workflow head `491887c4f20b2146026629984f43d25f19e949f4` succeeded with workflow-requested Dart SDK 3.13.3. A worker isolate exclusively owned a mutable counter; three concurrent request Futures produced three distinct increments and final count 3 without a scheduler-order oracle. A negative probe verified that sending an explicitly unsendable `ReceivePort` is rejected at the message boundary.
+
+**TRANSFER VALIDATION:** F004's source/model claim that Dart isolate concurrency uses memory isolation + message passing now has direct Dart Native execution evidence. This does not establish fairness, exactly-once protocol effects, external-resource serialization, Flutter/native-thread/plugin behavior, browser workers, or product concurrency correctness.
 
 ### F005 — Async execution, event loops, futures, streams and cancellation
 Status: **IN STUDY — DIRECT DART TRANSFER ADDED.** Canonical: `research/foundations/F005_async_event_loop_futures_cancellation.md`; direct fixture: `research/foundations/fixtures/F005_dart_async_timeout_ordering.dart`.
@@ -41,20 +45,20 @@ GitHub-hosted run `35429564591`, job `105861592799`, exact workflow/source commi
 Status: **IN STUDY — two integrated Foundation blocks complete**. Stream/framing/termination ambiguity evidence retained; direct Dart/mobile/real-network transfer remains OPEN.
 
 ## Gate assessment
-Foundation PASS is **not** awarded. F001 has crossed its original direct-execution blocker with Dart JIT/AOT plus first Flutter framework execution and includes failure/root-cause/regression evidence. F005 now adds direct Dart async transfer rather than reading/model evidence alone. The broader Foundations Stage-1 gate still needs appropriate transfer across memory/types, structures/complexity, concurrency and OS/network claims; one async fixture cannot substitute for those mechanisms or for native/browser platform evidence.
+Foundation PASS is **not** awarded. F001 has direct Dart JIT/AOT plus first Flutter framework execution with failure/root-cause/regression evidence; F004 now has direct Dart Native isolate/message-boundary transfer with a negative sendability case; F005 has direct Dart async transfer. The broader Stage-1 gate still needs appropriate transfer across memory/types, structures/complexity and OS/network claims; hosted Dart Native evidence cannot substitute for native mobile/browser/product platform evidence.
 
 ## Dependencies / handoffs
-- **Mobile:** M001 may consume direct Flutter framework evidence and F005 direct Dart async semantics, but Flutter scheduler/frame and Android/iOS/browser behavior remain separate.
-- **Quality:** preserve exact runtime identity and semantic oracles; timeout tests must observe source terminal state independently of waiter state.
-- **Data:** D006 retry/idempotency work should model late source completion after caller timeout explicitly.
+- **Mobile:** consume direct Flutter framework, Dart isolate and async evidence only at their stated runtime boundaries; Flutter scheduler/frame, native plugin threads and Android/iOS/browser behavior remain separate.
+- **Quality:** preserve exact runtime identity and semantic oracles; concurrency tests should assert invariants rather than incidental scheduler order.
+- **Data:** D006 retry/idempotency work should model late source completion after caller timeout and must not infer durable/exactly-once effects from isolate-local serialization.
 - **Systems:** exact workflow/run/job/toolchain identity belongs with executable/release evidence; Studio hosted execution is not a canonical LogMate build.
-- **Architecture:** timeout/cancellation/cleanup semantics are consumer-visible contracts where observable.
+- **Architecture:** isolate ownership is a concrete state-ownership option; timeout/cancellation/cleanup and request/reply semantics remain consumer-visible contracts where observable.
 
 ## CHANGE WATCH / OPEN
 - Flutter/Dart toolchain behavior is version-sensitive; preserve exact ref/SDK/run identity.
-- Hosted Linux `flutter test` is not release-AOT native app, Android/iOS lifecycle, browser/PWA or physical-device evidence.
-- F002/F003/F004/F006 still have direct Dart/Flutter transfer gaps where runtime semantics materially matter.
-- F005 still needs isolate, stream backpressure/error, concrete I/O cancellation, Flutter scheduler/lifecycle and product/browser transfer.
+- Hosted Linux `flutter test` and Dart Native isolate execution are not release-AOT native app, Android/iOS lifecycle, browser/PWA or physical-device evidence.
+- F002/F003/F006 still have direct Dart/runtime transfer gaps where runtime semantics materially matter.
+- F004 still needs external-resource/process-failure/fairness/platform transfer; F005 still needs stream backpressure/error, concrete I/O cancellation, Flutter scheduler/lifecycle and product/browser transfer.
 
 ## Next work
-Return to Balance Loop. Do not repeat equivalent F001 or F005 happy-path variants. The trustworthy hosted Dart/Flutter path now supports direct transfer of remaining Foundations mechanisms. Recompare F002/F003/F004/F006 against exact canonical LogMate build/toolchain enforcement and native/browser execution; prefer a coherent block that changes evidence class or closes a prerequisite, not another timing permutation.
+Return to Balance Loop. Do not repeat equivalent F001/F004/F005 happy-path variants. The trustworthy hosted Dart/Flutter path has now transferred execution, isolate ownership and a central async mechanism. Recompare F002/F003/F006 against exact canonical LogMate build/toolchain enforcement and native/browser execution; prefer a coherent block that changes evidence class, closes a remaining prerequisite, or creates product transfer rather than another timing/order permutation.
