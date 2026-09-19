@@ -9,6 +9,10 @@ on:
 
 jobs:
   validate:
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter: ['3.38.10', '3.47.0']
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -18,7 +22,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          git clone --depth 1 --branch 3.47.0 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          git clone --depth 1 --branch "${{ matrix.flutter }}" https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
 
       - name: Record toolchain identity
@@ -35,7 +39,12 @@ jobs:
         run: |
           set -euxo pipefail
           cp pubspec.lock pubspec.lock.before
-          flutter pub get --enforce-lockfile
+          set +e
+          flutter pub get --enforce-lockfile > positive.out 2>&1
+          rc=$?
+          set -e
+          cat positive.out
+          test "$rc" -eq 0
           cmp pubspec.lock.before pubspec.lock
 
       - name: Negative case - hosted content hash mutation must fail closed
