@@ -5,7 +5,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ## Current studies
 
 ### Foundations
-- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**; direct Dart JIT/AOT and Flutter runtime validation OPEN.
+- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**; direct Dart JIT/AOT process/I/O transfer is now executable and successful in hosted Linux run `35423963687` after a fixture defect was root-caused and fixed. Flutter framework/runtime hosted transfer is now actively being executed; verdict pending.
 - `F002`–`F006` — initial integrated executable/model Foundation blocks complete; see `progress/FOUNDATIONS_STATUS.md`.
 
 ### Architecture
@@ -27,8 +27,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Systems
 - `S001`–`S003` — planned Foundation boundaries initiated with executable/professional evidence.
-- `S004` — base dependency/supply-chain/build-system study plus `research/systems/S004_logmate_lockfile_toolchain_transfer.md`: exact-ref LogMate transfer confirms committed package versions/content hashes while exact Flutter SDK/engine identity remains unbound in inspected repository evidence; Dart/pub/build execution OPEN.
-- `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer + real GitHub Actions attestation generation + one successful hosted retrieval/verification/negative identity run. `research/systems/S005_offline_attestation_verification_attempt.md` records blocked offline input export. `research/systems/S005_attestation_authorization_policy_attempt.md` records the stronger signer/ref/source policy attempt and a reproduced contradiction: the fixed subject/repository pair that previously verified successfully later failed even the repository-only hosted baseline. Strong authorization policy and verifier root cause remain OPEN; do not spend further Actions variants without command-level failure evidence.
+- `S004` — base dependency/supply-chain/build-system study plus `research/systems/S004_logmate_lockfile_toolchain_transfer.md`: exact-ref LogMate transfer confirms committed package versions/content hashes while exact Flutter SDK/engine identity remains unbound in inspected repository evidence; canonical product Dart/pub/build execution OPEN.
+- `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer + real GitHub Actions attestation generation + one successful hosted retrieval/verification/negative identity run. Offline export and stronger authorization remain OPEN because later hosted baseline verification contradicted the earlier success and command-level root cause evidence is absent.
 - `S006` — rollback/change-safety foundation plus directory-sync publication failure evidence; hard-power-loss and platform transfer remain OPEN.
 
 ## Research note minimum contract
