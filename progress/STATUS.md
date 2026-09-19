@@ -7,7 +7,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 ## Specialist map
 | Specialist | Current state |
 | --- | --- |
-| Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT + first Flutter framework execution validated; F005 direct Dart async transfer validated; F002/F003/F004/F006 transfer OPEN |
+| Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT + first Flutter framework execution; F004 direct Dart isolate transfer; F005 direct Dart async transfer; F002/F003/F006 runtime transfer OPEN |
 | Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 repeated-change + natural LogMate evolution transfer; A006 decision governance evidence |
 | Mobile | Stage 1 IN STUDY — M001 first direct Flutter framework execution; M002-M006 professional/model boundaries; native/browser/EFB transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
@@ -18,10 +18,15 @@ No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
+### F004 — direct Dart isolate/message-boundary transfer
+GitHub-hosted run `35432075163`, job `105868357618`, exact source/workflow head `491887c4f20b2146026629984f43d25f19e949f4` completed successfully with workflow-requested Dart SDK 3.13.3. A worker isolate exclusively owned a mutable counter; three concurrent caller Futures crossed the boundary through messages and the invariant oracle observed three distinct increments with final count 3 without assuming scheduler response order. A negative probe verified rejection of an explicitly unsendable `ReceivePort` at the send boundary.
+
+**TRANSFER VALIDATION:** F004's prior Dart source/model boundary now has direct Dart Native execution. **EVIDENCE LIMIT:** isolate-local ownership/message passing does not establish fairness, exactly-once protocol effects, external-resource serialization, Flutter native/plugin thread behavior, browser workers or product concurrency correctness.
+
 ### F005 — direct Dart async transfer
 GitHub-hosted run `35429564591`, job `105861592799`, exact workflow/source commit `b5fc0cfaa4c79c646218326e6aae8be9121e0cf0` completed successfully on exact Dart SDK 3.13.3 / Ubuntu 24.04.5 / Linux 6.17.0-1022-azure. The fixture directly observed the documented microtask-before-zero-delay-event relation, a 10 ms timeout while the 80 ms source Future later completed its side effect/result, and `StreamSubscription.cancel()` preventing a later controller event from reaching the cancelled subscription.
 
-**TRANSFER VALIDATION:** F005's prior Python model conclusion `waiter timeout ≠ source cancellation` now survives direct Dart execution. **EVIDENCE LIMIT:** StreamSubscription cancellation is API-specific and is not generalized to Futures, sockets, plugins or arbitrary work; arbitrary timer ordering, isolate concurrency, stream backpressure/error, Flutter scheduler/lifecycle, browser/PWA and product runtime remain OPEN.
+**TRANSFER VALIDATION:** F005's prior Python model conclusion `waiter timeout ≠ source cancellation` now survives direct Dart execution. **EVIDENCE LIMIT:** StreamSubscription cancellation is API-specific and is not generalized to Futures, sockets, plugins or arbitrary work; arbitrary timer ordering, stream backpressure/error, Flutter scheduler/lifecycle, browser/PWA and product runtime remain OPEN.
 
 ### F001 — direct Dart JIT/AOT execution gap closed at bounded hosted Linux boundary
 GitHub-hosted run `35423963687`, job `105846574857`, exact workflow/source commit `ccad123b533a5aa41bed7e84d36ad852828545c8` completed successfully. SDK setup, runtime identity recording, JIT execution, AOT compilation and AOT executable execution all passed. A prior AOT-execution failure was root-caused to a fixture launch-shape defect and the corrected regression passed.
@@ -31,19 +36,20 @@ Workflow commit `3b920ba70d315baa686a9ee931144700719bab58`, run `35426881450`, j
 
 ## Retained evidence
 - **Architecture:** A001-A003/A005/A006 cover change pressure, ownership/dependency, semantic contracts, refactoring/evolution and evidence-preserving decisions.
-- **Mobile:** M001 now has direct framework execution; M002-M006 retain first professional/model boundaries; real native/browser/EFB transfer OPEN.
+- **Mobile:** M001 has direct framework execution; M002-M006 retain first professional/model boundaries; real native/browser/EFB transfer OPEN.
 - **Data:** D005 rollback/storage/WAL/checkpoint/live backup/interruption evidence; D006 transport faults + exact-ref inbound progress transfer.
 - **Quality:** Q001-Q006 professional boundaries; Q004 mutation/search-strength and Q006 semantic recovery-oracle discrimination retained.
 - **Systems:** S001-S006 retained; S004 exact-ref Flutter-application dependency/toolchain transfer; S005 hosted attestation evidence plus verifier contradiction; S006 directory-sync publication failure evidence.
 
 ## Cross-track handoffs
+- **Architecture / Data / Quality:** consume F004 as evidence that isolate-owned state can serialize a bounded local invariant, not as evidence of durable/exactly-once external effects; protocol contracts and external resources remain separate.
 - **Data / Quality / Architecture:** consume F005's direct Dart timeout/source distinction when specifying retry, cancellation and async contract oracles; caller timeout cannot stand in for operation terminal state.
-- **Mobile:** consume F005 as Dart-runtime evidence only; Flutter frame scheduling, platform lifecycle and browser semantics remain independent transfer obligations.
+- **Mobile:** consume F004/F005 as Dart Native runtime evidence only; Flutter frame scheduling, native plugin threads, platform lifecycle and browser semantics remain independent transfer obligations.
 - **Systems:** hosted Studio Dart/Flutter execution is not a canonical LogMate build. S004 still requires exact product toolchain capture + committed-lock enforcement + canonical build + artifact identity before reproducibility/provenance claims.
-- **Design Studio / Web Manager / Marketing Manager:** considered under the cross-repo contract; this bounded runtime mechanism does not alter their canonical decisions; no files edited there.
+- **Design Studio / Web Manager / Marketing Manager:** considered under the cross-repo contract; these bounded runtime mechanisms do not alter their canonical decisions; no files edited there.
 
 ## Current Balance Loop
-Do not repeat equivalent F001 or F005 timing/widget passes. A trustworthy hosted Dart/Flutter execution path now exists and has transferred one central async mechanism. Next compare direct Dart transfer of F002/F003/F004/F006 against higher product leverage from an exact canonical LogMate Flutter build/toolchain-enforcement block and against native/browser platform transfer. Prefer a new evidence class, prerequisite closure or product transfer rather than symmetry.
+Do not repeat equivalent F001, F004 or F005 variants. A trustworthy hosted Dart/Flutter execution path now covers direct execution, isolate ownership/message boundary and a central async mechanism. Next compare direct Dart transfer of F002/F003/F006 against higher product leverage from an exact canonical LogMate Flutter build/toolchain-enforcement block and against native/browser platform transfer. Prefer a new evidence class, prerequisite closure or product transfer rather than symmetry.
 
 ## CHANGE WATCH
 - Flutter/Dart runtime/build behavior is version-sensitive; exact SDK/ref/engine identity matters.
