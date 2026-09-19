@@ -1,0 +1,73 @@
+name: S004 LogMate exact-ref baseline PWA build
+
+on:
+  push:
+    paths:
+      - '.github/workflows/s004-logmate-baseline-pwa-build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install product-owned Flutter project baseline
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch 3.38.7 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Record exact toolchain identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine | tee "$RUNNER_TEMP/flutter-version.json"
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee "$RUNNER_TEMP/flutter-head.txt"
+          dart --version 2>&1 | tee "$RUNNER_TEMP/dart-version.txt"
+          test "$(git -C "$RUNNER_TEMP/flutter" rev-parse HEAD)" = "3b62efc2a3da49882f43c372e0bc53daef7295a6"
+
+      - name: Fetch exact LogMate source ref
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone https://github.com/yhappcom/logmate.git "$RUNNER_TEMP/logmate"
+          git -C "$RUNNER_TEMP/logmate" checkout --detach b551ce434ad72b1895033e0f3617c73b026d40ea
+          test "$(git -C "$RUNNER_TEMP/logmate" rev-parse HEAD)" = "b551ce434ad72b1895033e0f3617c73b026d40ea"
+          grep -q '^version: 1.0.0+1$' "$RUNNER_TEMP/logmate/pubspec.yaml"
+          grep -q 'flutter build web --no-web-resources-cdn --no-wasm-dry-run' "$RUNNER_TEMP/logmate/Makefile"
+          grep -q 'dart run tool/precache_flutter_web.dart' "$RUNNER_TEMP/logmate/Makefile"
+
+      - name: Enforce committed dependency lock
+        working-directory: ${{ runner.temp }}/logmate
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cp pubspec.lock "$RUNNER_TEMP/pubspec.lock.before"
+          flutter pub get --enforce-lockfile
+          cmp "$RUNNER_TEMP/pubspec.lock.before" pubspec.lock
+
+      - name: Execute product-owned PWA build path
+        working-directory: ${{ runner.temp }}/logmate
+        shell: bash
+        run: |
+          set -euxo pipefail
+          make build-pwa
+          test -s build/web/index.html
+          test -s build/web/flutter_service_worker.js
+          grep -Fq 'const CORE = Object.keys(RESOURCES);' build/web/flutter_service_worker.js
+          grep -Fq "key.indexOf('?')" build/web/flutter_service_worker.js
+          grep -Fq 'ignoreSearch: true' build/web/flutter_service_worker.js
+
+      - name: Record artifact identity and offline-resource boundary
+        working-directory: ${{ runner.temp }}/logmate
+        shell: bash
+        run: |
+          set -euxo pipefail
+          find build/web -type f -print0 | sort -z | xargs -0 sha256sum | tee "$RUNNER_TEMP/logmate-web-file-sha256.txt"
+          find build/web -type f -printf '%P\n' | LC_ALL=C sort | tee "$RUNNER_TEMP/logmate-web-files.txt"
+          sha256sum "$RUNNER_TEMP/logmate-web-file-sha256.txt" | tee "$RUNNER_TEMP/logmate-web-tree-manifest-sha256.txt"
+          test ! -e build/web/canvaskit || { find build/web/canvaskit -type f -print; exit 1; }
+          echo 'S004_LOGMATE_BASELINE_PWA_BUILD_PASS'
