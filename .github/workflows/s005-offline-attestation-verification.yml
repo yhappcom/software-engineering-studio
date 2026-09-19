@@ -21,15 +21,22 @@ jobs:
           printf 'repository=yhappcom/software-engineering-studio\ncommit=ab6dbf4307078fc82ddc056029f686dd61eae3a7\n' > subject.txt
           test "$(sha256sum subject.txt | awk '{print $1}')" = '9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071'
 
-      - name: Export attestation bundle and trusted roots while online
+      - name: Export attestation bundle by exact digest
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh attestation download subject.txt -R yhappcom/software-engineering-studio
+          gh api -H 'Accept: application/vnd.github+json' \
+            repos/yhappcom/software-engineering-studio/attestations/sha256:9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071 \
+            --jq '.attestations[].bundle' > bundle.jsonl
+          test -s bundle.jsonl
+
+      - name: Export current trusted roots
+        shell: bash
+        run: |
+          set -euo pipefail
           gh attestation trusted-root > trusted_root.jsonl
-          test -s sha256:9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071.jsonl
           test -s trusted_root.jsonl
 
       - name: Verify exact subject in isolated network namespace
@@ -44,7 +51,7 @@ jobs:
             fi
             gh attestation verify subject.txt \
               -R yhappcom/software-engineering-studio \
-              --bundle sha256:9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071.jsonl \
+              --bundle bundle.jsonl \
               --custom-trusted-root trusted_root.jsonl
           '
 
@@ -54,7 +61,7 @@ jobs:
           set -euo pipefail
           if sudo unshare -n -- gh attestation verify subject.txt \
             -R yhappcom/design-studio \
-            --bundle sha256:9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071.jsonl \
+            --bundle bundle.jsonl \
             --custom-trusted-root trusted_root.jsonl; then
             echo 'wrong repository identity unexpectedly accepted' >&2
             exit 91
@@ -68,7 +75,7 @@ jobs:
           printf '%s\n' 'mutation' >> mutated.txt
           if sudo unshare -n -- gh attestation verify mutated.txt \
             -R yhappcom/software-engineering-studio \
-            --bundle sha256:9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071.jsonl \
+            --bundle bundle.jsonl \
             --custom-trusted-root trusted_root.jsonl; then
             echo 'mutated subject unexpectedly accepted' >&2
             exit 92
