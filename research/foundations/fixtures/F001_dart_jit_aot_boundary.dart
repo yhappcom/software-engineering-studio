@@ -10,11 +10,23 @@ Future<void> main(List<String> args) async {
     return;
   }
 
-  final self = Platform.resolvedExecutable;
+  final executable = Platform.resolvedExecutable;
   final script = Platform.script.toFilePath();
-  final result = await Process.run(self, [script, 'child']);
+
+  // Under JIT, resolvedExecutable is the Dart VM and the script path must be
+  // supplied. In an AOT executable, Platform.script resolves to the executable
+  // itself, so supplying it as argv[0] would recursively re-enter parent mode.
+  final childArgs = executable == script ? <String>['child'] : <String>[script, 'child'];
+  final result = await Process.run(executable, childArgs);
+
   if (result.exitCode != 7) throw StateError('exit=${result.exitCode}');
-  if (!result.stdout.toString().contains(':stdout')) throw StateError('stdout boundary missing');
-  if (!result.stderr.toString().contains(':stderr')) throw StateError('stderr boundary missing');
-  stdout.writeln('F001_OK runtime=${Platform.version.split(' ').first} parent=$pid childExit=${result.exitCode}');
+  if (!result.stdout.toString().contains(':stdout')) {
+    throw StateError('stdout boundary missing');
+  }
+  if (!result.stderr.toString().contains(':stderr')) {
+    throw StateError('stderr boundary missing');
+  }
+  stdout.writeln(
+    'F001_OK runtime=${Platform.version.split(' ').first} parent=$pid childExit=${result.exitCode}',
+  );
 }
