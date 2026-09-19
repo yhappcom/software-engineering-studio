@@ -17,7 +17,7 @@ Last sync: 2026-09-19
 **IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S003_resource_cost_models_profiling_foundations.md`. Wall latency/CPU/allocation/I/O/network observables separated; bounded Python fixture complete. Dart/Flutter/device transfer OPEN.
 
 ### S004 — Dependency, supply-chain and build-system fundamentals
-**IN STUDY — first integrated executable Foundation block complete.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`. Manifest/resolved graph/content/toolchain/build/artifact/provenance identities separated; resolution-drift and same-version integrity failure evidence complete. Direct Dart/pub/build transfer OPEN.
+**IN STUDY — executable Foundation block + exact-ref LogMate dependency/toolchain transfer.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`, `research/systems/S004_logmate_lockfile_toolchain_transfer.md`. Manifest/resolved graph/content/toolchain/build/artifact/provenance identities separated; resolution-drift and same-version integrity failure evidence complete. Exact-ref LogMate audit confirms committed hosted package versions/content hashes but no exact Flutter SDK/engine identity in the inspected repository evidence. Direct Dart/pub/build transfer remains OPEN.
 
 ### S005 — CI/CD, signing, versioning, reproducibility and release evidence
 **IN STUDY — real hosted generation + one successful online retrieval/verification + contradictory later verifier failures; offline verification OPEN.**  
@@ -27,32 +27,33 @@ Retained evidence: real RSA/OpenSSL negative verification; bounded GCC/ld reprod
 
 Offline verification attempt remains OPEN: one fixture defect was root-caused, then exact-subject runs failed at bundle/input export without command-level stderr.
 
-New authorization-policy attempt used current GitHub CLI policy controls (`--signer-workflow`, `--source-ref`, `--source-digest`) but did not reach a trustworthy policy verdict. Run `35415715727` exposed an oracle/reporting defect caused by relying on `continue-on-error` step outcome/conclusion semantics. Run `35415743203` then failed the fail-closed combined exact policy. Run `35415769301` isolated the repository-only baseline and that baseline itself failed for the same fixed subject/repository pair that had previously verified successfully. **CONTRADICTION:** hosted verification success is therefore not currently stable/reproducible in this evidence channel. No service/permission/CLI/attestation root cause is assigned without command-level failure output.
+Authorization-policy attempt used current GitHub CLI policy controls (`--signer-workflow`, `--source-ref`, `--source-digest`) but did not reach a trustworthy policy verdict. Run `35415715727` exposed an oracle/reporting defect caused by relying on `continue-on-error` step outcome/conclusion semantics. Run `35415743203` then failed the fail-closed combined exact policy. Run `35415769301` isolated the repository-only baseline and that baseline itself failed for the same fixed subject/repository pair that had previously verified successfully. **CONTRADICTION:** hosted verification success is therefore not currently stable/reproducible in this evidence channel. No service/permission/CLI/attestation root cause is assigned without command-level failure output.
 
 ### S006 — Rollback, incident evidence, production change safety and publication durability
 **IN STUDY — two integrated executable Foundation blocks.** Canonical: `research/systems/S006_rollback_incident_change_safety_governance.md`, `research/systems/S006_directory_fsync_publication_boundary.md`. Linux LD_PRELOAD evidence distinguishes rename visibility from successful containing-directory synchronization; hard-power-loss transfer remains OPEN.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S001-S006 have professional Foundation evidence. S005 has real hosted generation and at least one successful hosted cryptographic repository verification with negative subject/repository cases, but later runs reproduce verifier instability before stronger workflow/ref/source authorization can be trusted. Offline verification, direct Dart/mobile build execution, physical power-loss/filesystem durability, mobile signing, independent-host reproducibility, deployment rollback/recovery and production evidence remain OPEN.
+Systems Stage 1 remains **NOT PASS**. S001-S006 have professional Foundation evidence. S004 now has a natural exact-ref Flutter application transfer showing the lockfile/toolchain boundary, but no Dart/pub/build execution. S005 has real hosted generation and at least one successful hosted cryptographic repository verification with negative subject/repository cases, but later runs reproduce verifier instability before stronger workflow/ref/source authorization can be trusted. Offline verification, direct Dart/mobile build execution, physical power-loss/filesystem durability, mobile signing, independent-host reproducibility, deployment rollback/recovery and production evidence remain OPEN.
 
 ## HANDOFFS
 - **Foundations:** direct Dart/Flutter execution remains OPEN.
-- **Architecture:** preserve exact workflow run/job/commit/subject, verifier policy inputs and contradictory verification evidence; do not collapse prior success and later failure into one assumed state.
-- **Mobile:** Studio text-subject evidence is not mobile release evidence; transfer requires canonical Flutter build → artifact digest → signing/attestation → policy → installed/delivered artifact identity.
+- **Architecture:** preserve exact workflow run/job/commit/subject, verifier policy inputs and contradictory verification evidence; build/toolchain identity is an externally relevant release contract when reproducibility/provenance is required.
+- **Mobile:** Studio text-subject evidence is not mobile release evidence; transfer requires canonical Flutter build → artifact digest → signing/attestation → policy → installed/delivered artifact identity. Exact Flutter SDK/engine identity remains unbound in the inspected LogMate repository evidence.
 - **Data:** migration/backup release evidence should bind exact artifact/provenance when used as a release gate.
-- **Quality:** run `35415715727` is an oracle/reporting-design defect; run `35415769301` is a distinct baseline verifier contradiction. Do not fabricate a shared root cause.
-- **LogMate / release engineering:** retained transfer identity is `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-18`; production identity unknown. No LogMate build was executed here.
+- **Quality:** run `35415715727` is an oracle/reporting-design defect; run `35415769301` is a distinct baseline verifier contradiction. Future product reproducibility validation should test toolchain drift separately from lockfile/content-hash drift.
+- **LogMate / release engineering:** transfer identity is `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-19`; production identity unknown. `pubspec.lock` records exact hosted package versions/content hashes, while the inspected repository evidence does not identify one exact Flutter SDK/engine. No LogMate build was executed here.
 - **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded mechanism; no canonical files edited.
 
 ## CHANGE WATCH / OPEN
 - Direct Dart/Flutter execution unavailable after recheck 2026-09-19.
+- Dart/pub lockfile enforcement and Flutter SDK-constraint behavior are tool/version sensitive.
+- Exact Flutter SDK/engine and any external CI/operator toolchain pin for LogMate remain unknown from the inspected repository evidence.
 - GitHub Actions/CLI/attestation API/Sigstore roots and hosted-runner behavior are service/tool-version sensitive.
 - Hosted repository-only verifier stability/root cause is OPEN; one prior success and multiple later failures exist.
 - Stronger workflow/ref/source-digest authorization policy remains OPEN until baseline verification is diagnosable/stable.
 - Offline bundle + trusted-root verification remains OPEN; command-level stderr for current bundle-export failures is missing.
 - Linux/filesystem publication evidence does not establish hard-power-loss survival, lying-successful fsync, APFS/mobile behavior or network-filesystem semantics.
-- Exact Flutter SDK/ref and production identity for a real LogMate release remain unknown.
 - Android/iOS signing, independent-host reproducibility, hermeticity, staged deployment and production rollback remain OPEN.
 
 ## Next work
-Return to Balance Loop. Direct Dart/Flutter remains first-attempt work when a trustworthy SDK appears. Do not spend further Actions minutes varying S005 signer/ref/digest or offline-export flags without command-level failure evidence or an independent verifier path. Prefer a materially different higher rung such as canonical product build/attestation when the toolchain is available, independent-host reproducibility, physical/platform publication transfer, natural release/ADR evidence, or another track's stronger gap.
+Return to Balance Loop. Direct Dart/Flutter remains first-attempt work when a trustworthy SDK appears; the first product transfer should include exact toolchain capture plus lockfile enforcement and a canonical LogMate build rather than another static manifest audit. Do not spend further Actions minutes varying S005 signer/ref/digest or offline-export flags without command-level failure evidence or an independent verifier path. Otherwise prefer a materially different higher rung such as independent-host reproducibility, physical/platform publication transfer, natural release/ADR evidence, or another track's stronger gap.
