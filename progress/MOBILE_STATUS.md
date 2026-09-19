@@ -26,32 +26,34 @@ Build deep Flutter/Dart and mobile-platform engineering capability while preserv
 **IN STUDY — first integrated Foundation block + bounded executable capability evidence complete.** Exact-ref LogMate transfer retained; real native/web capability transfer OPEN.
 
 ### M006 — Native app vs PWA/web boundary and deployment constraints
-**IN STUDY — FIRST REAL CHROMIUM SERVICE-WORKER/OFFLINE TRANSFER VALIDATED.** Canonical base: `research/mobile/M006_native_pwa_web_deployment_constraints.md`; direct browser transfer: `research/mobile/M006_real_browser_service_worker_transfer.md`.
+**IN STUDY — REAL CHROMIUM OFFLINE TRANSFER VALIDATED; BROWSER-RESTART PERSISTENCE TRANSFER EXECUTING.** Canonical base: `research/mobile/M006_native_pwa_web_deployment_constraints.md`; direct browser transfer: `research/mobile/M006_real_browser_service_worker_transfer.md`.
 
-Run `35461424265`, job `105945868263`, exact head `754ed4f86be25ffd32c85665d42a78c88988452e` completed successfully on `ubuntu-24.04`. The workflow installed pinned Playwright 1.55.0 Chromium and executed a real browser fixture. A controlled page received an explicitly precached payload through a service-worker fetch handler after Playwright offline emulation; an uncached resource failed under the same offline state. This advances M006 beyond the prior Python capability model. Exact Chromium build number is not exposed by the current connector evidence channel and remains OPEN.
+Run `35461424265`, job `105945868263`, exact head `754ed4f86be25ffd32c85665d42a78c88988452e` completed successfully on `ubuntu-24.04`. A controlled page received an explicitly precached payload through a service-worker fetch handler after Playwright offline emulation; an uncached resource failed under the same offline state.
 
-**EVIDENCE LIMIT:** generic Chromium + loopback origin + emulated offline is not Safari/WebKit/iPadOS/EFB, real network loss, Flutter web, LogMate source/build/post-build artifact, deployed HTTPS origin, restart/update/storage-eviction behavior or production evidence.
+A materially different restart/persistence oracle is now committed. Exact head `c4d45429c45617f127a6502de4bc241371617c55`, run `35464672061`, job `105954736630` was queued at the latest evidence check. It uses a persistent Chromium profile, closes the first browser context/process, relaunches against the same profile, requires service-worker control after restart, then switches offline and requires the cached payload to remain available while a never-cached resource fails. It also records `browser.version()` to close the prior exact-browser-identity evidence gap if the run reaches execution. **No verdict is assigned while queued.**
+
+**EVIDENCE LIMIT:** even a successful restart oracle would remain generic Chromium + loopback + emulated offline. It would not establish offline cold-start shell availability because the second navigation is intentionally online, nor Safari/WebKit/iPadOS/EFB, real network loss, Flutter web, LogMate artifact, deployed HTTPS origin, storage eviction or production behavior.
 
 ## Product transfer scope
-Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. The browser fixture is Studio validation, not a LogMate build and not production evidence.
+Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. Browser fixtures are Studio validation, not LogMate builds or production evidence.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. M001 has direct Flutter framework/test-runtime execution and M006 now has first real generic-browser service-worker/offline execution with a negative uncached oracle. Representative Android/iOS lifecycle/process/storage/plugin execution, Safari/iPadOS/EFB behavior, canonical LogMate browser build/runtime transfer, release-mode/device evidence, update/client-control transitions and storage/recovery evidence remain materially absent.
+Mobile Stage 1 remains **NOT PASS**. M001 has direct Flutter framework/test-runtime execution and M006 has first real generic-browser service-worker/offline execution. Restart persistence is pending, not evidence yet. Representative Android/iOS lifecycle/process/storage/plugin execution, Safari/iPadOS/EFB behavior, canonical LogMate browser build/runtime transfer, release-mode/device evidence, update/client-control transitions and storage/recovery evidence remain materially absent.
 
 ## Dependencies / handoffs
 - **Foundations:** F001-F005 bounded direct Dart/Flutter evidence is available; do not generalize hosted Linux/framework semantics to OS/platform behavior. F006 remains separate and OPEN.
 - **Architecture:** service-worker/cache behavior is an externally observable deployment contract when offline behavior is required.
-- **Data:** successful CacheStorage delivery is not authoritative logbook persistence, durability, backup or recovery evidence.
-- **Quality:** reuse M006's positive controlled-cache plus negative uncached oracle shape; add restart/update/storage/network failure injection for stronger browser acceptance.
+- **Data:** successful CacheStorage delivery or restart persistence is not authoritative logbook durability, backup or recovery evidence.
+- **Quality:** restart is now a distinct lifecycle failure boundary; retain the negative uncached oracle and do not infer storage-eviction resilience from profile reuse.
 - **Systems:** canonical product validation must bind exact browser version, Flutter SDK/engine, dependency lock, LogMate build/post-build artifact, deployment origin and active service-worker/client-control identity.
 - **Design Studio / Web Manager / Marketing Manager:** considered under cross-repo contract; no canonical decisions changed and no files edited there.
 
 ## CHANGE WATCH / OPEN
 - Flutter/Dart/browser/service-worker behavior is version-sensitive; preserve exact runtime/build identity.
-- Exact Chromium build identity for run `35461424265` remains unavailable through the current evidence channel.
+- Browser version capture is now part of the restart fixture but remains OPEN until run `35464672061` executes successfully and its observation is recoverable.
 - Android/iOS process/background/storage/plugin behavior and Safari/iPadOS/EFB install/update/background/storage remain OPEN.
-- Browser restart, service-worker update/waiting/activation/client-control transitions, CacheStorage/IndexedDB persistence/eviction and deployed-origin behavior remain OPEN.
+- Browser restart verdict is pending; service-worker update/waiting/activation/client-control transitions, offline cold start, CacheStorage/IndexedDB eviction and deployed-origin behavior remain OPEN.
 - Exact company EFB iPadOS/Safari policy/version and production LogMate deployment identity remain dependencies for acceptance.
 
 ## Next work
-Do not repeat generic Chromium cache/offline variants merely to accumulate passes. Prefer a materially stronger transfer: Safari/iPadOS/EFB or Android/iOS execution when trustworthy infrastructure exists; canonical LogMate PWA build/runtime when authorized source acquisition exists; or a browser restart/update/storage-persistence failure campaign if it changes the evidence class. Otherwise return to the global Balance Loop.
+Recover run `35464672061` first. If successful, persist the exact browser identity and restart-persistence verdict; if failed, preserve the failure signature and isolate lifecycle/profile/control versus cache persistence before changing the fixture. Do not repeat same-session offline variants. Safari/iPadOS/EFB or Android/iOS execution and canonical LogMate PWA runtime remain stronger later transfers when trustworthy infrastructure/access exists.
