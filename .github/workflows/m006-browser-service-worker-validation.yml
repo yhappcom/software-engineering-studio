@@ -11,7 +11,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - name: Record environment
@@ -37,3 +37,12 @@ jobs:
         timeout-minutes: 2
         working-directory: research/mobile/fixtures/m006_browser_service_worker
         run: node validate_update.mjs
+      - name: Execute offline cold-start navigation oracle
+        timeout-minutes: 2
+        working-directory: research/mobile/fixtures/m006_browser_service_worker
+        run: |
+          python3 -m http.server 8768 --bind 127.0.0.1 >/tmp/m006-cold-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          sleep 1
+          node validate_cold_start.mjs
