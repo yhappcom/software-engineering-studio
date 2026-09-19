@@ -17,11 +17,15 @@ Last sync: 2026-09-19
 **IN STUDY — first integrated executable Foundation block complete.** Dart/Flutter/device transfer OPEN.
 
 ### S004 — Dependency, supply-chain and build-system fundamentals
-**IN STUDY — executable Foundation + exact-ref LogMate static transfer + product-derived lock-enforcement transfer completed.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`, `research/systems/S004_logmate_lockfile_toolchain_transfer.md`, `research/systems/S004_logmate_lock_enforcement_execution.md`.
+**IN STUDY — executable Foundation + exact-ref LogMate static transfer + product-derived lock-enforcement transfer; product-owned Flutter metadata identity recovered.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`, `research/systems/S004_logmate_lockfile_toolchain_transfer.md`, `research/systems/S004_logmate_lock_enforcement_execution.md`.
 
 Product identity: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-19`; production identity unknown, main not assumed production.
 
-Run `35443257511` at workflow head `0426836a14866f00dd9de4811c7083bb1f1c0675` demonstrated exact-toolchain sensitivity. Flutter 3.38.10 / framework `c6f67dede3d4aa1aa7a69dd56a3494a5cde6cc80` / engine `cafcda5721a78a7884db92f13c5e89f7643d52dd` / Dart 3.10.9 accepted the copied committed lock unchanged. Deliberate one-nibble `cupertino_icons 1.0.9` content-hash corruption failed closed with exit 65 and explicit hash mismatch. Flutter 3.47.0 / framework `4cf24164269a5ebf0c16a028a00727d0e77bbb05` / engine `5f77625673248ee5846fbcaf5d3e1a3878386fd7` / Dart 3.13.0 rejected the unchanged lock because seven SDK-coupled/transitive dependencies would change. This validates `SDK range != exact toolchain != demonstrated lock acceptance`; it does not identify LogMate's canonical toolchain.
+**SOURCE / product evidence:** version-controlled LogMate `.metadata` records Flutter revision `3b62efc2a3da49882f43c372e0bc53daef7295a6`, channel `stable`, and the same revision as create/base migration revision across platforms. Official `flutter/flutter` Git ref `3.38.7` resolves exactly to that commit; the upstream commit prepares the 3.38.7 stable hotfix. This is exact product-owned project-generation/migration baseline evidence, not proof of current CI/operator/release SDK.
+
+Prior run `35443257511` demonstrated exact-toolchain sensitivity: Flutter 3.38.10/Dart 3.10.9 accepted the copied committed lock unchanged and rejected a deliberate content-hash mutation; Flutter 3.47.0/Dart 3.13.0 rejected the unchanged lock because seven SDK-coupled/transitive dependencies would change.
+
+**VALIDATION pending:** workflow head `7815772bc11f8902dee2816165195c56ad45fef9` adds exact Flutter 3.38.7 to the same positive unchanged-lock + negative hash-mutation matrix. No 3.38.7 PASS is claimed until hosted execution completes.
 
 ### S005 — CI/CD, signing, versioning, reproducibility and release evidence
 **IN STUDY.** Real hosted generation + one successful online retrieval/verification + contradictory later verifier failures retained. Offline verification OPEN; do not spend further Actions minutes on flag permutations without stronger diagnostics or an independent verifier path.
@@ -30,22 +34,23 @@ Run `35443257511` at workflow head `0426836a14866f00dd9de4811c7083bb1f1c0675` de
 **IN STUDY — two integrated executable Foundation blocks.** Linux rename/directory-sync failure evidence retained; hard-power-loss transfer OPEN.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S004 now has an executable product-derived dependency-lock rung with a positive acceptance, deliberate integrity-negative oracle, and exact-toolchain alternative failure. It still lacks canonical product toolchain identity, canonical source build, artifact digest, signing/attestation, independent-host reproducibility, deployment and production evidence. S005 retains contradictory hosted-verifier evidence. Physical power-loss/filesystem durability and mobile signing/rollback remain OPEN.
+Systems Stage 1 remains **NOT PASS**. S004 now has product-owned exact Flutter project metadata identity plus prior executable lock sensitivity. It still lacks proof that the metadata revision is the operational release toolchain, its pending 3.38.7 execution verdict, canonical source build, artifact digest, signing/attestation, independent-host reproducibility, deployment and production evidence.
 
 ## HANDOFFS
 - **Foundations:** hosted Dart/Flutter execution is available at bounded Studio scope; F006 socket correctness remains separate and OPEN.
 - **Architecture:** exact build/toolchain identity is a release contract when reproducibility/provenance is required.
-- **Mobile:** 3.38.10 acceptance is not authority to choose it as LogMate policy; canonical transfer requires product-owned toolchain identity before source build.
-- **Quality:** retain the 3.38.10 positive+hash-mutation pair and the 3.47.0 resolver rejection as distinct regression evidence classes.
-- **LogMate / release engineering:** exact product ref above; no product files edited. Product/CI/operator toolchain pin remains unknown.
-- **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded dependency-resolution mechanism; no canonical files edited.
+- **Mobile:** product `.metadata` maps to exact Flutter 3.38.7, but this is a project baseline rather than Android/iOS/browser/runtime or release-policy evidence.
+- **Quality:** preserve the 3.38.10 positive+hash-mutation pair, 3.47.0 resolver rejection, and pending 3.38.7 product-metadata-grounded transfer as distinct evidence classes.
+- **LogMate / release engineering:** exact product ref above; no product files edited. Seek explicit CI/operator/release toolchain evidence before calling 3.38.7 canonical release identity.
+- **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded toolchain identity mechanism; no canonical files edited.
 
 ## CHANGE WATCH / OPEN
-- Exact canonical Flutter SDK/engine and any external CI/operator toolchain pin for LogMate remain unknown.
+- Product-owned project baseline is exact Flutter 3.38.7, but canonical operational/release Flutter SDK/engine and any external CI/operator pin remain unknown.
+- 3.38.7 lock-enforcement execution is pending.
 - Canonical LogMate source build, target artifact digest, signing/attestation and independent-host reproducibility remain OPEN.
 - Dart/pub lockfile enforcement and Flutter SDK behavior are tool/version sensitive.
 - Hosted S005 verifier stability/root cause, stronger authorization policy and offline verification remain OPEN.
 - Android/iOS signing, staged deployment and production rollback remain OPEN.
 
 ## Next work
-Do not repeat the lockfile matrix. First seek trustworthy product-owned toolchain identity; if unavailable, Balance Loop should move to the highest independent evidence class rather than labeling 3.38.10 canonical. A canonical source build is justified only after toolchain identity is bounded. F002/F003 and other cross-track evidence remain alternatives; F006 close-order variants and S005 policy-flag permutations remain deprioritized.
+First recover the 3.38.7 hosted verdict. If it accepts the exact lock and the negative mutation fails closed, that validates compatibility at the product-owned project baseline but still does not prove release-toolchain identity. Then seek explicit product CI/operator/release pin; only after that is a canonical source build justified. Do not repeat arbitrary SDK matrices.
