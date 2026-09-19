@@ -6,8 +6,9 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Foundations
 - `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**; direct Dart JIT/AOT process/I/O transfer and first Flutter framework/test-binding execution are successful on hosted Linux; native/browser/product transfer remains OPEN.
-- `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — direct Dart 3.13.3 transfer now validates the documented microtask→zero-delay-event relation, waiter-timeout ≠ source-cancellation, and API-specific StreamSubscription cancellation at bounded hosted-Linux scope.
-- `F002`, `F003`, `F004`, `F006` — initial integrated executable/model Foundation blocks complete; direct Dart/runtime transfer remains selectively OPEN; see `progress/FOUNDATIONS_STATUS.md`.
+- `F004` — base concurrency/synchronization study plus `research/foundations/F004_direct_dart_isolate_transfer.md`; direct Dart 3.13.3 hosted execution now validates isolate-owned mutable state through message requests and rejection of an explicitly unsendable `ReceivePort`; external-resource/native/browser/product transfer remains OPEN.
+- `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — direct Dart 3.13.3 transfer validates the documented microtask→zero-delay-event relation, waiter-timeout ≠ source-cancellation, and API-specific StreamSubscription cancellation at bounded hosted-Linux scope.
+- `F002`, `F003`, `F006` — initial integrated executable/model Foundation blocks complete; direct Dart/runtime transfer remains selectively OPEN; see `progress/FOUNDATIONS_STATUS.md`.
 
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
