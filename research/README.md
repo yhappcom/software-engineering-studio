@@ -30,7 +30,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Systems
 - `S001`–`S003` — planned Foundation boundaries initiated with executable/professional evidence.
-- `S004` — base dependency/supply-chain/build-system study plus `research/systems/S004_logmate_lockfile_toolchain_transfer.md`: exact-ref LogMate transfer confirms committed package versions/content hashes while exact Flutter SDK/engine identity remains unbound in inspected repository evidence; canonical product Dart/pub/build execution OPEN.
+- `S004` — base dependency/supply-chain/build-system study + `research/systems/S004_logmate_lockfile_toolchain_transfer.md` + `research/systems/S004_logmate_lock_enforcement_execution.md`. Exact-ref LogMate dependency metadata is now under hosted exact-Flutter lock-enforcement validation with both a positive unchanged-lock oracle and deliberate hosted-content-hash mutation negative oracle. Run `35443174123` is in progress; no PASS yet. Canonical LogMate toolchain/source build/artifact identity remain OPEN.
 - `S005` — release-identity model + real OpenSSL asymmetric signature verification + bounded GCC/ld reproducibility + exact-ref LogMate build-identity transfer + real GitHub Actions attestation generation + one successful hosted retrieval/verification/negative identity run. Offline export and stronger authorization remain OPEN because later hosted baseline verification contradicted the earlier success and command-level root cause evidence is absent.
 - `S006` — rollback/change-safety foundation plus directory-sync publication failure evidence; hard-power-loss and platform transfer remain OPEN.
 
