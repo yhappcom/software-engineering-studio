@@ -7,7 +7,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 ## Specialist map
 | Specialist | Current state |
 | --- | --- |
-| Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT + first Flutter framework execution validated; F002-F006 initiated |
+| Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT + first Flutter framework execution validated; F005 direct Dart async transfer validated; F002/F003/F004/F006 transfer OPEN |
 | Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 repeated-change + natural LogMate evolution transfer; A006 decision governance evidence |
 | Mobile | Stage 1 IN STUDY — M001 first direct Flutter framework execution; M002-M006 professional/model boundaries; native/browser/EFB transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
@@ -18,17 +18,16 @@ No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### F001 — direct Dart JIT/AOT execution gap closed at bounded hosted Linux boundary
-GitHub-hosted run `35423963687`, job `105846574857`, exact workflow/source commit `ccad123b533a5aa41bed7e84d36ad852828545c8` completed successfully. SDK setup, runtime identity recording, JIT execution, AOT compilation and AOT executable execution all passed.
+### F005 — direct Dart async transfer
+GitHub-hosted run `35429564591`, job `105861592799`, exact workflow/source commit `b5fc0cfaa4c79c646218326e6aae8be9121e0cf0` completed successfully on exact Dart SDK 3.13.3 / Ubuntu 24.04.5 / Linux 6.17.0-1022-azure. The fixture directly observed the documented microtask-before-zero-delay-event relation, a 10 ms timeout while the 80 ms source Future later completed its side effect/result, and `StreamSubscription.cancel()` preventing a later controller event from reaching the cancelled subscription.
 
-A prior run `35421496953` had passed JIT and AOT compilation but failed AOT execution. Root cause was a fixture launch-shape defect: JIT requires `dart <script> child`, while the self-contained compiled executable must self-spawn as `<exe> child`. The corrected regression passed. The failure is retained as FAILURE → DEBUG/ROOT CAUSE → FIX → REGRESSION evidence.
+**TRANSFER VALIDATION:** F005's prior Python model conclusion `waiter timeout ≠ source cancellation` now survives direct Dart execution. **EVIDENCE LIMIT:** StreamSubscription cancellation is API-specific and is not generalized to Futures, sockets, plugins or arbitrary work; arbitrary timer ordering, isolate concurrency, stream backpressure/error, Flutter scheduler/lifecycle, browser/PWA and product runtime remain OPEN.
+
+### F001 — direct Dart JIT/AOT execution gap closed at bounded hosted Linux boundary
+GitHub-hosted run `35423963687`, job `105846574857`, exact workflow/source commit `ccad123b533a5aa41bed7e84d36ad852828545c8` completed successfully. SDK setup, runtime identity recording, JIT execution, AOT compilation and AOT executable execution all passed. A prior AOT-execution failure was root-caused to a fixture launch-shape defect and the corrected regression passed.
 
 ### F001/M001 — first direct Flutter framework/test-runtime transfer
-Workflow commit `3b920ba70d315baa686a9ee931144700719bab58`, run `35426881450`, job `105854277141` completed successfully. Official Flutter stable checkout installation, Flutter/Dart/engine identity recording, fixture dependency resolution and `flutter test` widget runtime execution all passed. The test observes a state transition across the framework test binding's pump boundary rather than merely parsing or compiling Flutter source.
-
-The official `flutter/flutter` stable branch observed immediately after the run was commit `6a19cca56475dbfba1478ee68d7bd0c2ef891da1`; that exact ref records engine `af7e796e161ae0bb1ff0758c71a7105418bd9ded`. The workflow itself records checkout identity, but current connector evidence does not expose command stdout, so the post-run branch/ref observation is corroborating identity evidence, not a fabricated hidden-log value.
-
-**VALIDATION:** the original F001 direct Dart JIT/AOT gap is CLOSED for the bounded hosted Linux claim, and the absence of any direct Flutter execution is CLOSED at a first framework/test-binding level. **EVIDENCE LIMIT:** this does not establish Android/iOS embedder/lifecycle behavior, physical-device behavior, release-AOT Flutter application behavior, browser/PWA behavior, canonical LogMate build correctness or production behavior.
+Workflow commit `3b920ba70d315baa686a9ee931144700719bab58`, run `35426881450`, job `105854277141` completed successfully. Official Flutter stable checkout installation, Flutter/Dart/engine identity recording, fixture dependency resolution and `flutter test` widget runtime execution all passed. This is framework/test-binding evidence, not Android/iOS/browser/production evidence.
 
 ## Retained evidence
 - **Architecture:** A001-A003/A005/A006 cover change pressure, ownership/dependency, semantic contracts, refactoring/evolution and evidence-preserving decisions.
@@ -38,18 +37,17 @@ The official `flutter/flutter` stable branch observed immediately after the run 
 - **Systems:** S001-S006 retained; S004 exact-ref Flutter-application dependency/toolchain transfer; S005 hosted attestation evidence plus verifier contradiction; S006 directory-sync publication failure evidence.
 
 ## Cross-track handoffs
-- **Mobile:** consume the new Flutter result as framework/test-runtime evidence only. Android/iOS/browser/embedder and product runtime semantics remain independent transfer obligations.
-- **Quality:** preserve the failed AOT run and corrected regression as evidence that fixtures can encode execution-mode defects; runtime/build identity belongs in the oracle contract.
-- **Systems:** hosted Studio Flutter execution is not a canonical LogMate build. S004 still requires exact product toolchain capture + committed-lock enforcement + canonical build + artifact identity before reproducibility/provenance claims.
-- **Architecture/Data:** direct Dart/Flutter execution strengthens the shared execution model but does not change persistence, ownership or product behavior claims.
+- **Data / Quality / Architecture:** consume F005's direct Dart timeout/source distinction when specifying retry, cancellation and async contract oracles; caller timeout cannot stand in for operation terminal state.
+- **Mobile:** consume F005 as Dart-runtime evidence only; Flutter frame scheduling, platform lifecycle and browser semantics remain independent transfer obligations.
+- **Systems:** hosted Studio Dart/Flutter execution is not a canonical LogMate build. S004 still requires exact product toolchain capture + committed-lock enforcement + canonical build + artifact identity before reproducibility/provenance claims.
 - **Design Studio / Web Manager / Marketing Manager:** considered under the cross-repo contract; this bounded runtime mechanism does not alter their canonical decisions; no files edited there.
 
 ## Current Balance Loop
-Do not repeat equivalent F001 JIT/AOT/widget-test passes. The prerequisite picture has materially changed: a trustworthy hosted Dart/Flutter execution path now exists. Next compare direct Dart transfer of F002-F006 against higher product leverage from an exact canonical LogMate Flutter build/toolchain-enforcement block and against native/browser platform transfer. Select one coherent block by risk, cross-track leverage and evidence maturity rather than deepening F001 for symmetry.
+Do not repeat equivalent F001 or F005 timing/widget passes. A trustworthy hosted Dart/Flutter execution path now exists and has transferred one central async mechanism. Next compare direct Dart transfer of F002/F003/F004/F006 against higher product leverage from an exact canonical LogMate Flutter build/toolchain-enforcement block and against native/browser platform transfer. Prefer a new evidence class, prerequisite closure or product transfer rather than symmetry.
 
 ## CHANGE WATCH
 - Flutter/Dart runtime/build behavior is version-sensitive; exact SDK/ref/engine identity matters.
-- A moving `stable` label is not sufficient artifact identity; future runs must bind exact checkout/ref.
+- A moving Flutter `stable` label is not sufficient artifact identity; future runs must bind exact checkout/ref.
 - Exact Flutter SDK/engine and any external CI/operator toolchain pin for inspected LogMate remain unknown from product repository evidence.
 - Browser/PWA and Android/iOS storage/background/backup behavior is platform/version sensitive.
 - Filesystem publication durability and SQLite WAL/backup behavior remain OS/filesystem/device/wrapper sensitive.
