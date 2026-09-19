@@ -1,0 +1,23 @@
+name: F004 Dart isolate validation
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/foundations/fixtures/F004_dart_isolate_boundary.dart'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.13.3'
+      - name: Record environment
+        run: |
+          dart --version
+          uname -a
+          git rev-parse HEAD
+      - name: Execute isolate boundary fixture
+        run: dart run research/foundations/fixtures/F004_dart_isolate_boundary.dart
