@@ -11,7 +11,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Record environment
@@ -33,3 +33,7 @@ jobs:
         timeout-minutes: 2
         working-directory: research/mobile/fixtures/m006_browser_service_worker
         run: node validate_restart.mjs
+      - name: Execute service-worker update transition oracle
+        timeout-minutes: 2
+        working-directory: research/mobile/fixtures/m006_browser_service_worker
+        run: node validate_update.mjs
