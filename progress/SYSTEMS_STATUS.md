@@ -3,7 +3,7 @@
 Track: Systems, Security, Performance & Delivery  
 Prefix: `S###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
-Last sync: 2026-09-19
+Last sync: 2026-09-20
 
 ## Current evidence
 
@@ -17,15 +17,15 @@ Last sync: 2026-09-19
 **IN STUDY — first integrated executable Foundation block complete.** Dart/Flutter/device transfer OPEN.
 
 ### S004 — Dependency, supply-chain and build-system fundamentals
-**IN STUDY — product-owned exact Flutter project baseline + executable lock transfer validated.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`, `research/systems/S004_logmate_lockfile_toolchain_transfer.md`, `research/systems/S004_logmate_lock_enforcement_execution.md`.
+**IN STUDY — product-owned Flutter baseline + lock transfer validated; product-owned LogMate PWA build path recovered; baseline source build pending.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`, `research/systems/S004_logmate_lockfile_toolchain_transfer.md`, `research/systems/S004_logmate_lock_enforcement_execution.md`.
 
-Product identity: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-19`; production identity unknown, main not assumed production.
+Product identity: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`; production identity unknown, main not assumed production.
 
-**SOURCE / product evidence:** LogMate `.metadata` records Flutter revision `3b62efc2a3da49882f43c372e0bc53daef7295a6`, channel `stable`, and matching create/base migration revisions. Official `flutter/flutter` tag `3.38.7` resolves exactly to that commit. This establishes a product-owned project-generation/migration baseline, not a release-toolchain declaration.
+**SOURCE:** LogMate `.metadata` records exact Flutter project baseline revision `3b62efc2a3da49882f43c372e0bc53daef7295a6`, official Flutter 3.38.7. Exact-ref `Makefile` defines `build-pwa` as `flutter build web --no-web-resources-cdn --no-wasm-dry-run` followed by `dart run tool/precache_flutter_web.dart`. The post-build tool mutates the generated service worker for full-resource precache and query-safe offline navigation. Therefore raw `flutter build web` is not artifact-equivalent to the product-owned PWA path.
 
-**VALIDATION:** workflow head `7815772bc11f8902dee2816165195c56ad45fef9`, run `35449021735`, job `105912825103` executed exact Flutter 3.38.7. Installation/toolchain identity recording succeeded; the exact product-derived committed lock passed `flutter pub get --enforce-lockfile` unchanged; deliberate one-nibble hosted-package hash corruption was rejected by the negative oracle. Job `105912825084` independently replicated the prior 3.38.10 positive+negative result. Job `105912824971` reproduced the expected 3.47.0 unchanged-lock rejection. Matrix-level failure is therefore expected from the incompatible 3.47.0 leg, not failure of the 3.38.7 validation.
+**VALIDATION retained:** run `35449021735`, job `105912825103` validates exact Flutter 3.38.7 committed-lock acceptance plus deliberate content-hash rejection; 3.38.10 replicates and 3.47.0 reproduces resolver incompatibility.
 
-**TRANSFER VALIDATION:** `product metadata revision → official 3.38.7 tag → executable lock acceptance + integrity-negative rejection` is now demonstrated. This closes the product-baseline dependency-lock rung, not canonical release/build/artifact identity.
+**VALIDATION new:** first exact-ref baseline PWA source-build workflow head `c0d5ed1b8e662733aae9386b79c3f9d64c624e52`, run `35452259148`, job `105921347918` failed in the combined source-fetch/assertion step after successful Flutter 3.38.7 setup/identity. Dependency, build, post-transform and artifact-hash stages were skipped, so this is not a LogMate build failure verdict. Diagnostic commit `3f599b88a40224071512f29ade35591e61807acf` splits clone, exact-ref checkout/product identity and build-contract assertions into independent steps; result pending.
 
 ### S005 — CI/CD, signing, versioning, reproducibility and release evidence
 **IN STUDY.** Real hosted generation + one successful online retrieval/verification + contradictory later verifier failures retained. Offline verification OPEN; do not spend further Actions minutes on flag permutations without stronger diagnostics or an independent verifier path.
@@ -34,22 +34,24 @@ Product identity: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73
 **IN STUDY — two integrated executable Foundation blocks.** Linux rename/directory-sync failure evidence retained; hard-power-loss transfer OPEN.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S004 now has a product-owned exact Flutter project baseline and executable lock compatibility/integrity evidence at that baseline. It still lacks evidence that 3.38.7 is the operational release toolchain, canonical source build, artifact digest, signing/attestation, independent-host reproducibility, deployment and production evidence.
+Systems Stage 1 remains **NOT PASS**. S004 now binds an exact product ref to both a product-owned project baseline and a product-owned PWA build/post-build path. Dependency lock semantics are executable; baseline source build/artifact identity are not yet validated because the first build harness stopped before those stages. Operational release toolchain, signing/attestation, independent-host reproducibility, deployment and production evidence remain absent.
 
 ## HANDOFFS
 - **Foundations:** hosted Dart/Flutter execution is available at bounded Studio scope; F006 socket correctness remains separate and OPEN.
-- **Architecture:** exact build/toolchain identity is a release contract when reproducibility/provenance is required.
-- **Mobile:** exact product project baseline 3.38.7 now has executable dependency-resolution transfer; this is not Android/iOS/browser runtime or release-policy evidence.
-- **Quality:** preserve 3.38.7 and 3.38.10 positive+integrity-negative passes and 3.47.0 resolver rejection as distinct regression/upgrade evidence classes.
-- **LogMate / release engineering:** exact product ref above; no product files edited. Seek explicit CI/operator/release toolchain evidence before calling 3.38.7 canonical release identity.
+- **Architecture:** post-build transformation belongs to artifact provenance when externally observable offline behavior depends on it.
+- **Mobile:** for exact LogMate ref `b551ce4...`, use `make build-pwa` as product-owned PWA build path; raw framework build is not equivalent. Browser/EFB runtime remains OPEN.
+- **Quality:** preserve first source-build attempt as a harness/source-acquisition failure only; skipped stages cannot support a product-build verdict.
+- **LogMate / release engineering:** exact product ref above; no product files edited. Explicit CI/operator/release toolchain still needed before calling 3.38.7 release identity.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical files edited.
 
 ## CHANGE WATCH / OPEN
-- Product-owned project baseline is exact Flutter 3.38.7, but canonical operational/release Flutter SDK/engine and any external CI/operator pin remain unknown.
-- Canonical LogMate source build, target artifact digest, signing/attestation and independent-host reproducibility remain OPEN.
-- Dart/pub lockfile enforcement and Flutter SDK behavior are tool/version sensitive.
+- Split diagnostic baseline-build workflow awaits execution/result.
+- Product-owned project baseline is exact Flutter 3.38.7, but canonical operational/release Flutter SDK/engine and external CI/operator pin remain unknown.
+- Baseline LogMate PWA source build and artifact digest remain OPEN; release signing/attestation, independent-host reproducibility and production deployment remain further rungs.
+- Product post-build service-worker transform depends on Flutter-generated format and fails closed when expected patterns change.
+- Dart/pub/Flutter build behavior remains version-sensitive.
 - Hosted S005 verifier stability/root cause, stronger authorization policy and offline verification remain OPEN.
 - Android/iOS signing, staged deployment and production rollback remain OPEN.
 
 ## Next work
-Do not repeat SDK matrices. Seek explicit product CI/operator/release toolchain/build-path evidence. If unavailable, a baseline source build may only be performed with explicit labeling that it validates the 3.38.7 project baseline rather than production/release provenance; otherwise move to the highest independent evidence class.
+Recover the split diagnostic workflow result. If source acquisition succeeds, continue through exact lock enforcement → `make build-pwa` → post-transform oracles → artifact SHA-256 identity. If it fails again, isolate the exact source-access/identity assertion rather than attributing failure to product code. Do not relabel a successful baseline build as shipped/release provenance.
