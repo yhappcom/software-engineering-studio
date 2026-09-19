@@ -1,0 +1,25 @@
+name: F003 Dart structures and complexity validation
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/foundations/fixtures/F003_dart_queue_structure.dart'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.13.3'
+      - name: Record environment
+        run: |
+          dart --version
+          uname -a
+          git rev-parse HEAD
+      - name: Execute F003 direct Dart fixture
+        timeout-minutes: 1
+        run: dart run research/foundations/fixtures/F003_dart_queue_structure.dart
