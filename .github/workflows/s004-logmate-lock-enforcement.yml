@@ -12,7 +12,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter: ['3.38.10', '3.47.0']
+        # 3.38.7 is not guessed: LogMate .metadata at exact product ref records
+        # framework revision 3b62efc2..., which is the official 3.38.7 tag target.
+        # 3.38.10 is the prior accepting comparison; 3.47.0 is the prior
+        # controlled resolver-rejection comparison.
+        flutter: ['3.38.7', '3.38.10', '3.47.0']
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
