@@ -1,5 +1,6 @@
 import 'dart:io';
 
+// F001 hosted validation: exercise the same process/I/O contract under Dart JIT and AOT.
 Future<void> main(List<String> args) async {
   final mode = args.isEmpty ? 'parent' : args.first;
   if (mode == 'child') {
