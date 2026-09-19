@@ -7,58 +7,56 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 ## Specialist map
 | Specialist | Current state |
 | --- | --- |
-| Foundations | Stage 1 IN STUDY — F001 direct Dart/Flutter execution OPEN; F002-F006 initiated with executable/model evidence |
+| Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT validated; Flutter framework/runtime hosted transfer executing; F002-F006 initiated |
 | Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 repeated-change + natural LogMate evolution transfer; A006 decision governance evidence |
 | Mobile | Stage 1 IN STUDY — M001-M006 first professional/model boundaries; direct Flutter/native/browser/EFB transfer OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 mutation/search; Q006 real crash recovery-oracle transfer |
-| Systems | Stage 1 IN STUDY — S004 exact-ref LogMate dependency/toolchain transfer; S005 hosted verification contradiction; direct Flutter build/strong authorization OPEN |
+| Systems | Stage 1 IN STUDY — S004 exact-ref LogMate dependency/toolchain transfer; S005 hosted verification contradiction; canonical Flutter product build/strong authorization OPEN |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
 
-### S004 — exact-ref LogMate lockfile/toolchain identity transfer
-Canonical: `research/systems/S004_logmate_lockfile_toolchain_transfer.md`.
+### F001 — direct Dart JIT/AOT execution gap closed at bounded hosted Linux boundary
+Canonical: `research/foundations/F001_program_execution_foundations.md`; status: `progress/FOUNDATIONS_STATUS.md`.
 
-F001 was attempted first on 2026-09-19: no `dart` or `flutter` executable was available. Direct Dart/Flutter validation remains OPEN rather than simulated.
+GitHub-hosted run `35423963687`, job `105846574857`, exact workflow/source commit `ccad123b533a5aa41bed7e84d36ad852828545c8` completed successfully. SDK setup, runtime identity recording, JIT execution, AOT compilation and AOT executable execution all passed.
 
-Product evidence: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-19`; production identity unknown and default branch is not assumed production.
+A prior run `35421496953` had already passed JIT and AOT compilation but failed AOT execution. Root cause was the fixture's launch-shape assumption: JIT requires `dart <script> child`, whereas the self-contained compiled executable must self-spawn as `<exe> child`. The fixture was corrected and the regression run passed. This is retained as FAILURE → DEBUG/ROOT CAUSE → FIX → REGRESSION evidence rather than hiding the failed run.
 
-At that exact ref, `pubspec.yaml` declares Dart `^3.10.7` and ranged hosted dependencies while committed `pubspec.lock` records exact selected hosted versions and SHA-256 content hashes. Concrete examples: `cloud_functions ^6.0.0 → 6.4.0` and `cupertino_icons ^1.0.8 → 1.0.9`. The lockfile records Dart `>=3.10.7 <4.0.0` and Flutter `>=3.27.0`, but does not identify one exact Flutter SDK/engine revision. Repository search found no `flutter-version` or `fvm` pin and `.github/workflows` was absent at the exact ref through the contents API; external CI/operator configuration remains unknown.
+**VALIDATION:** the named direct Dart JIT/AOT process/I/O transfer is CLOSED for this bounded hosted Linux claim. It does not establish Flutter framework/engine/embedder or Android/iOS/web behavior.
 
-**SYNTHESIS:** `manifest constraints != resolved package graph/content != exact SDK/toolchain != build artifact`. The committed lockfile materially strengthens package reproducibility, but it is not sufficient evidence for exact Flutter build reproducibility/provenance.
-
-**VALIDATION:** no Flutter/Dart executable was available, so lockfile enforcement, package-content retrieval, canonical LogMate build, independent-host comparison and artifact digest/signing/attestation remain OPEN. No PASS awarded.
+### F001/M001 next boundary — Flutter framework/runtime execution
+A minimal Flutter widget-state boundary fixture and hosted workflow were added at workflow commit `3b920ba70d315baa686a9ee931144700719bab58`. Run `35426881450`, job `105854277141` successfully installed the stable Flutter checkout, recorded Flutter/Dart/engine identity and resolved the fixture; the actual widget runtime test was still executing at the latest observation. No Flutter PASS is claimed until the run completes.
 
 ## Retained evidence
-- **F001:** source/runtime/process model + OS process/I/O fixture; direct Dart JIT/AOT and Flutter runtime execution remain OPEN.
 - **Architecture:** A001-A003/A005/A006 cover change pressure, ownership/dependency, semantic contracts, refactoring/evolution and evidence-preserving decisions.
-- **Mobile:** M001-M006 cover planned Foundation boundaries at first professional/model level; real runtime/platform transfer OPEN.
+- **Mobile:** M001-M006 cover planned Foundation boundaries at first professional/model level; real platform transfer OPEN.
 - **Data:** D005 rollback/storage/WAL/checkpoint/live backup/interruption evidence; D006 transport faults + exact-ref inbound progress transfer.
 - **Quality:** Q001-Q006 professional boundaries; Q004 mutation/search-strength and Q006 semantic recovery-oracle discrimination retained.
-- **Systems:** S001-S006 retained; S004 now has exact-ref Flutter-application dependency/toolchain transfer. S005 retains hosted attestation generation, one successful retrieval/verification/negative identity run and later verifier contradiction; S006 retains directory-sync publication failure evidence.
+- **Systems:** S001-S006 retained; S004 exact-ref Flutter-application dependency/toolchain transfer; S005 hosted attestation evidence plus verifier contradiction; S006 directory-sync publication failure evidence.
 
 ## Cross-track handoffs
-- **Architecture:** build/toolchain identity becomes an externally relevant contract when reproducibility/provenance is required; evidence-critical release decisions should preserve exact artifact/toolchain/provenance identity.
-- **Quality:** future product reproducibility validation should inject toolchain drift separately from lockfile/content-hash drift.
-- **Mobile / LogMate:** when canonical build tooling becomes available, capture exact Flutter SDK/engine, enforce the committed lockfile, execute the canonical build, then bind artifact digest/signing/attestation. Current static source evidence does not establish a reproducible mobile artifact.
-- **Data:** bind migration/backup release evidence to exact artifact/provenance when used as a release gate.
-- **Design Studio / Web Manager / Marketing Manager:** considered under cross-repo contract; not materially relevant to this bounded mechanism; no canonical files edited.
+- **Mobile:** direct Dart is no longer the F001 blocker. Consume it only for the tested language/process boundary; Flutter framework/engine/embedder and native/browser lifecycle remain independent validation obligations.
+- **Quality:** preserve the failed AOT run and corrected regression as evidence that a test fixture can encode an execution-mode defect; runtime/build identity belongs in the oracle contract.
+- **Systems:** hosted Dart execution is not a canonical LogMate build. S004 still requires exact Flutter toolchain capture + lockfile enforcement + canonical product build before reproducibility/provenance claims.
+- **Architecture/Data:** direct Dart execution strengthens the shared execution model but does not change persistence, ownership or product behavior claims.
+- **Design Studio / Web Manager / Marketing Manager:** considered under the cross-repo contract; this bounded runtime mechanism does not alter their canonical decisions; no files edited there.
 
 ## Current Balance Loop
-Direct Dart/Flutter execution remains the highest-prerequisite target whenever a trustworthy SDK appears. The runtime still has no `dart`/`flutter`.
+Foundations remains the highest-prerequisite track because a trustworthy hosted SDK path now exists. First retrieve the exact Flutter runtime run verdict. If successful, separate what `flutter test` proves about framework/test-shell execution from what remains OPEN for Android/iOS embedder, browser/PWA and canonical product builds. Do not repeat equivalent Dart JIT/AOT passes.
 
-The S004 static product-transfer boundary is now explicit; do not repeat manifest/lockfile audits. The next product rung is executable lockfile enforcement + exact toolchain capture + canonical build. Do not repeat S005 offline-export or signer/ref/digest flag variants until command-level verifier failure evidence or an independent verifier path is available. Otherwise prefer a materially different higher rung: independent-host reproducibility, physical/platform publication durability, natural ADR/release evidence, or another track's stronger gap.
+If Flutter execution is blocked or fails, preserve the failure and isolate it before changing tracks. If the failure cannot be diagnosed with trustworthy evidence, move to the highest-value independent rung rather than simulating a Flutter result.
 
 ## CHANGE WATCH
-- Flutter/Dart runtime/build and pub lockfile behavior are version-sensitive; exact SDK/ref matters.
-- Exact Flutter SDK/engine and any external CI/operator toolchain pin for inspected LogMate remain unknown.
+- Flutter/Dart runtime/build behavior is version-sensitive; exact SDK/ref/engine identity matters.
+- The hosted Flutter workflow currently clones the then-current `stable` branch but records its exact checkout identity before execution; future runs must not be treated as equivalent merely because they also say `stable`.
+- Exact Flutter SDK/engine and any external CI/operator toolchain pin for inspected LogMate remain unknown from product evidence.
 - Browser/PWA and Android/iOS storage/background/backup behavior is platform/version sensitive.
 - Filesystem publication durability depends on OS/filesystem/device and synchronization semantics; current EIO injection is not hard-power-loss evidence.
 - SQLite WAL/backup behavior depends on SQLite version, wrapper, VFS/OS/filesystem/device and synchronization mode.
-- LogMate Sync and backup consistency/publication mechanisms remain OPEN product decisions.
-- GitHub Actions/CLI/attestation API/Sigstore roots/OIDC/hosted-runner behavior are service/tool/version sensitive; hosted verification currently has contradictory success/failure evidence.
+- GitHub Actions/CLI/attestation API/Sigstore roots/OIDC/hosted-runner behavior are service/tool-version sensitive; hosted verification has contradictory success/failure evidence.
 
 ## Evidence rule
 No PASS from reading alone. Expected progression where applicable: `SOURCE → MODEL → EXECUTABLE EXAMPLE → FAILURE → DEBUG/ROOT CAUSE → ALTERNATIVE → TRANSFER → PRODUCTION EVIDENCE`.
