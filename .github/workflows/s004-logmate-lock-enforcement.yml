@@ -1,0 +1,63 @@
+name: S004 LogMate lock enforcement transfer
+
+on:
+  push:
+    paths:
+      - '.github/workflows/s004-logmate-lock-enforcement.yml'
+      - 'research/systems/fixtures/s004_logmate_lock_enforcement/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install exact Flutter release
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch 3.47.0 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine | tee s004-flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee s004-flutter-git-head.txt
+          dart --version 2>&1 | tee s004-dart-version.txt
+
+      - name: Enforce exact LogMate lock resolution
+        working-directory: research/systems/fixtures/s004_logmate_lock_enforcement
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cp pubspec.lock pubspec.lock.before
+          flutter pub get --enforce-lockfile
+          cmp pubspec.lock.before pubspec.lock
+
+      - name: Negative case - hosted content hash mutation must fail closed
+        working-directory: research/systems/fixtures/s004_logmate_lock_enforcement
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cp pubspec.lock pubspec.lock.good
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('pubspec.lock')
+          s = p.read_text()
+          old = '41e005c33bd814be4d3096aff55b1908d419fde52ca656c8c47719ec745873cd'
+          new = '01e005c33bd814be4d3096aff55b1908d419fde52ca656c8c47719ec745873cd'
+          assert old in s
+          p.write_text(s.replace(old, new, 1))
+          PY
+          set +e
+          flutter pub get --enforce-lockfile > negative.out 2>&1
+          rc=$?
+          set -e
+          cat negative.out
+          test "$rc" -ne 0
+          grep -Ei 'hash|content|lock' negative.out
+          mv pubspec.lock.good pubspec.lock
