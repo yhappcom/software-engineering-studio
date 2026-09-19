@@ -5,8 +5,9 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ## Current studies
 
 ### Foundations
-- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**; direct Dart JIT/AOT process/I/O transfer is now executable and successful in hosted Linux run `35423963687` after a fixture defect was root-caused and fixed. Flutter framework/runtime hosted transfer is now actively being executed; verdict pending.
-- `F002`–`F006` — initial integrated executable/model Foundation blocks complete; see `progress/FOUNDATIONS_STATUS.md`.
+- `F001` — `research/foundations/F001_program_execution_foundations.md` — **IN STUDY**; direct Dart JIT/AOT process/I/O transfer and first Flutter framework/test-binding execution are successful on hosted Linux; native/browser/product transfer remains OPEN.
+- `F005` — `research/foundations/F005_async_event_loop_futures_cancellation.md` — direct Dart 3.13.3 transfer now validates the documented microtask→zero-delay-event relation, waiter-timeout ≠ source-cancellation, and API-specific StreamSubscription cancellation at bounded hosted-Linux scope.
+- `F002`, `F003`, `F004`, `F006` — initial integrated executable/model Foundation blocks complete; direct Dart/runtime transfer remains selectively OPEN; see `progress/FOUNDATIONS_STATUS.md`.
 
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
@@ -14,7 +15,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `A006` — evidence-preserving decisions + governance fixture; natural ADR-corpus validation OPEN.
 
 ### Mobile
-- `M001`–`M006` — all planned Foundation boundaries have first professional/model evidence; direct Flutter/native/browser/EFB transfer remains OPEN.
+- `M001`–`M006` — all planned Foundation boundaries have first professional/model evidence; M001 has first direct Flutter framework execution; native/browser/EFB transfer remains OPEN.
 
 ### Data
 - `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
