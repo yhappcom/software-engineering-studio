@@ -1,6 +1,6 @@
 # F006 — Direct Dart Socket Transfer
 
-Status: **IN STUDY — HANG REPRODUCED; FIRST ROOT-CAUSE HYPOTHESIS FALSIFIED**  
+Status: **IN STUDY — HANG REPRODUCED; FIRST ROOT-CAUSE HYPOTHESIS FALSIFIED; OUTER CI CONTAINMENT VALIDATED**  
 Evidence date: 2026-09-19
 
 ## Problem
@@ -31,36 +31,41 @@ The first causal hypothesis was that awaiting `client.close()` before allowing t
 
 **CONTRADICTION / FALSIFICATION:** regression run `35434895889`, job `105875778624`, exact head `6f78f6ee8ccda32143df55d2a7f3820a117cc5c7` again reached `Run F006 Dart socket boundary fixture` and remained `in_progress` for far longer than either five-second Future timeout. Therefore the original close-order hypothesis is not an adequate root cause. No Dart/runtime defect is assigned from this observation alone.
 
-A partial running-job log could not be retrieved through the current GitHub evidence channel (404 while the job remained active), so the exact internal await/resource retaining progress is still **OPEN**.
+A partial running-job log could not be retrieved through the current GitHub evidence channel, so the exact internal await/resource retaining progress is still **OPEN**.
 
-### Validation-governance correction
-The workflow itself lacked a job/step timeout, allowing a faulty fixture to consume runner time without a bounded verdict. Commit `835104ea9dac410b4f0a4d17f748882710f5921c` adds a three-minute job timeout, one-minute fixture-step timeout, and a workflow concurrency group with `cancel-in-progress: true` for future F006 runs. Run `35437455712` was queued from that exact head at the evidence cutoff; queue/start state is not a PASS.
+### Validation-governance correction and result
+The workflow itself originally lacked a job/step timeout, allowing a faulty fixture to consume runner time without a bounded verdict. Commit `835104ea9dac410b4f0a4d17f748882710f5921c` added a three-minute job timeout, one-minute fixture-step timeout, and an F006 concurrency group with `cancel-in-progress: true`.
 
-**QUALITY / SYSTEMS SYNTHESIS:** application-level Future timeouts are not sufficient CI resource-governance controls. A validation harness that can itself hang needs an independent outer execution deadline. This is evidence about test-harness containment, not proof of the socket mechanism under study.
+**VALIDATION:** bounded run `35437455712`, job `105882433731`, exact head `835104ea9dac410b4f0a4d17f748882710f5921c`, completed with `failure`. Setup, checkout, Dart setup, and environment recording all succeeded. The fixture step started at `2026-09-19T10:27:43Z` and ended as `failure` at `10:28:56Z`; the job completed at `10:28:58Z`. This validates the outer harness containment rung: the previously runaway fixture is now independently bounded by CI and yields a terminal failure rather than consuming an unbounded runner interval.
+
+**EVIDENCE LIMIT:** the failed bounded step still does not expose command-level fixture output through the current evidence channel, so it does not identify which internal await/resource retained progress. It is not a socket-correctness verdict and not a root-cause proof.
+
+**QUALITY / SYSTEMS SYNTHESIS:** application-level Future timeouts are not sufficient CI resource-governance controls. A validation harness that can itself hang needs an independent outer execution deadline. The outer deadline is now executable evidence, not merely a proposed safeguard.
 
 A workflow-definition commit also triggered run `35434853921` before the fixture existed at that head. That run is not a valid fixture verdict and must not be used as F006 evidence.
 
 ## VALIDATION / OPEN
-- Await exact bounded run `35437455712` completion and step verdict.
-- If it times out, isolate the fixture into independently bounded phases or use an external process deadline so the blocking phase can be identified without another unbounded run.
-- Do not award F006 direct-Dart PASS from queue/start/hang evidence.
+- Direct Dart socket correctness remains OPEN; do not award PASS from the bounded failure.
+- Exact blocking/resource-retention phase remains OPEN because command-level fixture output is unavailable through the current evidence channel.
+- Do not spend another runner cycle on close-order permutations. If F006 resumes, isolate phases into independently observable processes/steps or use an external process supervisor that can preserve phase-level output before termination.
+- Balance Loop should now compare that debugging cost against higher-leverage independent evidence such as exact canonical LogMate toolchain/lock/build/artifact transfer or remaining F002/F003 prerequisites.
 - Real remote timeout/partition, packet-level behavior, half-close/reset distinctions, TLS, Android/iOS connectivity/background state, browser/PWA networking and product protocol behavior remain OPEN.
 
 ## EVIDENCE LIMIT
-Loopback TCP on hosted Linux cannot establish WAN behavior, radio/network transitions, mobile lifecycle behavior, browser semantics, peer durable commit, application ACK or exactly-once processing. The released-port probe is deliberately only a local connect-failure classification test. The reproduced hang currently validates only a harness failure mode and falsifies one causal hypothesis; it does not establish a Dart socket semantic defect.
+Loopback TCP on hosted Linux cannot establish WAN behavior, radio/network transitions, mobile lifecycle behavior, browser semantics, peer durable commit, application ACK or exactly-once processing. The released-port probe is deliberately only a local connect-failure classification test. The reproduced hang plus bounded failure validates a harness failure mode, falsifies one causal hypothesis, and validates outer containment; it does not establish a Dart socket semantic defect.
 
 ## RELATED DOMAIN CHECK
 - **Foundations:** F001/F004/F005 hosted Dart evidence enables this transfer; F006 base framing/termination model checked.
 - **Architecture:** frame and terminal-state semantics are interface contracts when observable.
 - **Mobile:** `dart:io` excludes browser apps; Android/iOS/browser transfer remains separate.
 - **Data:** D006 operation identity/ACK/idempotency remains above transport and is not replaced by this fixture.
-- **Quality:** oracle checks semantic frame completeness, not merely absence of exceptions; the new hang demonstrates why the harness itself also needs an independent termination oracle/deadline.
+- **Quality:** oracle checks semantic frame completeness, not merely absence of exceptions; the hang and bounded failure demonstrate why the harness itself also needs an independent termination oracle/deadline.
 - **Systems:** bounded CI execution is part of controlled evidence production; TLS, resource exhaustion, performance and release artifact identity remain separate.
-- **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded transport/harness mechanism.
+- **Design Studio / Web Manager / Marketing Manager:** considered under the cross-repository contract; not materially relevant to this bounded transport/harness mechanism, so no canonical files were edited there.
 - **Product:** no new product repository audit was required; no product implementation claim is made.
 
 ## HANDOFFS
-- **Quality:** preserve `run 35434895889` as a harness-hang failure and `835104e...` as containment, not socket correctness. Future async/network tests need an outer deadline independent of the code under test.
-- **Systems:** CI evidence pipelines should bound runaway validation jobs; application timeout logic is not a substitute for runner/job resource controls.
-- **Data:** consume no new Dart transport correctness claim yet; application completion/ACK/durable-effect semantics remain above this unresolved transport fixture.
+- **Quality:** preserve run `35437455712` as executable evidence that the independent CI deadline terminates the runaway validation step. It is containment evidence, not socket correctness.
+- **Systems:** CI evidence pipelines should independently bound target execution; application timeout logic is not a substitute for runner/job resource controls.
+- **Data:** consume no new Dart transport correctness claim; application completion/ACK/durable-effect semantics remain above this unresolved transport fixture.
 - **Mobile:** browser/PWA cannot inherit this `dart:io` result; use browser networking APIs and exact deployment context for transfer validation.
