@@ -33,14 +33,15 @@ Future<void> main() async {
   final client = await Socket.connect(InternetAddress.loopbackIPv4, server.port);
   client.add(Uint8List.fromList([0, 5, 72, 69])); // declared 5-byte body, only "HE"
   await client.flush();
-  await client.close();
+  // Socket.close() closes the IOSink/send side, but awaiting its Future before
+  // the peer consumes EOF can create an unnecessary wait cycle. Start close,
+  // let the peer observe EOF, then await close completion.
+  final closeFuture = client.close();
   await serverDone.future.timeout(const Duration(seconds: 5));
+  await closeFuture.timeout(const Duration(seconds: 5));
   await server.close();
   if (serverError != null) throw StateError('$serverError');
 
-  // Separate connect-failure probe: a port released after binding should not be
-  // treated as a successful connection. This is bounded loopback evidence, not
-  // a claim about remote timeout/partition behavior.
   final temporary = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
   final unusedPort = temporary.port;
   await temporary.close();
