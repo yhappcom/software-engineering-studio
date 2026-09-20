@@ -16,12 +16,14 @@ Last sync: 2026-09-21
 Canonical background block: `research/mobile/M002_android_background_lifecycle_transfer.md`. Exact workflow head `a278de3f2a9015195262b30662b1c240601f336e`, run `35529237932`, job `106126775150` completed success. It pins Flutter tag `3.47.5` and requires same PID across HOME/background/resume, Flutter UI history containing `paused` and `resumed`, native `onPause`/`onStop` and a second `onResume`, plus natural completion. This is bounded API-35 x86_64 emulator TRANSFER VALIDATION, not a process-retention guarantee.
 
 ### M003
-**IN STUDY — BOUNDED ANDROID RUNTIME-PERMISSION GRANT/REVOKE TRANSFER VALIDATED.** Canonical: `research/mobile/M003_android_runtime_permission_revocation_transfer.md`.
+**IN STUDY — BOUNDED RUNTIME-PERMISSION TRANSFER VALIDATED; ANDROID KEYSTORE SECURE-STORAGE TRANSFER PENDING.** Canonical: `research/mobile/M003_android_runtime_permission_revocation_transfer.md`, `research/mobile/M003_android_keystore_secure_storage_transfer.md`.
 
-Exact Studio head `17d7e16dd1f25268f5d0f929cc106dabe56e6b48`, run `35522782572`, job `106109634570` completed success. The API-35 x86_64 emulator fixture required app-observed and package-manager denied → granted → revoked/denied transitions, process disappearance on live revoke, a fresh relaunch PID, and natural completion. Exact Flutter/Dart command outputs were recorded by the workflow but are not exposed by currently retrievable metadata; no version is invented. User-dialog denial, one-time permission, auto-reset, physical device, secure storage and product behavior remain OPEN.
+Permission evidence: exact Studio head `17d7e16dd1f25268f5d0f929cc106dabe56e6b48`, run `35522782572`, job `106109634570` completed success for denied → granted → revoked/denied state, process replacement and natural completion.
+
+New independent secure-storage block: workflow head `ed092abb3c81f4c47007499cd86edfd8cf6036cb`, run `35535674389` is currently in progress. Pinned Flutter `3.47.5`, Android API 35 x86_64. Oracle requires AndroidKeyStore AES-256/GCM key observation as `SecretKey.encoded == null`, encrypted marker recovery after force-stop/fresh PID, deliberate external ciphertext mutation, authenticated-decryption failure, and natural completion. **No PASS/TRANSFER VALIDATION until terminal evidence.** Hardware backing/StrongBox, physical device, user-auth-bound keys, backup/restore, reinstall/migration, iOS and product behavior remain OPEN.
 
 ### M004
-**IN STUDY.** M002 exercises `path_provider`; M003 crosses Flutter MethodChannel/native permission state. Broader native/plugin/multi-engine behavior remains OPEN.
+**IN STUDY.** M002 exercises `path_provider`; M003 crosses Flutter/native Android security boundaries. Broader native/plugin/multi-engine behavior remains OPEN.
 
 ### M005
 **IN STUDY.** Planned Foundation capability evidence retained; physical/native product transfer remains OPEN.
@@ -30,24 +32,25 @@ Exact Studio head `17d7e16dd1f25268f5d0f929cc106dabe56e6b48`, run `35522782572`,
 **IN STUDY — REAL CHROMIUM OFFLINE + RESTART + UPDATE/CONTROL + OFFLINE COLD-START TRANSFER VALIDATED.** Safari/iPadOS/EFB, physical connectivity, Flutter/LogMate artifact and production remain OPEN.
 
 ## Product transfer scope
-Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. M001-M003 lifecycle/permission/storage evidence is Studio-fixture evidence, not product builds.
+Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. Current M003 Keystore work is Studio-fixture evidence, not a LogMate/MintTap audit or product build.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. M001 supplies host/Chrome + Android-emulator application execution; M002 now supplies both controlled process replacement + persistent-file recovery and controlled same-process HOME background/resume; M003 adds mutable runtime-authority grant/revoke + fresh-process transfer; M006 supplies generic Chromium lifecycle evidence. Physical Android/iOS lifecycle, system-initiated process death/background pressure, user-driven/one-time/auto-reset permissions, secure storage, broader plugin/native behavior, Safari/iPadOS/EFB, canonical product runtime and production evidence remain materially absent.
+Mobile Stage 1 remains **NOT PASS**. Physical Android/iOS lifecycle, system-initiated process death/background pressure, user-driven/one-time/auto-reset permissions, secure-storage terminal evidence, broader plugin/native behavior, Safari/iPadOS/EFB, canonical product runtime and production evidence remain materially absent.
 
 ## Dependencies / handoffs
-- **Architecture:** permission-dependent features should model denial/revocation as explicit contract states; lifecycle callbacks must not be assumed guaranteed finalization hooks.
-- **Data:** M002 force-stop validates process-memory loss versus file recovery only; successful ordinary background callbacks do not establish durability.
-- **Quality:** M003 validates independent app/platform permission oracles; M002 lifecycle independently compares Flutter state history, native callbacks, PID continuity and natural completion.
-- **Systems:** M003 supplies bounded least-privilege mechanics, not secure-storage or authorization-policy completeness; background process priority remains platform-controlled.
-- **Design Studio:** permission denial/rationale UX and state restoration semantics remain related; no canonical design file edited.
-- **Web Manager / Marketing Manager:** considered; not materially relevant to the native lifecycle fixture.
+- **Architecture:** permission/key/storage failure states should be explicit contract states; lifecycle callbacks must not be assumed guaranteed finalization hooks.
+- **Data:** process recovery does not establish physical durability or backup correctness; Keystore ciphertext recovery is a distinct property.
+- **Quality:** M003 Keystore block uses independent ciphertext tamper injection plus fresh-process recovery and natural completion oracles.
+- **Systems:** Keystore work is bounded least-privilege/secret mechanics; even a pass will not establish hardware backing, StrongBox, auth policy, root resistance or complete secret management.
+- **Design Studio:** user-auth/recovery UX becomes related for auth-bound keys; current fixture has no product interaction contract.
+- **Web Manager / Marketing Manager:** considered; no material dependency for this native storage mechanism.
 
 ## CHANGE WATCH / OPEN
-- Physical Android/iOS, system-initiated lifecycle/background pressure, user-dialog/one-time/auto-reset permissions, secure storage and broader plugin-native integration remain OPEN.
-- Same-PID HOME survival must not be generalized to Android process-retention guarantees; Flutter docs explicitly permit skipped lifecycle notifications on abrupt termination.
+- Keystore run `35535674389` terminal result is OPEN.
+- Physical Android/iOS, system-initiated lifecycle/background pressure, user-dialog/one-time/auto-reset permissions and broader plugin-native integration remain OPEN.
+- Hardware-backed/StrongBox, user-auth-bound key invalidation, backup/restore, reinstall/key rotation/device migration remain OPEN.
+- Same-PID HOME survival must not be generalized to Android process-retention guarantees.
 - Safari/iPadOS/EFB and canonical product runtime remain OPEN.
-- M002 workflow records toolchain identity, but current metadata does not expose that stdout; preserve exact tag/ref and strengthen provenance in later replication rather than inventing output.
 
 ## Next work
-Return to Balance Loop. Do not repeat controlled HOME/force-stop lifecycle variants. Prefer a materially different high-leverage evidence class: physical Android/iOS/Safari, system-initiated process pressure, secure storage, user-driven permission behavior, canonical product runtime, physical storage/connectivity, or another track's stronger Stage-1 gap.
+Continue M003 until run `35535674389` reaches a terminal verdict. If it fails, isolate build/emulator/key-generation/process-recovery/tamper-oracle phase before changing semantics. If it succeeds, award only the bounded API-35 emulator Keystore process/tamper transfer, then return to Balance Loop rather than repeating equivalent crypto variants.
