@@ -14,16 +14,16 @@ Last sync: 2026-09-20
 Bounded direct Dart/Flutter execution retained: identity/resource lifetime (F002), representation/queue semantics (F003), isolate ownership/sendability (F004), and async ordering/cancellation boundaries (F005). Previously recorded platform/product/GC/performance/backpressure gaps remain OPEN.
 
 ### F006 — OS, file, socket and network foundations
-**IN STUDY — TRANSPORT SEMANTICS PASS; BOUNDED PROCESS-LIVENESS ROOT CAUSE ESTABLISHED; COMBINED REGRESSION PENDING.** Canonical: `research/foundations/F006_direct_dart_socket_transfer.md`, `research/foundations/F006_process_liveness_phase_isolation.md`.
+**BOUNDED PROFESSIONAL BOUNDARY CLOSED — TRANSPORT SEMANTICS + ROOT CAUSE + FIX + REGRESSION VALIDATED.** Canonical: `research/foundations/F006_direct_dart_socket_transfer.md`, `research/foundations/F006_process_liveness_phase_isolation.md`.
 
-Run `35489259464`, exact head `d57d5531d9a5d96d21685d31e75bc2aaed051dd4`, Dart 3.13.3/linux_x64 on Ubuntu 24.04.5, provides the causal discriminator: `accepted-close` replicated BODY_DONE→timeout/orphan termination while structurally matched `accepted-destroy` reached BODY_DONE and naturally exited. `server-close` and `refused-connect` controls also exited; `truncated-eof` retained the close-path failure.
+Run `35489259464`, exact head `d57d5531d9a5d96d21685d31e75bc2aaed051dd4`, Dart 3.13.3/linux_x64 on Ubuntu 24.04.5, established the causal discriminator: `accepted-close` replicated BODY_DONE→timeout/orphan termination while structurally matched `accepted-destroy` naturally exited. Server-only/refused-connect controls exited; truncated-eof retained the close-path failure.
 
 **ROOT CAUSE at this bounded target:** the fixture treated send-side `Socket.close()` completion as complete connected-socket teardown. The receive side could retain process liveness; explicit bidirectional `destroy()` removed the symptom in the matched accepted-socket case. This is not a universal claim that `Socket.close()` leaks or is incorrect.
 
-Commit `5aa89aa5c11c4baf68233a412566e891a855506a` repairs the combined semantic fixture to flush its truncated payload and then explicitly destroy the client. Hosted combined semantic + natural-exit regression remains pending; do not close F006 before terminal evidence.
+Commit `5aa89aa5c11c4baf68233a412566e891a855506a` repaired the combined fixture. **REGRESSION PASS:** workflow run `35491928998`, job `106028240397`, exact checkout `5aa89aa5...`, Dart 3.13.3 stable/linux_x64, Ubuntu 24.04.5, runner image `20260907.300.1`, completed success. The combined fixture preserved `truncated_eof_rejected=true`, `connect_failure_observed=true`, `bidirectional_teardown=true` and then naturally exited without the prior timeout/orphan termination.
 
 ## Gate assessment
-Foundation PASS is **not** awarded. F001-F005 retain bounded direct execution. F006 now has semantic transport evidence plus bounded debug/root-cause evidence, but repaired combined regression and broader native/product transfer remain OPEN.
+Foundation PASS is **not** awarded. F001-F006 now each have bounded direct executable evidence, and F006 has a complete failure→reproduction→isolation→root cause→fix→regression chain. Broader native/product/cross-platform transfer and other Stage-1 scope gaps remain OPEN; this result closes only the named Dart/Linux loopback professional boundary.
 
 ## HANDOFFS
 - Quality/Systems: semantic PASS/BODY_DONE is not executable completion; preserve natural process exit/resource lifecycle as an independent oracle.
@@ -32,8 +32,8 @@ Foundation PASS is **not** awarded. F001-F005 retain bounded direct execution. F
 
 ## CHANGE WATCH / OPEN
 - Flutter/Dart/browser behavior is version-sensitive; preserve exact SDK/ref/run identity.
-- F006 repaired combined semantic + natural-exit regression remains OPEN.
+- F006 cross-platform/native/product networking transfer remains OPEN; do not repeat equivalent Linux close-vs-destroy variants.
 - F001 native Android/iOS, Safari/iPadOS/EFB, PWA/product/release runtime remains OPEN.
 
 ## Next work
-Recover/execute the combined F006 fixture at or after `5aa89aa5...`; require truncated-EOF rejection + refused-connect semantic PASS + natural process exit. If successful, close this bounded F006 professional boundary and return to Balance Loop rather than repeating socket teardown variants.
+Return to Balance Loop. The repaired F006 combined regression is terminal-success evidence, so do not continue socket teardown permutations. Prefer a materially different evidence class with higher leverage: native/mobile/Safari runtime, exact product PWA/build transfer, physical storage/connectivity boundary, or another track's stronger Stage-1 gap.
