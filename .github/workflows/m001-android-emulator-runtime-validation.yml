@@ -67,6 +67,7 @@ jobs:
           DART
           mkdir -p integration_test
           cat > integration_test/runtime_boundary_test.dart <<'DART'
+          import 'package:flutter/foundation.dart';
           import 'package:flutter_test/flutter_test.dart';
           import 'package:integration_test/integration_test.dart';
           import 'package:m001_android_fixture/main.dart';
