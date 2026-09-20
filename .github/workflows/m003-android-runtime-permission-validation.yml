@@ -1,0 +1,146 @@
+name: M003 Android runtime permission validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m003-android-runtime-permission-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  android-runtime-permission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install current Flutter stable checkout
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          dart --version 2>&1 | tee dart-version.txt
+
+      - name: Create isolated permission fixture
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "$RUNNER_TEMP"
+          flutter create --platforms android --org dev.yhapp.studio m003_permission_fixture
+          cd m003_permission_fixture
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/src/main/AndroidManifest.xml')
+          s = p.read_text()
+          s = s.replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">', '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.CAMERA" />')
+          p.write_text(s)
+          PY
+          cat > android/app/src/main/kotlin/dev/yhapp/studio/m003_permission_fixture/MainActivity.kt <<'KOTLIN'
+          package dev.yhapp.studio.m003_permission_fixture
+
+          import android.Manifest
+          import android.content.pm.PackageManager
+          import androidx.core.content.ContextCompat
+          import io.flutter.embedding.android.FlutterActivity
+          import io.flutter.embedding.engine.FlutterEngine
+          import io.flutter.plugin.common.MethodChannel
+
+          class MainActivity : FlutterActivity() {
+              override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+                  super.configureFlutterEngine(flutterEngine)
+                  MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "studio.m003/permission")
+                      .setMethodCallHandler { call, result ->
+                          if (call.method == "cameraStatus") {
+                              val granted = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                              result.success(if (granted) "GRANTED" else "DENIED")
+                          } else {
+                              result.notImplemented()
+                          }
+                      }
+              }
+          }
+          KOTLIN
+          cat > lib/main.dart <<'DART'
+          import 'package:flutter/material.dart';
+          import 'package:flutter/services.dart';
+
+          Future<void> main() async {
+            WidgetsFlutterBinding.ensureInitialized();
+            const channel = MethodChannel('studio.m003/permission');
+            final status = await channel.invokeMethod<String>('cameraStatus') ?? 'UNKNOWN';
+            runApp(MaterialApp(home: Scaffold(body: Center(child: Text('CAMERA:$status', textDirection: TextDirection.ltr)))));
+          }
+          DART
+          flutter build apk --debug
+
+      - name: Create stateful Android oracle script
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat > "$RUNNER_TEMP/m003_oracle.sh" <<'BASH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          PKG=dev.yhapp.studio.m003_permission_fixture
+          PERM=android.permission.CAMERA
+          APK="$RUNNER_TEMP/m003_permission_fixture/build/app/outputs/flutter-apk/app-debug.apk"
+          adb shell getprop ro.build.version.release
+          adb shell getprop ro.build.version.sdk
+          adb shell getprop ro.product.cpu.abi
+          adb install -r "$APK"
+
+          adb shell am start -W -n "$PKG/.MainActivity"
+          sleep 3
+          adb shell uiautomator dump /sdcard/m003-denied-initial.xml >/dev/null
+          adb shell cat /sdcard/m003-denied-initial.xml | grep 'CAMERA:DENIED'
+          adb shell dumpsys package "$PKG" | grep -A 20 'runtime permissions:' | grep "$PERM: granted=false"
+
+          adb shell am force-stop "$PKG"
+          adb shell pm grant "$PKG" "$PERM"
+          adb shell am start -W -n "$PKG/.MainActivity"
+          sleep 3
+          adb shell uiautomator dump /sdcard/m003-granted.xml >/dev/null
+          adb shell cat /sdcard/m003-granted.xml | grep 'CAMERA:GRANTED'
+          adb shell dumpsys package "$PKG" | grep -A 20 'runtime permissions:' | grep "$PERM: granted=true"
+          PID_GRANTED=$(adb shell pidof "$PKG" | tr -d '\r')
+          test -n "$PID_GRANTED"
+          echo "pid_granted=$PID_GRANTED"
+
+          adb shell pm revoke "$PKG" "$PERM"
+          sleep 2
+          test -z "$(adb shell pidof "$PKG" | tr -d '\r')"
+          adb shell am start -W -n "$PKG/.MainActivity"
+          sleep 3
+          adb shell uiautomator dump /sdcard/m003-denied-after-revoke.xml >/dev/null
+          adb shell cat /sdcard/m003-denied-after-revoke.xml | grep 'CAMERA:DENIED'
+          adb shell dumpsys package "$PKG" | grep -A 20 'runtime permissions:' | grep "$PERM: granted=false"
+          PID_RELAUNCH=$(adb shell pidof "$PKG" | tr -d '\r')
+          test -n "$PID_RELAUNCH"
+          test "$PID_RELAUNCH" != "$PID_GRANTED"
+          echo "pid_relaunch=$PID_RELAUNCH"
+          echo 'M003_ANDROID_PERMISSION_GRANT_REVOKE_PASS'
+          BASH
+          chmod +x "$RUNNER_TEMP/m003_oracle.sh"
+
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Execute permission grant-revoke oracle on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: bash "$RUNNER_TEMP/m003_oracle.sh"
