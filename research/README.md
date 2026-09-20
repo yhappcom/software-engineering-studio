@@ -5,7 +5,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ## Current studies
 
 ### Foundations
-- `F001` — direct Dart JIT/AOT and first Flutter framework/test-binding execution successful on hosted Linux; native/browser/product transfer remains OPEN.
+- `F001` — direct Dart JIT/AOT, Flutter framework/test-binding execution, and `research/foundations/F001_flutter_chrome_runtime_transfer.md`: same bounded Flutter widget oracle validated on host and Chrome target at exact workflow head `b547c5d...`, run `35478966848`; native/Safari/PWA/product/release transfer remains OPEN.
 - `F002` — direct Dart identity/alias/final-binding/explicit-close transfer validated; GC/finalizer/platform/product transfer OPEN.
 - `F003` — direct Dart List front-removal versus `ListQueue.removeFirst()` semantic/representation transfer validated; timing is diagnostic only; broader algorithms/product performance OPEN.
 - `F004` — direct Dart isolate-owned mutable state/message transfer validated; external-resource/platform/product transfer OPEN.
