@@ -1,7 +1,7 @@
 # M001 — Android Emulator Flutter Runtime Transfer
 
 Date: 2026-09-20
-Status: **FAILURE ISOLATED / REPAIR PENDING VALIDATION — NO ANDROID PASS AWARDED**
+Status: **FAILURE ISOLATED / FIXTURE COMPILE REPAIR PENDING — NO ANDROID PASS AWARDED**
 
 ## Problem / selection
 
@@ -9,7 +9,7 @@ Balance Loop comparison selected Mobile M001 over another synthetic browser, Lin
 
 ## SOURCE
 
-Current Flutter integration-test documentation states that integration tests run on physical devices or OS emulators and documents `flutter test integration_test/app_test.dart` for Android-device execution. Flutter's testing overview explicitly distinguishes integration tests on an OS emulator/device from host/widget tests.
+Current Flutter integration-test documentation states that integration tests run on physical devices or OS emulators and documents `flutter test integration_test/app_test.dart` for Android-device execution. Flutter's testing overview distinguishes integration tests on an OS emulator/device from host/widget tests.
 
 Primary sources checked 2026-09-20:
 - https://docs.flutter.dev/testing/integration-tests
@@ -29,40 +29,57 @@ The Android-emulator CI harness uses `reactivecircus/android-emulator-runner@v2`
 
 **FAILURE MODEL:** separates workflow/shell infrastructure, emulator setup/boot/device discovery, Flutter build/install/application runtime, semantic oracle, and natural job completion.
 
-## First executable attempt — failure observation and isolation
+## Attempt 1 — shell-contract failure
 
-Workflow: `.github/workflows/m001-android-emulator-runtime-validation.yml`
-
-Exact Studio head: `869e1ca493b3dafdb8c19cb91174e5f83a9f77bd`
-Run: `35499758484`
-Job: `106049294338`
+Exact Studio head: `869e1ca493b3dafdb8c19cb91174e5f83a9f77bd`  
+Run: `35499758484`  
+Job: `106049294338`  
 Terminal verdict: **failure**.
 
-### Environment observed
-- GitHub Actions Ubuntu 24.04.5, runner image `ubuntu-24.04` version `20260907.300.1`.
-- Flutter `3.47.5` stable, framework revision `6a19cca56475dbfba1478ee68d7bd0c2ef891da1`.
-- Dart `3.13.4` stable on `linux_x64`.
-- Android SDK initially reported 37.0.0; action installed Android API 35 system image.
-- Android emulator `37.1.11.0`, API 35/default/x86_64, Pixel 6 profile.
+Flutter 3.47.5 / Dart 3.13.4 setup, fixture creation, KVM, API 35 x86_64 AVD creation and emulator boot completed. The action then invoked the configured script with `/usr/bin/sh`; Bash-specific `set -euxo pipefail` failed before Android identity, device discovery or the integration test ran.
 
-### Observation
-Toolchain setup, fixture creation, KVM setup, Android SDK/system-image installation, AVD creation and emulator boot all completed. The emulator reported `sys.boot_completed=1` after approximately 32.7 seconds.
+**ROOT CAUSE:** workflow shell-contract mismatch. Commit `ea3101b696f667b98ee8022afc7f71eef3a31d0e` replaced the Bash-only prologue with POSIX-compatible `set -eu` without changing the semantic oracle.
 
-The action then invoked the configured script through `/usr/bin/sh -c`. The first script line was `set -euxo pipefail`; Ubuntu `/usr/bin/sh` rejected `-o pipefail` with `set: Illegal option -o pipefail`, exit code 2. The Android identity commands, `flutter devices`, and `flutter test ... -d emulator-5554` were therefore never executed.
+## Attempt 2 — command-boundary/CWD failure
 
-### FAILURE / ROOT CAUSE at this attempt
+Repair run `35502482760` proved the shell repair and reached Android identity/device discovery, but the emulator action executes multiline script lines as separate `/usr/bin/sh -c` commands. A standalone `cd` therefore did not persist to the following `flutter test`, which ran outside the generated fixture and failed with `No pubspec.yaml file found`.
 
-**FAILURE:** workflow infrastructure failed after successful emulator boot but before the Flutter Android build/install/runtime/oracle phase.
+**ROOT CAUSE:** incorrect assumption that action script lines share shell working-directory state. Commit `a67c20ca9b679eb3ba9b6bee2fcea8acae4ca70c` joined project selection and test execution into one command: `cd ... && flutter test ...`.
 
-**ROOT CAUSE:** the workflow supplied a Bash-specific `set -o pipefail` option to an action script that this execution path ran under POSIX `/usr/bin/sh`. This is a workflow shell-contract defect, not evidence that Flutter, Android build/install, application runtime, or the state-transition oracle failed.
+## Attempt 3 — Android build reached; fixture compile failure isolated
 
-No Android runtime PASS or semantic failure verdict can be inferred from this attempt.
+Exact Studio head: `a67c20ca9b679eb3ba9b6bee2fcea8acae4ca70c`  
+Run: `35505103675`  
+Job: `106063467870`  
+Terminal verdict: **failure**.
 
-## Repair
+### VALIDATION / environment
 
-Commit `ea3101b696f667b98ee8022afc7f71eef3a31d0e` changes only the action-script prologue from `set -euxo pipefail` to POSIX-compatible `set -eu`; the Android identity commands and Flutter integration-test oracle remain unchanged.
+The prior infrastructure repairs held. The run recorded:
+- GitHub Actions Ubuntu 24.04.5, runner image `ubuntu-24.04` version `20260907.300.1`;
+- Flutter `3.47.5` stable, framework revision `6a19cca56475dbfba1478ee68d7bd0c2ef891da1`;
+- Dart `3.13.4` stable on `linux_x64`;
+- Android Emulator `37.1.11.0`;
+- Android `15`, API `35`, ABI `x86_64`;
+- `flutter devices` discovered `emulator-5554` as `android-x64` / Android 15 API 35.
 
-**VALIDATION:** repaired workflow terminal execution is pending. Do not award Android PASS until the new run demonstrates emulator identity, Flutter device discovery, build/install/application execution, oracle success and natural job completion.
+The corrected command entered the generated fixture and started `flutter test`. Flutter downloaded Android target artifacts and Gradle reached `assembleDebug`. Compilation then failed in `integration_test/runtime_boundary_test.dart` at `const Key('increment')` with `Error: Couldn't find constructor 'Key'.` The build therefore stopped at `:app:compileFlutterBuildDebug`; installation/application runtime and semantic `0 → 1` oracle did not execute.
+
+### ROOT CAUSE / classification
+
+**ROOT CAUSE:** the synthetic test fixture referenced Flutter's `Key` type without importing a library that exports it. This is a fixture source compile defect, not Android emulator/device discovery failure and not a semantic application-runtime failure.
+
+This attempt materially advances the boundary: emulator boot, Android identity, Flutter device discovery, project CWD, Flutter Android build invocation and Gradle compilation were all reached. It does **not** establish install/runtime/oracle success.
+
+### Repair
+
+Commit `b6bfc4bf7e07c004c43326fb1821fd54de3986ba` adds only `import 'package:flutter/foundation.dart';` to the generated integration-test source. The app implementation, state-transition oracle, emulator target and execution command are unchanged.
+
+**VALIDATION pending:** the repair must compile, install, execute on `emulator-5554`, satisfy the independent `0 → tap → 1` assertions and complete naturally before Android TRANSFER VALIDATION can be awarded.
+
+## SYNTHESIS
+
+Three sequential failures demonstrate why Android-transfer evidence must preserve phase boundaries. Emulator boot success is not application execution; device discovery is not build success; build invocation is not compilation; compilation is not installation/runtime; and none of those substitute for the semantic oracle. Minimal single-variable repairs preserve causal evidence better than changing the harness broadly after each failure.
 
 ## Evidence limit
 
@@ -70,12 +87,12 @@ Even a repaired success is Android **emulator** evidence for a synthetic Studio 
 
 ## RELATED DOMAIN CHECK
 
-- Foundations: F001 host→Chrome transfer checked; Android is a materially different target.
+- Foundations: F001 host→Chrome transfer checked; Android remains a materially different target.
 - Architecture: no architecture contract changed.
 - Mobile: lead track; M001/M002/M004/M005 platform gaps considered.
 - Data: no persistence claim is tested.
-- Quality: this failure demonstrates why setup/emulator/build-install/runtime/oracle/job-completion phases require separate verdicts.
-- Systems: exact toolchain/emulator/run identity retained; failure is workflow shell-contract infrastructure, not product provenance.
+- Quality: failure chain now independently distinguishes shell, command/CWD, compile, install/runtime and oracle phases.
+- Systems: exact toolchain/emulator/run identity retained; CI interpreter and command-boundary behavior are pipeline provenance.
 - Design Studio: not materially relevant to this bounded runtime mechanism.
 - Web Manager: not materially relevant; this is native Android, not web/PWA.
 - Marketing Manager: not materially relevant.
@@ -83,14 +100,14 @@ Even a repaired success is Android **emulator** evidence for a synthetic Studio 
 
 ## HANDOFFS
 
-- Mobile → Foundations: Android transfer remains unproven; the first attempt establishes only that the emulator can boot in this hosted environment before a shell-contract defect aborts execution.
-- Mobile → Quality: a failed outer CI step must not be mislabeled as application/test failure when the semantic oracle never ran.
-- Mobile → Systems: shell/interpreter identity is part of executable pipeline provenance; Bash-specific options require an actual Bash execution boundary.
+- Mobile → Foundations: Android application transfer remains unproven, but the hosted environment now demonstrably reaches Android-target Gradle compilation.
+- Mobile → Quality: compile-time fixture defects must not be mislabeled as Android runtime/oracle failures; retain phase-specific verdicts.
+- Mobile → Systems: interpreter identity, per-command shell lifetime and working-directory persistence are executable-pipeline contracts, not incidental CI details.
 
 ## OPEN / CHANGE WATCH
 
-- Terminal result for repaired head `ea3101b696f667b98ee8022afc7f71eef3a31d0e`.
-- Android release/API/ABI from inside the repaired script, Flutter device discovery, build/install/runtime/oracle result.
+- Terminal result for repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`.
+- Android build completion, APK install/application launch, semantic oracle and natural completion.
 - Physical Android device and iOS execution.
 - Process death/background/storage/plugin/native integration.
 - Canonical LogMate/MintTap artifact/runtime transfer.
