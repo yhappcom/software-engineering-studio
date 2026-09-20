@@ -12,39 +12,36 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | Mobile | Stage 1 IN STUDY — M001 direct Flutter framework execution; M006 exact Chromium offline/restart/update-control/cold-start transfer; native/Safari/product runtime OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 mutation/search; Q006 real crash recovery-oracle transfer |
-| Systems | Stage 1 IN STUDY — S004 product-owned Flutter 3.38.7 baseline + lock transfer; exact-ref source build acquisition remains a dependency |
+| Systems | Stage 1 IN STUDY — S004 product-owned Flutter 3.38.7 baseline + lock + build-path transfer; hosted exact-ref source acquisition isolated as credential-context dependency |
 
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
-### F006 — repaired combined regression PASS
-**VALIDATION / REGRESSION:** exact checkout `5aa89aa5c11c4baf68233a412566e891a855506a`, workflow run `35491928998`, job `106028240397`, Dart 3.13.3 stable/linux_x64, Ubuntu 24.04.5, runner image `ubuntu-24.04 20260907.300.1`, completed success.
+### S004 — source visibility does not transfer across credential contexts
+Product identity remains `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`; production identity unknown and main is not assumed production.
 
-The repaired combined fixture preserved all intended semantic oracles — truncated EOF rejected, released-port connection failure observed, bidirectional teardown recorded — and then naturally exited. The Dart step completed immediately after `F006_PHASE natural_process_exit_expected`; unlike the prior failing close-path runs, there was no timeout/orphan-process termination.
+**TRANSFER VALIDATION:** the connected GitHub evidence identity can read exact-ref LogMate `Makefile`, `pubspec.yaml` and `.metadata`, revalidating the product-owned PWA build path, declared version and Flutter project baseline. Prior split hosted run `35452482342`, job `105921932831`, failed specifically at `Clone LogMate repository` before exact-ref checkout or any product build stage. Therefore source-read authorization is scoped to the credential/execution context: interactive connector access does not establish GitHub Actions checkout authorization.
 
-**VERDICT:** the bounded F006 chain is now complete: failure observation → reproduction → listener-hypothesis falsification → accepted-socket isolation → close-vs-destroy causal discriminator → root cause → fixture repair → combined semantic + natural-exit regression PASS.
+**VALIDATION VERDICT:** exact-ref static product identity is available; hosted exact-ref source acquisition, `make build-pwa`, post-transform artifact oracles and artifact digest remain OPEN. No product-build PASS is awarded. Do not reconstruct a partial connector snapshot and call it an exact-ref source build.
 
-**EVIDENCE LIMIT:** Dart 3.13.3/Linux loopback Studio fixture only. No WAN/TLS/mobile/browser/product/protocol-durability or production claim follows.
+Canonical: `research/systems/S004_logmate_lock_enforcement_execution.md`.
 
-Canonical: `research/foundations/F006_process_liveness_phase_isolation.md`.
-
-## Retained cross-track evidence
-Architecture, Mobile, Data, Quality and Systems evidence remains unchanged. With the named F006 professional boundary terminal-success, Balance Loop must move to a materially different higher-value evidence class rather than continue socket teardown permutations.
+## Retained evidence
+F006 bounded regression chain remains closed. Architecture, Mobile, Data and Quality evidence remains unchanged. S004's earlier status text saying the split diagnostic was pending was stale; the canonical research already recorded its source-clone failure and the status is now synchronized.
 
 ## HANDOFFS
+- Systems → Mobile/Quality/LogMate release engineering: use `make build-pwa` for the inspected exact ref; raw Flutter web build is not artifact-equivalent. Connector source visibility does not authorize CI checkout. Resume source-build validation only with runner-appropriate authorization or an equivalent trustworthy exact-ref execution environment.
 - Foundations → Quality/Systems: internal semantic PASS/BODY_DONE is insufficient executable-completion evidence; preserve natural process exit/resource lifecycle independently.
-- Foundations → Architecture: API completion must be interpreted at its documented contract boundary; send-side completion is not bidirectional teardown.
-- Foundations → Mobile/Data: bounded Dart/Linux loopback evidence does not establish browser/mobile networking or durable application completion.
-- Other repositories: Design Studio, Web Manager and Marketing Manager considered; no canonical files edited. No MintTap/LogMate behavior is claimed.
+- Other repositories: no Design Studio, Web Manager, Marketing Manager or LogMate canonical files edited.
 
 ## Current Balance Loop
-F006 bounded regression chain is closed. Next selection should prefer the strongest independent Stage-1 evidence gap by prerequisite/product leverage/risk: native Android/iOS or Safari/iPadOS/EFB execution; exact LogMate PWA/source-build artifact transfer if source acquisition is available; physical storage/connectivity boundary; natural release/ADR evidence; or another materially stronger transfer. Do not repeat Linux close-vs-destroy variants.
+S004 source acquisition is a real dependency, not a reason to simulate build evidence or retry credential permutations. Until an authorized execution path exists, prefer a materially independent Stage-1 evidence class: native Android/iOS or Safari/iPadOS/EFB execution; physical storage/connectivity boundary; natural release/ADR evidence; or another stronger transfer. Do not repeat Linux F006 teardown variants or unauthenticated LogMate clone attempts.
 
 ## CHANGE WATCH / OPEN
 - F001 native/Safari/PWA/product/release runtime remains OPEN.
-- F006 cross-platform/native/product networking transfer remains OPEN, but the named Linux loopback lifecycle defect is closed.
+- F006 cross-platform/native/product networking transfer remains OPEN; named Linux loopback lifecycle defect is closed.
 - Mobile native/Safari/iPadOS/EFB and canonical LogMate PWA runtime remain OPEN.
-- S004 canonical LogMate source build/artifact identity remains dependent on source acquisition.
+- S004 canonical LogMate source build/artifact identity remains dependent on execution-context source authorization despite connector read access.
 - Product/default branch is never assumed production without evidence.
 
 ## Evidence rule
