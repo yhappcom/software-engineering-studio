@@ -26,10 +26,14 @@ Status: **IN STUDY — DIRECT DART ISOLATE TRANSFER ADDED.** Run `35432075163`, 
 Status: **IN STUDY — DIRECT DART TRANSFER ADDED.** Run `35429564591`, job `105861592799`, exact head `b5fc0cfaa4c79c646218326e6aae8be9121e0cf0` validates bounded async ordering, waiter-timeout ≠ source-cancellation and API-specific subscription cancellation.
 
 ### F006 — OS, file, socket and network foundations
-Status: **IN STUDY — DIRECT DART SOCKET HARNESS FAILURE CONTAINED; SOCKET VERDICT/ROOT CAUSE OPEN.** Canonical: `research/foundations/F006_direct_dart_socket_transfer.md`. Run `35437455712`, job `105882433731`, validates independent CI containment after the first close-order hypothesis was falsified. Command-level fixture output remains unavailable; exact blocking/resource-retention phase and socket correctness remain OPEN.
+Status: **IN STUDY — DIRECT DART TRANSPORT ORACLES OBSERVED PASS; POST-ORACLE PROCESS-LIVENESS FAILURE ISOLATED; ROOT CAUSE OPEN.** Canonical: `research/foundations/F006_direct_dart_socket_transfer.md`, `research/foundations/F006_process_liveness_phase_isolation.md`.
+
+Recovered decoded logs for exact head `835104ea9dac410b4f0a4d17f748882710f5921c`, run `35437455712`, job `105882433731` materially sharpen the prior verdict. Dart 3.13.3 emitted `F006_DART_SOCKET_PASS truncated_eof_rejected=true connect_failure_observed=true` about 0.25 s after the fixture step began, then the Dart process remained alive until the independent one-minute CI timeout; runner cleanup explicitly terminated the orphan Dart process. Therefore the bounded truncated-frame EOF rejection and released-port connect-failure oracles passed, while natural process/resource-lifecycle completion failed. This is not yet root-cause proof for a specific resource.
+
+Alternative exact head `3904ca9806d8e48bb90b5f6019acbdffc60feffb` replaces the prior `ServerSocket.listen` lifecycle with one-shot `server.first`, explicit phase markers and bounded cleanup while preserving the semantic oracles. Run `35484021836`, job `106006913686` is currently in progress; no regression PASS/root cause is awarded while pending.
 
 ## Gate assessment
-Foundation PASS is **not** awarded. F001-F005 have bounded direct Dart and/or Flutter execution evidence appropriate to their current claims, and F001 now includes a successful host→Chrome test-runtime transfer. F006 has failure→hypothesis→falsification plus executable outer containment but no transport verdict. Native mobile/product transfer remains materially open, and F003 still lacks space/broader algorithm/product-resource evidence.
+Foundation PASS is **not** awarded. F001-F005 have bounded direct Dart and/or Flutter execution evidence appropriate to their current claims. F006 now has a positive bounded transport-semantic verdict plus a distinct post-oracle process-liveness failure; the resource-retention root cause and successful natural-exit regression remain OPEN. Native mobile/product transfer remains materially open, and F003 still lacks space/broader algorithm/product-resource evidence.
 
 ## Dependencies / handoffs
 - **Architecture/Data:** F002 directly demonstrates binding immutability/shallow-copy ownership boundaries; F003 supplies the source-backed `operation → representation → primitive cost → workload` model for structure/index/cache choices.
@@ -37,8 +41,8 @@ Foundation PASS is **not** awarded. F001-F005 have bounded direct Dart and/or Fl
 - **Systems/Quality:** F001 records runtime/browser identity before comparing the same oracle across host and Chrome targets; a green host step cannot substitute for the browser verdict, and browser-test success cannot substitute for release artifact provenance.
 - **Mobile:** F003 does not establish Flutter frame-budget impact; require Flutter/device/browser execution for performance claims.
 - **Mobile/Systems:** F002 explicit `dart:io` close is a bounded hosted-native resource contract; do not transfer it to lifecycle cleanup, browser behavior or GC/finalizer timing.
-- **Quality:** preserve F006 as failure→hypothesis→falsification→outer-containment evidence; target-level timeouts are not sufficient harness controls.
-- **Data:** do not infer application completion from transport termination.
+- **Quality/Systems:** F006 run `35437455712` is semantic-oracle PASS + executable-process-liveness FAIL. Preserve the independent CI deadline; a target PASS marker does not imply resource cleanup or successful executable completion.
+- **Data:** do not infer application durable completion from transport termination.
 
 ## CHANGE WATCH / OPEN
 - Flutter/Dart/browser toolchains are version-sensitive; preserve exact ref/SDK/browser/run identity.
@@ -46,8 +50,9 @@ Foundation PASS is **not** awarded. F001-F005 have bounded direct Dart and/or Fl
 - The F001 workflow captured exact Flutter/Dart/Chrome/device version strings, but current connector evidence does not expose command stdout; do not fabricate those strings.
 - F002 WeakReference/Finalizer timing, JIT/AOT equivalence and platform transfer remain OPEN.
 - F003 space cost, broader search/hash behavior and product/platform performance transfer remain OPEN.
-- F006 direct Dart socket verdict/root cause is OPEN; exact blocking phase is not isolated.
+- F006 bounded transport semantics now have a positive direct Dart oracle at run `35437455712`; post-oracle natural process exit failed and exact resource-retention root cause remains OPEN.
+- F006 alternative listener-lifecycle run `35484021836` is pending; do not claim root cause from the structural change alone.
 - F004 external-resource/process-failure/fairness/platform transfer and F005 backpressure/error/concrete I/O cancellation/platform transfer remain OPEN.
 
 ## Next work
-Return to Balance Loop. Do not repeat the same F001 host/Chrome oracle now that the named transfer is closed. Prefer a materially stronger evidence class: native Android/iOS or Safari/iPadOS/EFB execution, canonical product runtime/build when exact-ref access exists, storage/physical-connectivity boundary, natural release/ADR lifecycle, or F006 root cause only when a phase-isolating harness is available. Resume S004 exact LogMate source build immediately if authorized exact-ref source acquisition becomes available.
+Recover run `35484021836` first. If it exits naturally, construct a minimal A/B listener-lifecycle reproduction before naming root cause. If it still hangs, use the emitted phase markers to isolate the last completed phase. Do not return to blind close-order permutations. After this professional boundary is resolved or blocked, return to Balance Loop for native/platform/product evidence or S004 when authorized source acquisition becomes available.
