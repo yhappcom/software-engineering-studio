@@ -22,13 +22,13 @@ Prior attempt recorded Flutter 3.47.5 / Dart 3.13.4, Android 15 API35 x86_64, em
 **EVIDENCE LIMIT:** synthetic Studio Android Emulator fixture only. Physical Android, iOS, release-AOT, process death/background, storage/permissions, plugins/native integration, product artifacts and production remain OPEN.
 
 ### M002 — Android/iOS process lifecycle, termination and background execution
-**IN STUDY — source/failure-model block complete.** Real process-death/background platform execution OPEN.
+**IN STUDY — source/failure-model block + Android force-stop/storage recovery transfer STARTED.** Canonical execution note: `research/mobile/M002_android_force_stop_storage_transfer.md`. Exact initial workflow head `8f8e7b5bb4b1117e90bc0240abc93a665c36a789`, run `35513638513` was queued at recording time. The fixture requires first-launch write oracle, confirmed process disappearance after `am force-stop`, a different PID on relaunch, recovered-file UI oracle, and natural completion. No PASS yet. This is controlled force-stop, not low-memory/system-initiated kill evidence.
 
 ### M003 — App sandbox, files, permissions, secure storage and platform APIs
-**IN STUDY — integrated Foundation block + bounded executable classification evidence complete.** Real Android/iOS/Flutter storage transfer OPEN.
+**IN STUDY — integrated Foundation block + bounded executable classification evidence complete.** Real Android/iOS/Flutter storage transfer is now being exercised jointly through M002; terminal result pending.
 
 ### M004 — Plugins, platform channels and native integration failure boundaries
-**IN STUDY — integrated Foundation block + bounded executable contract/lifetime evidence complete.** Direct native/plugin/multi-engine transfer OPEN.
+**IN STUDY — integrated Foundation block + bounded executable contract/lifetime evidence complete.** Direct native/plugin/multi-engine transfer OPEN. M002 uses `path_provider`, but plugin success must not be claimed before terminal execution.
 
 ### M005 — Cross-platform architecture, portability and platform divergence
 **IN STUDY — integrated Foundation block + bounded executable capability evidence complete.** Exact-ref LogMate transfer retained; real product/native/web capability transfer OPEN.
@@ -37,25 +37,26 @@ Prior attempt recorded Flutter 3.47.5 / Dart 3.13.4, Android 15 API35 x86_64, em
 **IN STUDY — REAL CHROMIUM OFFLINE + RESTART + UPDATE/CONTROL + OFFLINE COLD-START TRANSFER VALIDATED.** Canonical: `research/mobile/M006_real_browser_service_worker_transfer.md`. Generic Chromium/loopback evidence only; Safari/iPadOS/EFB, physical connectivity, Flutter/LogMate artifact and production remain OPEN.
 
 ## Product transfer scope
-Exact LogMate ref retained from prior studies: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. M001 Android fixture is Studio validation, not a LogMate build or product-runtime claim.
+Exact LogMate ref retained from prior studies: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. M001/M002 Android fixtures are Studio validation, not LogMate builds or product-runtime claims.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. M001 now has direct Flutter framework execution plus bounded Android-emulator transfer with a preserved failure→root-cause→repair→regression chain; M006 has real generic-browser lifecycle evidence. Representative physical Android/iOS lifecycle, process death/background, storage/permissions, plugin/native behavior, Safari/iPadOS/EFB, canonical product artifact/runtime and production evidence remain materially absent.
+Mobile Stage 1 remains **NOT PASS**. M001 has direct Flutter framework execution plus bounded Android-emulator transfer; M006 has real generic-browser lifecycle evidence. M002 now attempts the materially stronger process-loss + persistent-storage boundary, but its terminal execution is pending. Representative physical Android/iOS lifecycle, system-initiated process death/background, permissions, broader plugin/native behavior, Safari/iPadOS/EFB, canonical product artifact/runtime and production evidence remain materially absent.
 
 ## Dependencies / handoffs
-- **Foundations:** F001 host→Chrome evidence now has bounded Android-emulator transfer; native physical/iOS/product/release evidence remains open.
+- **Foundations:** F001 host→Chrome evidence has bounded Android-emulator transfer; physical/iOS/product/release evidence remains open.
 - **Architecture:** no semantic contract changed.
-- **Data:** M001 makes no persistence/durability claim; Android storage/process-death transfer remains high leverage.
-- **Quality:** retain phase-specific verdicts and the four-attempt regression chain; green CI is bounded to the exact oracle/workflow.
-- **Systems:** shell/interpreter/CWD lifetime and exact run/ref are pipeline provenance.
+- **Data:** M002 explicitly separates process-memory loss from file recovery and from physical power-loss durability.
+- **Quality:** M002 requires write, process-disappearance, fresh-PID, recovery and completion as distinct oracles; green CI alone is insufficient.
+- **Systems:** exact workflow/ref/toolchain/API/ABI provenance is required; force-stop is not a low-memory-kill claim.
 - **Design Studio / Web Manager / Marketing Manager:** RELATED DOMAIN CHECK performed; no canonical decisions changed and no files edited.
 
 ## CHANGE WATCH / OPEN
 - Flutter/Dart/Android/browser behavior is version-sensitive; preserve exact runtime/build identity.
+- M002 run `35513638513` terminal result is OPEN.
 - Physical Android and iOS platform execution remain OPEN.
-- Android/iOS process death/background/storage/permissions/plugin/native integration remain OPEN.
+- System-initiated process death/background/storage-full/permissions/plugin-native integration remain OPEN.
 - Safari/iPadOS/EFB remains OPEN.
 - Flutter-generated/LogMate PWA and canonical product native/runtime transfer remain OPEN.
 
 ## Next work
-Return to Balance Loop; do not repeat equivalent synthetic Android counter variants. Prefer a materially stronger independent evidence class: Android process-death/storage boundary, physical device/iOS/Safari execution when available, canonical product artifact/runtime, physical storage/connectivity, or another track's stronger Stage-1 gap.
+Continue M002 until its professional boundary is terminal: recover run `35513638513`, classify failure by build/install/first-launch/write/force-stop/PID/relaunch/recovery/job phase, and repair only an isolated defect if needed. Do not award process-death/storage PASS from source or queued CI alone.
