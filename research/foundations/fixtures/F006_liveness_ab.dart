@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 Future<void> main(List<String> args) async {
   if (args.length != 1) {
-    stderr.writeln('usage: F006_liveness_ab.dart <server-close|accepted-close|truncated-eof|refused-connect>');
+    stderr.writeln('usage: F006_liveness_ab.dart <server-close|accepted-close|accepted-destroy|truncated-eof|refused-connect>');
     exitCode = 64;
     return;
   }
@@ -21,6 +21,15 @@ Future<void> main(List<String> args) async {
       final peer = await accepted;
       await server.close().timeout(const Duration(seconds: 3));
       await client.close().timeout(const Duration(seconds: 3));
+      peer.destroy();
+      break;
+    case 'accepted-destroy':
+      final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final accepted = server.first.timeout(const Duration(seconds: 3));
+      final client = await Socket.connect(InternetAddress.loopbackIPv4, server.port);
+      final peer = await accepted;
+      await server.close().timeout(const Duration(seconds: 3));
+      client.destroy();
       peer.destroy();
       break;
     case 'truncated-eof':
