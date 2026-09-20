@@ -46,6 +46,15 @@ Head `3f599b88a40224071512f29ade35591e61807acf`, run `35452482342`, job `1059219
 
 **VALIDATION VERDICT:** baseline PWA source build remains OPEN. Both failures are pre-build infrastructure/access evidence, not LogMate build failures.
 
+## TRANSFER VALIDATION — credential context is part of source provenance
+On 2026-09-20 the connected GitHub evidence channel successfully read the exact private product ref `b551ce434ad72b1895033e0f3617c73b026d40ea`, including `Makefile`, `pubspec.yaml`, and `.metadata`. The exact-ref `pubspec.yaml` independently confirms declared version `1.0.0+1`; `.metadata` confirms Flutter revision `3b62efc2a3da49882f43c372e0bc53daef7295a6`; `Makefile` confirms the two-stage product-owned `build-pwa` target.
+
+This does **not** resolve the hosted build dependency. Attempt 2 proves that the GitHub Actions execution identity used by the Studio workflow could not acquire the LogMate repository, while the current connected evidence identity can read the same exact ref. Therefore repository authorization is scoped to the credential/execution context and must not be inferred to transfer between an interactive connector and a hosted runner.
+
+**SYNTHESIS:** source provenance has at least two distinct questions: (1) can an evidence channel inspect the exact source identity, and (2) can the execution environment acquire that exact source under its own credentials and build it? Positive evidence for (1) does not establish (2). Copying connector-returned files into the Studio would also weaken the build claim because it would no longer demonstrate repository acquisition and complete exact-ref source identity inside the runner.
+
+**VALIDATION:** exact-ref static product identity is revalidated through an authorized read channel; exact-ref hosted source acquisition and source build remain OPEN. No PASS is awarded for the build rung.
+
 ## ENGINEERING JUDGMENT
 The product-owned `build-pwa` target is materially stronger build-path evidence than an ad hoc framework command. Flutter 3.38.7 remains a project-baseline toolchain, not proven release provenance. Once source access is trustworthy, a successful workflow can establish a **baseline-labeled source build** and artifact identity for the exact ref; it still cannot establish shipment, signing, deployment, independent-host reproducibility, or EFB/browser acceptance.
 
@@ -66,7 +75,8 @@ The product-owned `build-pwa` target is materially stronger build-path evidence 
 - Treat `make build-pwa`, not raw `flutter build web`, as product-owned PWA build path at `b551ce4...` unless superseded by later product evidence.
 - Flutter 3.38.7 is an exact project baseline with lock evidence, not proven release policy.
 - Runs `35452259148` and `35452482342` are source-acquisition/harness failures only; they do not test product compilation.
-- A future exact-ref build needs authorized source acquisition. Once built, Mobile still needs browser/EFB offline/update/runtime transfer; Systems still needs release/deployment provenance.
+- The connected evidence identity can inspect the exact private ref, but that authorization does not transfer to the Studio GitHub Actions runner. A future exact-ref build needs runner-appropriate authorization or an equivalent trustworthy environment where the exact ref is already present.
+- Once built, Mobile still needs browser/EFB offline/update/runtime transfer; Systems still needs release/deployment provenance.
 
 ## OPEN / CHANGE WATCH
 - Authorized hosted source acquisition or an equivalent trustworthy exact-ref execution environment is required before baseline build validation can continue.
