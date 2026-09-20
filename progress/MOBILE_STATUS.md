@@ -6,61 +6,56 @@ State: **Stage 1 — IN STUDY / NOT YET PASSED**
 Last sync: 2026-09-20
 
 ## Mission
-Build deep Flutter/Dart and mobile-platform engineering capability while preserving the distinction between framework behavior, Android/iOS platform behavior, browser/PWA behavior, and cross-platform abstractions.
+Build deep Flutter/Dart and mobile-platform engineering capability while preserving framework, Android/iOS, browser/PWA and cross-platform boundaries.
 
 ## Current evidence
 
 ### M001 — Dart/Flutter runtime model, widget/render/state pipeline, lifecycle and platform boundary
-**IN STUDY — SOURCE/MODEL + DIRECT FLUTTER HOST/CHROME EVIDENCE; ANDROID EMULATOR BUILD BOUNDARY REACHED / FIXTURE COMPILE REPAIR PENDING.** Hosted run `35426881450`, job `105854277141` validates a real `flutter_test` widget boundary; F001 later transferred a bounded widget oracle host→Chrome. Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
+**IN STUDY — DIRECT FLUTTER HOST/CHROME + BOUNDED ANDROID EMULATOR TRANSFER VALIDATED.** Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
 
-Android attempt 1 (`869e1ca...`, run `35499758484`) booted API35 x86_64 but failed because the emulator action ran Bash-only `pipefail` under `/usr/bin/sh`. Commit `ea3101b...` repaired the shell contract. Attempt 2 (`35502482760`) reached Android identity/device discovery but exposed that action script lines run as independent shell commands, so CWD did not persist; commit `a67c20ca...` joined `cd` and `flutter test` in one command.
+Android transfer preserved a four-attempt failure chain. Attempt 1 isolated `/usr/bin/sh` vs Bash `pipefail`; attempt 2 isolated per-command CWD lifetime; attempt 3 reached Android-target Gradle compilation and isolated a missing Flutter `Key` import. Each repair changed only the isolated defect.
 
-Attempt 3: exact Studio head `a67c20ca9b679eb3ba9b6bee2fcea8acae4ca70c`, run `35505103675`, job `106063467870`, terminal **failure**. The prior repairs held: Android 15/API35/x86_64 booted, `flutter devices` found `emulator-5554`, the generated project was selected, Flutter Android artifacts downloaded, and Gradle reached `assembleDebug`. Compilation then failed at `const Key('increment')` because the generated integration test lacked an import exporting Flutter `Key`. Installation/application runtime/oracle did not run.
+**TRANSFER VALIDATION:** exact repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`, run `35507983649`, job `106070907373`, terminal **success**. Run metadata records completed/success and job metadata records every step successful, including `Execute on Android emulator` and natural job completion. Exact workflow source executes `flutter test integration_test/runtime_boundary_test.dart -d emulator-5554`; the test asserts visible `0`, taps the keyed increment control, settles and asserts `1`.
 
-**ROOT CAUSE for attempt 3:** synthetic fixture compile defect, not Android runtime failure. Commit `b6bfc4bf7e07c004c43326fb1821fd54de3986ba` adds only `package:flutter/foundation.dart`; semantic oracle and target remain unchanged. **No Android PASS or TRANSFER VALIDATION yet.**
+Prior attempt recorded Flutter 3.47.5 / Dart 3.13.4, Android 15 API35 x86_64, emulator 37.1.11. Exact repaired run log text was unavailable through the current evidence channel, so those prior environment observations are retained with that provenance rather than silently reasserted as freshly logged values.
+
+**EVIDENCE LIMIT:** synthetic Studio Android Emulator fixture only. Physical Android, iOS, release-AOT, process death/background, storage/permissions, plugins/native integration, product artifacts and production remain OPEN.
 
 ### M002 — Android/iOS process lifecycle, termination and background execution
-**IN STUDY — first integrated source/failure-model block complete.** Real platform execution OPEN.
+**IN STUDY — source/failure-model block complete.** Real process-death/background platform execution OPEN.
 
 ### M003 — App sandbox, files, permissions, secure storage and platform APIs
-**IN STUDY — first integrated Foundation block + bounded executable classification evidence complete.** Real Android/iOS/Flutter storage transfer OPEN.
+**IN STUDY — integrated Foundation block + bounded executable classification evidence complete.** Real Android/iOS/Flutter storage transfer OPEN.
 
 ### M004 — Plugins, platform channels and native integration failure boundaries
-**IN STUDY — first integrated Foundation block + bounded executable contract/lifetime evidence complete.** Direct native/plugin/multi-engine transfer OPEN.
+**IN STUDY — integrated Foundation block + bounded executable contract/lifetime evidence complete.** Direct native/plugin/multi-engine transfer OPEN.
 
 ### M005 — Cross-platform architecture, portability and platform divergence
-**IN STUDY — first integrated Foundation block + bounded executable capability evidence complete.** Exact-ref LogMate transfer retained; real native/web capability transfer OPEN.
+**IN STUDY — integrated Foundation block + bounded executable capability evidence complete.** Exact-ref LogMate transfer retained; real product/native/web capability transfer OPEN.
 
 ### M006 — Native app vs PWA/web boundary and deployment constraints
-**IN STUDY — REAL CHROMIUM OFFLINE + RESTART + UPDATE/CONTROL + OFFLINE COLD-START TRANSFER VALIDATED.** Canonical: `research/mobile/M006_real_browser_service_worker_transfer.md`.
-
-Prior runs validate same-session controlled-cache offline behavior, browser-restart/persistent-profile cache/control persistence and service-worker update/waiting/activation/client-control transition. Run `35473544016`, job `105978759910`, exact head `3eef4e22b993018ea6b1787df0b82a819e545cdc` completed success on GitHub Actions Ubuntu 24.04.
-
-**ENVIRONMENT:** Playwright 1.55.0 downloaded exact Chromium `140.0.7339.16`, Playwright build `v1187`; runner image `ubuntu-24.04` version `20260907.300.1`.
-
-**EVIDENCE LIMIT:** generic Chromium + loopback + Playwright offline emulation; synthetic Studio worker. This is not physical connectivity loss, Flutter web, LogMate post-build service worker, deployed HTTPS, Safari/WebKit/iPadOS/EFB, storage eviction or production behavior.
+**IN STUDY — REAL CHROMIUM OFFLINE + RESTART + UPDATE/CONTROL + OFFLINE COLD-START TRANSFER VALIDATED.** Canonical: `research/mobile/M006_real_browser_service_worker_transfer.md`. Generic Chromium/loopback evidence only; Safari/iPadOS/EFB, physical connectivity, Flutter/LogMate artifact and production remain OPEN.
 
 ## Product transfer scope
-Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. Browser and Android fixtures are Studio validation, not LogMate builds or production evidence.
+Exact LogMate ref retained from prior studies: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. M001 Android fixture is Studio validation, not a LogMate build or product-runtime claim.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. M001 has direct Flutter framework execution and a three-step Android-emulator failure/root-cause chain that now reaches Android-target Gradle compilation, but no Android application runtime PASS yet. M006 has four real generic-browser lifecycle evidence classes. Representative Android process/storage/plugin behavior, physical device execution, iOS, Safari/iPadOS/EFB, canonical LogMate browser/native artifact/runtime, release/device evidence, storage eviction and physical connectivity-loss transfer remain materially absent.
+Mobile Stage 1 remains **NOT PASS**. M001 now has direct Flutter framework execution plus bounded Android-emulator transfer with a preserved failure→root-cause→repair→regression chain; M006 has real generic-browser lifecycle evidence. Representative physical Android/iOS lifecycle, process death/background, storage/permissions, plugin/native behavior, Safari/iPadOS/EFB, canonical product artifact/runtime and production evidence remain materially absent.
 
 ## Dependencies / handoffs
-- **Foundations:** F001-F006 bounded direct Dart/Flutter evidence is available; Android M001 transfer remains pending, though Android-target compilation is now reached.
-- **Architecture:** no contract change from these fixture/infrastructure failures.
-- **Data:** the M001 state fixture makes no persistence/durability claim.
-- **Quality:** shell, command/CWD, compilation, install/runtime and semantic-oracle verdicts must remain separate; attempt 3 is a compile failure before runtime.
-- **Systems:** shell/interpreter identity and per-command working-directory lifetime are pipeline provenance. Attempt 3 records Flutter 3.47.5, Dart 3.13.4, Android 15/API35/x86_64, emulator 37.1.11 and runner image 20260907.300.1.
-- **Design Studio / Web Manager / Marketing Manager:** RELATED DOMAIN CHECK performed; no canonical decisions changed and no files edited there.
+- **Foundations:** F001 host→Chrome evidence now has bounded Android-emulator transfer; native physical/iOS/product/release evidence remains open.
+- **Architecture:** no semantic contract changed.
+- **Data:** M001 makes no persistence/durability claim; Android storage/process-death transfer remains high leverage.
+- **Quality:** retain phase-specific verdicts and the four-attempt regression chain; green CI is bounded to the exact oracle/workflow.
+- **Systems:** shell/interpreter/CWD lifetime and exact run/ref are pipeline provenance.
+- **Design Studio / Web Manager / Marketing Manager:** RELATED DOMAIN CHECK performed; no canonical decisions changed and no files edited.
 
 ## CHANGE WATCH / OPEN
 - Flutter/Dart/Android/browser behavior is version-sensitive; preserve exact runtime/build identity.
-- M001 repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba` terminal result is OPEN; no Android PASS until compile/install/runtime/oracle completes.
-- Physical Android and iOS platform execution remain OPEN even if emulator validation succeeds.
+- Physical Android and iOS platform execution remain OPEN.
+- Android/iOS process death/background/storage/permissions/plugin/native integration remain OPEN.
 - Safari/iPadOS/EFB remains OPEN.
-- CacheStorage/IndexedDB eviction, physical/real connectivity loss and deployed-origin behavior remain OPEN.
-- Flutter-generated/LogMate-postprocessed service-worker update/cold-start behavior remains OPEN pending canonical artifact access.
+- Flutter-generated/LogMate PWA and canonical product native/runtime transfer remain OPEN.
 
 ## Next work
-First recover the workflow triggered by repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`. If it succeeds, record Android release/API/ABI, device discovery, build/install/runtime/oracle and natural completion as bounded emulator transfer. If it fails, isolate the next phase rather than changing multiple variables. Do not repeat generic Chromium or Linux socket variants.
+Return to Balance Loop; do not repeat equivalent synthetic Android counter variants. Prefer a materially stronger independent evidence class: Android process-death/storage boundary, physical device/iOS/Safari execution when available, canonical product artifact/runtime, physical storage/connectivity, or another track's stronger Stage-1 gap.
