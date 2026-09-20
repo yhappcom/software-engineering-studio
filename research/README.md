@@ -18,7 +18,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `A006` — evidence-preserving decisions + executable governance + natural LogMate decision-state transfer; natural ADR lifecycle OPEN.
 
 ### Mobile
-- `M001`–`M005` — planned Foundation boundaries have professional/model evidence; M001 has direct Flutter framework execution.
+- `M001` — direct Flutter framework execution retained; `research/mobile/M001_android_emulator_runtime_transfer.md` adds a real Android OS-emulator integration-test transfer at exact Studio head `869e1ca...`, run `35499758484`, job `106049294338`; terminal result pending, so no Android PASS yet.
+- `M002`–`M005` — planned Foundation boundaries have professional/model evidence; representative native platform execution remains open.
 - `M006` — exact Chromium same-session offline, restart persistence, update/controller transition and offline-before-navigation cold-start evidence; storage eviction/physical network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer OPEN.
 
 ### Data
