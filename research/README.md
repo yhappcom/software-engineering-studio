@@ -6,11 +6,8 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Foundations
 - `F001` — direct Dart JIT/AOT, Flutter framework/test-binding execution, and host→Chrome bounded widget-oracle transfer validated; native/Safari/PWA/product/release transfer OPEN.
-- `F002` — direct Dart identity/alias/final-binding/explicit-close transfer validated; GC/finalizer/platform/product transfer OPEN.
-- `F003` — direct Dart queue representation/semantic transfer validated; broader algorithms/product performance OPEN.
-- `F004` — direct Dart isolate ownership/message transfer validated; external-resource/platform/product transfer OPEN.
-- `F005` — direct Dart async ordering, timeout/source-cancellation and subscription-cancellation boundaries validated.
-- `F006` — `research/foundations/F006_process_liveness_phase_isolation.md`: bounded Dart/Linux loopback professional boundary closed. Close-vs-destroy isolation established the accepted-socket liveness root cause; repaired combined fixture at `5aa89aa5...` passed semantic truncated-EOF/refused-connect oracles and natural process exit in run `35491928998`, job `106028240397`. Cross-platform/native/product transfer remains OPEN.
+- `F002`–`F005` — bounded direct Dart/Flutter Foundation evidence retained.
+- `F006` — bounded Dart/Linux loopback professional boundary closed with root-cause/fix/regression; cross-platform/native/product transfer OPEN.
 
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
@@ -18,7 +15,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `A006` — evidence-preserving decisions + executable governance + natural LogMate decision-state transfer; natural ADR lifecycle OPEN.
 
 ### Mobile
-- `M001` — direct Flutter framework execution retained; `research/mobile/M001_android_emulator_runtime_transfer.md` adds a real Android OS-emulator integration-test transfer at exact Studio head `869e1ca...`, run `35499758484`, job `106049294338`; terminal result pending, so no Android PASS yet.
+- `M001` — direct Flutter host/Chrome evidence plus bounded Android Emulator transfer validated. Exact repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`, run `35507983649`, job `106070907373` completed success; exact workflow executes the `0 → tap → 1` integration-test oracle on `emulator-5554`. Physical Android/iOS/product/release transfer OPEN. Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
 - `M002`–`M005` — planned Foundation boundaries have professional/model evidence; representative native platform execution remains open.
 - `M006` — exact Chromium same-session offline, restart persistence, update/controller transition and offline-before-navigation cold-start evidence; storage eviction/physical network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer OPEN.
 
