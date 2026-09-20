@@ -1,0 +1,141 @@
+name: M002 Android background lifecycle validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m002-android-background-lifecycle-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  android-background-lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned Flutter
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch 3.47.5 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          dart --version 2>&1 | tee dart-version.txt
+
+      - name: Create isolated lifecycle fixture
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "$RUNNER_TEMP"
+          flutter create --platforms android --org dev.yhapp.studio m002_lifecycle_fixture
+          cd m002_lifecycle_fixture
+          cat > android/app/src/main/kotlin/dev/yhapp/studio/m002_lifecycle_fixture/MainActivity.kt <<'KOTLIN'
+          package dev.yhapp.studio.m002_lifecycle_fixture
+
+          import android.os.Bundle
+          import android.util.Log
+          import io.flutter.embedding.android.FlutterActivity
+
+          class MainActivity : FlutterActivity() {
+              private fun mark(name: String) = Log.i("M002_NATIVE_LIFECYCLE", name)
+              override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState); mark("onCreate") }
+              override fun onResume() { super.onResume(); mark("onResume") }
+              override fun onPause() { mark("onPause"); super.onPause() }
+              override fun onStop() { mark("onStop"); super.onStop() }
+              override fun onStart() { super.onStart(); mark("onStart") }
+          }
+          KOTLIN
+          cat > lib/main.dart <<'DART'
+          import 'package:flutter/material.dart';
+
+          void main() => runApp(const LifecycleApp());
+
+          class LifecycleApp extends StatefulWidget {
+            const LifecycleApp({super.key});
+            @override State<LifecycleApp> createState() => _LifecycleAppState();
+          }
+
+          class _LifecycleAppState extends State<LifecycleApp> with WidgetsBindingObserver {
+            final List<String> states = <String>[];
+            @override void initState() {
+              super.initState();
+              WidgetsBinding.instance.addObserver(this);
+              final initial = WidgetsBinding.instance.lifecycleState;
+              if (initial != null) states.add(initial.name);
+            }
+            @override void dispose() { WidgetsBinding.instance.removeObserver(this); super.dispose(); }
+            @override void didChangeAppLifecycleState(AppLifecycleState state) {
+              states.add(state.name);
+              debugPrint('M002_FLUTTER_LIFECYCLE:${state.name}');
+              if (mounted) setState(() {});
+            }
+            @override Widget build(BuildContext context) => MaterialApp(
+              home: Scaffold(body: Center(child: Text('STATES:${states.join(",")}', textDirection: TextDirection.ltr))),
+            );
+          }
+          DART
+          flutter build apk --debug
+
+      - name: Create Android lifecycle oracle
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat > "$RUNNER_TEMP/m002_lifecycle_oracle.sh" <<'BASH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          PKG=dev.yhapp.studio.m002_lifecycle_fixture
+          APK="$RUNNER_TEMP/m002_lifecycle_fixture/build/app/outputs/flutter-apk/app-debug.apk"
+          adb shell getprop ro.build.version.release
+          adb shell getprop ro.build.version.sdk
+          adb shell getprop ro.product.cpu.abi
+          adb logcat -c
+          adb install -r "$APK"
+          adb shell am start -W -n "$PKG/.MainActivity"
+          sleep 3
+          PID_BEFORE=$(adb shell pidof "$PKG" | tr -d '\r')
+          test -n "$PID_BEFORE"
+          adb shell input keyevent KEYCODE_HOME
+          sleep 3
+          PID_BACKGROUND=$(adb shell pidof "$PKG" | tr -d '\r')
+          test "$PID_BACKGROUND" = "$PID_BEFORE"
+          adb shell am start -W -n "$PKG/.MainActivity"
+          sleep 3
+          PID_AFTER=$(adb shell pidof "$PKG" | tr -d '\r')
+          test "$PID_AFTER" = "$PID_BEFORE"
+          adb shell uiautomator dump /sdcard/m002-lifecycle.xml >/dev/null
+          UI=$(adb shell cat /sdcard/m002-lifecycle.xml)
+          echo "$UI" | grep 'STATES:'
+          echo "$UI" | grep 'paused'
+          echo "$UI" | grep 'resumed'
+          LOG=$(adb logcat -d -s M002_NATIVE_LIFECYCLE:I '*:S')
+          echo "$LOG"
+          echo "$LOG" | grep 'onPause'
+          echo "$LOG" | grep 'onStop'
+          test "$(echo "$LOG" | grep -c 'onResume')" -ge 2
+          echo "pid_before=$PID_BEFORE pid_background=$PID_BACKGROUND pid_after=$PID_AFTER"
+          echo 'M002_ANDROID_BACKGROUND_LIFECYCLE_PASS'
+          BASH
+          chmod +x "$RUNNER_TEMP/m002_lifecycle_oracle.sh"
+
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Execute Android background lifecycle oracle
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: bash "$RUNNER_TEMP/m002_lifecycle_oracle.sh"
