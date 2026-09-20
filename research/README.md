@@ -10,7 +10,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `F003` — direct Dart List front-removal versus `ListQueue.removeFirst()` semantic/representation transfer validated; timing is diagnostic only; broader algorithms/product performance OPEN.
 - `F004` — direct Dart isolate-owned mutable state/message transfer validated; external-resource/platform/product transfer OPEN.
 - `F005` — direct Dart async ordering, waiter-timeout/source-cancellation and subscription-cancellation boundaries validated.
-- `F006` — loopback fixture hang reproduced, first root-cause hypothesis falsified and outer CI containment validated; socket verdict/root cause OPEN.
+- `F006` — `research/foundations/F006_process_liveness_phase_isolation.md` sharpens the prior failure: decoded run `35437455712` shows both bounded Dart socket semantic oracles emitted PASS before the command later timed out, so transport semantics and natural process/resource-lifecycle completion are separate verdicts. One-shot listener-lifecycle alternative head `3904ca9...`, run `35484021836` is pending; root cause remains OPEN.
 
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
