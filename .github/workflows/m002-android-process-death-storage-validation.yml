@@ -60,6 +60,39 @@ jobs:
           flutter pub get
           flutter build apk --debug
 
+      - name: Create stateful Android oracle script
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat > "$RUNNER_TEMP/m002_oracle.sh" <<'BASH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          adb shell getprop ro.build.version.release
+          adb shell getprop ro.build.version.sdk
+          adb shell getprop ro.product.cpu.abi
+          adb install -r "$RUNNER_TEMP/m002_process_storage_fixture/build/app/outputs/flutter-apk/app-debug.apk"
+          adb shell am start -W -n dev.yhapp.studio.m002_process_storage_fixture/.MainActivity
+          sleep 3
+          adb shell uiautomator dump /sdcard/m002-before.xml >/dev/null
+          adb shell cat /sdcard/m002-before.xml | grep 'WROTE:persisted-v1'
+          PID_BEFORE=$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')
+          test -n "$PID_BEFORE"
+          echo "pid_before=$PID_BEFORE"
+          adb shell am force-stop dev.yhapp.studio.m002_process_storage_fixture
+          sleep 1
+          test -z "$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')"
+          adb shell am start -W -n dev.yhapp.studio.m002_process_storage_fixture/.MainActivity
+          sleep 3
+          PID_AFTER=$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')
+          test -n "$PID_AFTER"
+          test "$PID_AFTER" != "$PID_BEFORE"
+          echo "pid_after=$PID_AFTER"
+          adb shell uiautomator dump /sdcard/m002-after.xml >/dev/null
+          adb shell cat /sdcard/m002-after.xml | grep 'RECOVERED:persisted-v1'
+          echo 'M002_ANDROID_FORCE_STOP_STORAGE_RECOVERY_PASS'
+          BASH
+          chmod +x "$RUNNER_TEMP/m002_oracle.sh"
+
       - name: Enable KVM
         shell: bash
         run: |
@@ -75,28 +108,4 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: |
-            set -eu
-            adb shell getprop ro.build.version.release
-            adb shell getprop ro.build.version.sdk
-            adb shell getprop ro.product.cpu.abi
-            adb install -r "$RUNNER_TEMP/m002_process_storage_fixture/build/app/outputs/flutter-apk/app-debug.apk"
-            adb shell am start -W -n dev.yhapp.studio.m002_process_storage_fixture/.MainActivity
-            sleep 3
-            adb shell uiautomator dump /sdcard/m002-before.xml >/dev/null
-            adb shell cat /sdcard/m002-before.xml | grep 'WROTE:persisted-v1'
-            PID_BEFORE=$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')
-            test -n "$PID_BEFORE"
-            echo "pid_before=$PID_BEFORE"
-            adb shell am force-stop dev.yhapp.studio.m002_process_storage_fixture
-            sleep 1
-            test -z "$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')"
-            adb shell am start -W -n dev.yhapp.studio.m002_process_storage_fixture/.MainActivity
-            sleep 3
-            PID_AFTER=$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')
-            test -n "$PID_AFTER"
-            test "$PID_AFTER" != "$PID_BEFORE"
-            echo "pid_after=$PID_AFTER"
-            adb shell uiautomator dump /sdcard/m002-after.xml >/dev/null
-            adb shell cat /sdcard/m002-after.xml | grep 'RECOVERED:persisted-v1'
-            echo 'M002_ANDROID_FORCE_STOP_STORAGE_RECOVERY_PASS'
+          script: bash "$RUNNER_TEMP/m002_oracle.sh"
