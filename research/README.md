@@ -5,35 +5,35 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ## Current studies
 
 ### Foundations
-- `F001` — direct Dart JIT/AOT, Flutter framework/test-binding execution, and `research/foundations/F001_flutter_chrome_runtime_transfer.md`: same bounded Flutter widget oracle validated on host and Chrome target at exact workflow head `b547c5d...`, run `35478966848`; native/Safari/PWA/product/release transfer remains OPEN.
+- `F001` — direct Dart JIT/AOT, Flutter framework/test-binding execution, and host→Chrome bounded widget-oracle transfer validated; native/Safari/PWA/product/release transfer OPEN.
 - `F002` — direct Dart identity/alias/final-binding/explicit-close transfer validated; GC/finalizer/platform/product transfer OPEN.
-- `F003` — direct Dart List front-removal versus `ListQueue.removeFirst()` semantic/representation transfer validated; timing is diagnostic only; broader algorithms/product performance OPEN.
-- `F004` — direct Dart isolate-owned mutable state/message transfer validated; external-resource/platform/product transfer OPEN.
-- `F005` — direct Dart async ordering, waiter-timeout/source-cancellation and subscription-cancellation boundaries validated.
-- `F006` — `research/foundations/F006_process_liveness_phase_isolation.md`: transport semantic oracles PASS, but natural process exit fails after all phases under both original and one-shot-listener structures. The listener-ownership hypothesis is falsified. Four independent liveness cases are running at exact head `75ba506...`, run `35486660067`; retained-resource root cause remains OPEN.
+- `F003` — direct Dart queue representation/semantic transfer validated; broader algorithms/product performance OPEN.
+- `F004` — direct Dart isolate ownership/message transfer validated; external-resource/platform/product transfer OPEN.
+- `F005` — direct Dart async ordering, timeout/source-cancellation and subscription-cancellation boundaries validated.
+- `F006` — `research/foundations/F006_process_liveness_phase_isolation.md`: semantic socket oracles PASS. Run `35486660067` isolates natural-exit failure to accepted connected-socket cases: server-only close and refused-connect exit; accepted-close and truncated-eof reach BODY_DONE then hang. Official `Socket.close()` send-side vs `destroy()` bidirectional semantics motivate a close-vs-destroy causal test at workflow head `d57d5531d9a5d96d21685d31e75bc2aaed051dd4`; terminal evidence/root cause pending.
 
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
 - `A005` — repeated-change executable evidence + natural exact-ref LogMate evolution transfer; runtime/long-horizon transfer OPEN.
-- `A006` — evidence-preserving decisions + executable governance fixture + `research/architecture/A006_logmate_natural_decision_state_transfer.md`. Natural LogMate history validates separate decision vs implementation/evidence states without relabeling the product master as an ADR corpus; natural ADR lifecycle and long-horizon supersession remain OPEN.
+- `A006` — evidence-preserving decisions + executable governance + natural LogMate decision-state transfer; natural ADR lifecycle OPEN.
 
 ### Mobile
-- `M001`–`M005` — planned Foundation boundaries have professional/model evidence; M001 has first direct Flutter framework execution.
-- `M006` — `research/mobile/M006_real_browser_service_worker_transfer.md` contains four exact-Chromium evidence classes: same-session controlled-cache offline, browser-restart/persistent-profile persistence, service-worker update/waiting/activation/client-controller transition, and second-process offline-before-navigation cold start. Run `35473544016` establishes exact Chromium `140.0.7339.16` / Playwright build `v1187`. Storage eviction/physical network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer remain OPEN.
+- `M001`–`M005` — planned Foundation boundaries have professional/model evidence; M001 has direct Flutter framework execution.
+- `M006` — exact Chromium same-session offline, restart persistence, update/controller transition and offline-before-navigation cold-start evidence; storage eviction/physical network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer OPEN.
 
 ### Data
-- `D001`–`D004` — Foundation studies initiated with executable/professional evidence.
-- `D005` — recovery/process crash/storage faults/WAL/checkpoint/live Online Backup/interrupted candidate-publication evidence; physical power loss/mobile durability OPEN.
+- `D001`–`D004` — Foundation studies with executable/professional evidence.
+- `D005` — recovery/process crash/storage faults/WAL/checkpoint/live Online Backup/interrupted candidate-publication evidence; physical power/mobile durability OPEN.
 - `D006` — sync + real TCP ambiguous retry + isolated link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync OPEN.
 
 ### Quality
-- `Q001`–`Q005` — professional Foundation boundaries initiated; Q004 includes generated shrinking plus mutation/exhaustive-search evidence.
+- `Q001`–`Q005` — professional Foundation boundaries; Q004 includes mutation/exhaustive-search evidence.
 - `Q006` — real child-process crash/restart + SQLite persistent-state oracle discrimination; mobile/backend/production transfer OPEN.
 
 ### Systems
-- `S001`–`S003` — planned Foundation boundaries initiated with executable/professional evidence.
-- `S004` — exact product-owned Flutter 3.38.7 project baseline and dependency-lock integrity transfer validated; exact-ref `make build-pwa` path recovered. Baseline source build/artifact identity OPEN because Studio runner cannot acquire separate private LogMate repository at execution time.
-- `S005` — release identity + hosted attestation evidence; later verifier contradiction retained; stronger/offline verification OPEN.
+- `S001`–`S003` — Foundation boundaries with executable/professional evidence.
+- `S004` — exact product-owned Flutter 3.38.7 baseline and dependency-lock transfer; product `make build-pwa` path recovered; canonical source build/artifact identity remains dependent on source acquisition.
+- `S005` — release identity + hosted attestation evidence; verifier contradiction retained.
 - `S006` — rollback/change-safety + directory-sync publication failure evidence; hard-power-loss/platform transfer OPEN.
 
 ## Research note minimum contract
