@@ -7,7 +7,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 ## Specialist map
 | Specialist | Current state |
 | --- | --- |
-| Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT + Flutter host→Chrome transfer; F002-F005 bounded direct execution; F006 semantic PASS + bounded socket-liveness root cause, repaired combined regression pending |
+| Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT + Flutter host→Chrome transfer; F002-F005 bounded direct execution; F006 bounded semantic/root-cause/fix/regression chain CLOSED |
 | Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 natural LogMate evolution transfer; A006 executable governance + natural product decision-state transfer |
 | Mobile | Stage 1 IN STUDY — M001 direct Flutter framework execution; M006 exact Chromium offline/restart/update-control/cold-start transfer; native/Safari/product runtime OPEN |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
@@ -17,17 +17,19 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
-### F006 — send-side close vs bidirectional teardown causally separated
-**VALIDATION / DEBUG:** exact head `d57d5531d9a5d96d21685d31e75bc2aaed051dd4`, run `35489259464`, Dart 3.13.3/linux_x64, Ubuntu 24.04.5. `accepted-close` replicated BODY_DONE followed by timeout/orphan termination; structurally matched `accepted-destroy` reached BODY_DONE and naturally exited. `server-close` and `refused-connect` controls exited; `truncated-eof` retained the close-path failure.
+### F006 — repaired combined regression PASS
+**VALIDATION / REGRESSION:** exact checkout `5aa89aa5c11c4baf68233a412566e891a855506a`, workflow run `35491928998`, job `106028240397`, Dart 3.13.3 stable/linux_x64, Ubuntu 24.04.5, runner image `ubuntu-24.04 20260907.300.1`, completed success.
 
-**ROOT CAUSE at this bounded target:** the fixture treated completion of `Socket.close()`'s send-side IOSink contract as complete connected-socket teardown. The receive side could retain process liveness. Explicit bidirectional `destroy()` removed the symptom in the matched accepted-socket case. This is not a universal claim that `Socket.close()` leaks.
+The repaired combined fixture preserved all intended semantic oracles — truncated EOF rejected, released-port connection failure observed, bidirectional teardown recorded — and then naturally exited. The Dart step completed immediately after `F006_PHASE natural_process_exit_expected`; unlike the prior failing close-path runs, there was no timeout/orphan-process termination.
 
-**FIX:** commit `5aa89aa5c11c4baf68233a412566e891a855506a` changes the combined semantic fixture to flush its intentionally truncated payload and then destroy the client. **VALIDATION remains OPEN:** semantic PASS and natural process exit must both succeed in the repaired combined fixture before F006 is closed.
+**VERDICT:** the bounded F006 chain is now complete: failure observation → reproduction → listener-hypothesis falsification → accepted-socket isolation → close-vs-destroy causal discriminator → root cause → fixture repair → combined semantic + natural-exit regression PASS.
+
+**EVIDENCE LIMIT:** Dart 3.13.3/Linux loopback Studio fixture only. No WAN/TLS/mobile/browser/product/protocol-durability or production claim follows.
 
 Canonical: `research/foundations/F006_process_liveness_phase_isolation.md`.
 
 ## Retained cross-track evidence
-Architecture, Mobile, Data, Quality and Systems evidence remains unchanged. Balance Loop remains on F006 until the repaired combined regression is terminal or genuinely blocked; this is a foundational resource-lifecycle boundary with direct Quality/Systems leverage.
+Architecture, Mobile, Data, Quality and Systems evidence remains unchanged. With the named F006 professional boundary terminal-success, Balance Loop must move to a materially different higher-value evidence class rather than continue socket teardown permutations.
 
 ## HANDOFFS
 - Foundations → Quality/Systems: internal semantic PASS/BODY_DONE is insufficient executable-completion evidence; preserve natural process exit/resource lifecycle independently.
@@ -36,13 +38,13 @@ Architecture, Mobile, Data, Quality and Systems evidence remains unchanged. Bala
 - Other repositories: Design Studio, Web Manager and Marketing Manager considered; no canonical files edited. No MintTap/LogMate behavior is claimed.
 
 ## Current Balance Loop
-Recover/execute the repaired combined F006 fixture at or after `5aa89aa5...`. Require truncated-EOF rejection, refused-connect observation and natural process exit. If successful, close this bounded F006 professional boundary and move to the next highest-value independent evidence class rather than repeating teardown variants.
+F006 bounded regression chain is closed. Next selection should prefer the strongest independent Stage-1 evidence gap by prerequisite/product leverage/risk: native Android/iOS or Safari/iPadOS/EFB execution; exact LogMate PWA/source-build artifact transfer if source acquisition is available; physical storage/connectivity boundary; natural release/ADR evidence; or another materially stronger transfer. Do not repeat Linux close-vs-destroy variants.
 
 ## CHANGE WATCH / OPEN
-- F006 repaired combined semantic + natural-exit regression remains OPEN.
 - F001 native/Safari/PWA/product/release runtime remains OPEN.
+- F006 cross-platform/native/product networking transfer remains OPEN, but the named Linux loopback lifecycle defect is closed.
 - Mobile native/Safari/iPadOS/EFB and canonical LogMate PWA runtime remain OPEN.
-- S004 canonical LogMate source build/artifact identity remains dependent on authorized source acquisition.
+- S004 canonical LogMate source build/artifact identity remains dependent on source acquisition.
 - Product/default branch is never assumed production without evidence.
 
 ## Evidence rule
