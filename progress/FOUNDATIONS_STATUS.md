@@ -11,7 +11,7 @@ Build language- and framework-independent understanding of how programs execute,
 ## Active evidence
 
 ### F001 — Program Execution Foundations
-Status: **IN STUDY — DIRECT DART JIT/AOT + FIRST FLUTTER FRAMEWORK EXECUTION VALIDATED**. Hosted run `35423963687` validates Dart JIT, AOT compilation and AOT execution after fixture root-cause/fix/regression. Run `35426881450` validates first Flutter framework/test-binding execution. Native/browser/product runtime remains separate.
+Status: **IN STUDY — DIRECT DART JIT/AOT + FIRST FLUTTER FRAMEWORK EXECUTION VALIDATED; CHROME TRANSFER PENDING**. Hosted run `35423963687` validates Dart JIT, AOT compilation and AOT execution after fixture root-cause/fix/regression. Run `35426881450` validates first Flutter framework/test-binding execution. Exact workflow head `b547c5d564731521eaf49380492fd10b5a980df9`, run `35478966848`, job `105993130270` adds a materially different browser target: it records Flutter/Dart/Chrome/device identity, reruns the existing host oracle, then runs the same state-transition oracle with `flutter test --platform chrome`. The run is still in progress; no browser verdict is awarded until the Chrome step terminates. Native mobile/product runtime remains separate.
 
 ### F002 — Values, references, memory models, stack/heap and lifetime
 Status: **IN STUDY — DIRECT DART IDENTITY/ALIAS/FINAL-BINDING + EXPLICIT RESOURCE-CLOSE TRANSFER VALIDATED.** Canonical base: `research/foundations/F002_values_references_memory_lifetime.md`; direct transfer: `research/foundations/F002_direct_dart_identity_resource_lifetime_transfer.md`. Run `35455279567`, job `105929339080`, exact head `d6bc8629f18b2ec8b7f8fb86849e7682f7ff36c2` succeeded on requested Dart 3.13.3 hosted Ubuntu. GC/finalizer timing, JIT/AOT equivalence, native mobile/browser and product transfer remain OPEN.
@@ -29,23 +29,25 @@ Status: **IN STUDY — DIRECT DART TRANSFER ADDED.** Run `35429564591`, job `105
 Status: **IN STUDY — DIRECT DART SOCKET HARNESS FAILURE CONTAINED; SOCKET VERDICT/ROOT CAUSE OPEN.** Canonical: `research/foundations/F006_direct_dart_socket_transfer.md`. Run `35437455712`, job `105882433731`, validates independent CI containment after the first close-order hypothesis was falsified. Command-level fixture output remains unavailable; exact blocking/resource-retention phase and socket correctness remain OPEN.
 
 ## Gate assessment
-Foundation PASS is **not** awarded. F001-F005 now each have bounded direct Dart and/or Flutter execution evidence appropriate to their current claim, while F006 has failure→hypothesis→falsification plus executable outer containment but no transport verdict. Native mobile/browser/product transfer remains materially open, and F003 still lacks space/broader algorithm/product-resource evidence.
+Foundation PASS is **not** awarded. F001-F005 have bounded direct Dart and/or Flutter execution evidence appropriate to their current claims; F001 browser transfer is currently pending rather than evidence. F006 has failure→hypothesis→falsification plus executable outer containment but no transport verdict. Native mobile/product transfer remains materially open, and F003 still lacks space/broader algorithm/product-resource evidence.
 
 ## Dependencies / handoffs
 - **Architecture/Data:** F002 directly demonstrates binding immutability/shallow-copy ownership boundaries; F003 supplies the source-backed `operation → representation → primitive cost → workload` model for structure/index/cache choices.
+- **Mobile:** F001 Chrome transfer, if successful, establishes only a bounded Flutter/browser test-runtime transfer; it does not establish Service Worker/PWA lifecycle, Safari/iPadOS/EFB, Android/iOS, or product behavior. M006 remains the stronger browser lifecycle evidence.
+- **Systems/Quality:** F001 now records exact browser/runtime identity before comparing the same oracle across host and Chrome targets; a green host step cannot substitute for the browser verdict.
 - **Mobile:** F003 does not establish Flutter frame-budget impact; require Flutter/device/browser execution for performance claims.
-- **Systems/Quality:** F003 deliberately separates semantic correctness from timing observations; CI timing is not a complexity proof or production profile.
 - **Mobile/Systems:** F002 explicit `dart:io` close is a bounded hosted-native resource contract; do not transfer it to lifecycle cleanup, browser behavior or GC/finalizer timing.
 - **Quality:** preserve F006 as failure→hypothesis→falsification→outer-containment evidence; target-level timeouts are not sufficient harness controls.
 - **Data:** do not infer application completion from transport termination.
 
 ## CHANGE WATCH / OPEN
-- Flutter/Dart toolchain and collection behavior are version-sensitive; preserve exact ref/SDK/run identity.
-- Hosted Linux evidence is not release-AOT native app, Android/iOS lifecycle, browser/PWA or physical-device evidence.
+- Flutter/Dart/browser toolchains are version-sensitive; preserve exact ref/SDK/browser/run identity.
+- F001 Chrome transfer run `35478966848` is pending; recover its terminal step-level result before any TRANSFER VALIDATION claim.
+- Hosted Linux evidence is not release-AOT native app, Android/iOS lifecycle, Safari/iPadOS/EFB, PWA lifecycle or physical-device evidence.
 - F002 WeakReference/Finalizer timing, JIT/AOT equivalence and platform transfer remain OPEN.
 - F003 space cost, broader search/hash behavior and product/platform performance transfer remain OPEN.
 - F006 direct Dart socket verdict/root cause is OPEN; exact blocking phase is not isolated.
 - F004 external-resource/process-failure/fairness/platform transfer and F005 backpressure/error/concrete I/O cancellation/platform transfer remain OPEN.
 
 ## Next work
-Do not repeat F002 alias variants or F003 queue timing sweeps merely to accumulate passes. S004 exact LogMate source build remains blocked by cross-private-repository source acquisition in the Studio runner; resume it immediately if authorized exact-ref execution becomes available. Balance Loop should now favor a materially stronger evidence class: native/browser/product runtime transfer, F006 phase-isolated root cause only if a better harness is available, or another high-risk cross-track prerequisite.
+Recover F001 run `35478966848` first. If Chrome succeeds, preserve exact Flutter/Dart/Chrome identity and record the bounded host→browser TRANSFER VALIDATION without generalizing to PWA/native/product runtime. If it fails, isolate browser setup/compilation/runtime/oracle phase before changing the fixture. Do not repeat F002 alias variants, F003 queue timing sweeps, or generic M006 Chromium lifecycle variants merely to accumulate passes. Resume S004 exact LogMate source build immediately if authorized exact-ref source acquisition becomes available.
