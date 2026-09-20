@@ -15,9 +15,9 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `A006` — evidence-preserving decisions + executable governance + natural LogMate decision-state transfer; natural ADR lifecycle OPEN.
 
 ### Mobile
-- `M001` — direct Flutter host/Chrome evidence plus bounded Android Emulator transfer validated. Exact repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`, run `35507983649`, job `106070907373` completed success; exact workflow executes the `0 → tap → 1` integration-test oracle on `emulator-5554`. Physical Android/iOS/product/release transfer OPEN. Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
-- `M002` — Android force-stop + app-specific persistent-file recovery transfer started. Exact initial head `8f8e7b5bb4b1117e90bc0240abc93a665c36a789`, run `35513638513` queued at recording time; terminal validation OPEN. Canonical: `research/mobile/M002_android_force_stop_storage_transfer.md`.
-- `M003`–`M005` — planned Foundation boundaries have professional/model evidence; representative native platform execution remains open.
+- `M001` — direct Flutter host/Chrome evidence plus bounded Android Emulator transfer validated. Exact repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`, run `35507983649`, job `106070907373` completed success. Physical Android/iOS/product/release transfer OPEN. Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
+- `M002` — bounded Android Emulator force-stop + app-specific persistent-file recovery transfer validated. Initial run `35513638513` failed on CI command-state lifetime; repair head `659c6e266dbcc4fe20e5b1b842ba73c2ab564f20`, run `35516637659`, job `106093583857` completed success with first-write UI, process disappearance, fresh PID, recovered-file UI and natural-completion oracles. System-initiated kill, physical durability, iOS and product transfer remain OPEN. Canonical: `research/mobile/M002_android_force_stop_storage_transfer.md`.
+- `M003`–`M005` — planned Foundation boundaries have professional/model evidence; M002 adds bounded Android app-specific storage/plugin transfer, while representative physical/native platform execution remains open.
 - `M006` — exact Chromium same-session offline, restart persistence, update/controller transition and offline-before-navigation cold-start evidence; storage eviction/physical network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer OPEN.
 
 ### Data
