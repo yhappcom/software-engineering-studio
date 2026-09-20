@@ -10,7 +10,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `F003` — direct Dart queue representation/semantic transfer validated; broader algorithms/product performance OPEN.
 - `F004` — direct Dart isolate ownership/message transfer validated; external-resource/platform/product transfer OPEN.
 - `F005` — direct Dart async ordering, timeout/source-cancellation and subscription-cancellation boundaries validated.
-- `F006` — `research/foundations/F006_process_liveness_phase_isolation.md`: semantic socket oracles PASS. Run `35486660067` isolates natural-exit failure to accepted connected-socket cases: server-only close and refused-connect exit; accepted-close and truncated-eof reach BODY_DONE then hang. Official `Socket.close()` send-side vs `destroy()` bidirectional semantics motivate a close-vs-destroy causal test at workflow head `d57d5531d9a5d96d21685d31e75bc2aaed051dd4`; terminal evidence/root cause pending.
+- `F006` — `research/foundations/F006_process_liveness_phase_isolation.md`: bounded Dart/Linux loopback professional boundary closed. Close-vs-destroy isolation established the accepted-socket liveness root cause; repaired combined fixture at `5aa89aa5...` passed semantic truncated-EOF/refused-connect oracles and natural process exit in run `35491928998`, job `106028240397`. Cross-platform/native/product transfer remains OPEN.
 
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
