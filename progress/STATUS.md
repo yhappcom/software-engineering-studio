@@ -9,7 +9,7 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 | --- | --- |
 | Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT + Flutter host→Chrome transfer; F002-F005 bounded direct execution; F006 bounded semantic/root-cause/fix/regression chain CLOSED |
 | Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 natural LogMate evolution transfer; A006 executable governance + natural product decision-state transfer |
-| Mobile | Stage 1 IN STUDY — M001 direct Flutter host/Chrome + bounded Android Emulator transfer VALIDATED; M006 Chromium offline/restart/update/cold-start transfer; physical/iOS/Safari/product runtime OPEN |
+| Mobile | Stage 1 IN STUDY — M001 host/Chrome + bounded Android Emulator transfer VALIDATED; M002 Android force-stop + app-specific storage recovery execution pending; M006 Chromium offline/restart/update/cold-start transfer |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q004 mutation/search; Q006 real crash recovery-oracle transfer |
 | Systems | Stage 1 IN STUDY — S004 product-owned Flutter 3.38.7 baseline + lock + build-path transfer; hosted exact-ref source acquisition isolated as credential-context dependency |
@@ -17,30 +17,29 @@ Canonical curriculum: `LEARNING_ROADMAP.md`
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
-### M001 — bounded Android OS-emulator transfer validated
-The repaired M001 workflow at exact Studio head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`, run `35507983649`, job `106070907373` completed **success**. Job metadata records all steps successful, including `Execute on Android emulator`, followed by successful job completion. Exact workflow source at that ref executes `flutter test integration_test/runtime_boundary_test.dart -d emulator-5554`; the test asserts visible `0`, taps `Key('increment')`, settles and asserts `1`.
+### M002 — Android force-stop + persistent-file recovery transfer started
+Balance Loop selected Android process loss + storage recovery as the next materially stronger evidence class after M001's synthetic in-memory Android transfer. Android primary documentation distinguishes process recreation from app-specific persistent-file storage; the new fixture tests those boundaries together without claiming low-memory kill or physical durability.
 
-The result closes the named synthetic Android-emulator transfer gap after three prior isolated failures: shell contract, per-command CWD lifetime, and missing `Key` import. Each was repaired minimally before the successful regression.
+Exact initial workflow head `8f8e7b5bb4b1117e90bc0240abc93a665c36a789`, run `35513638513` was queued at recording time. The oracle requires: first launch visibly reports `WROTE:persisted-v1`; process exists; `adb shell am force-stop` leaves no process; relaunch has a different PID; the fresh process visibly reports `RECOVERED:persisted-v1`; job completes naturally. No PASS/TRANSFER VALIDATION is awarded while execution is pending.
 
-**TRANSFER VALIDATION VERDICT:** PASS for the bounded Studio Android Emulator fixture only. Physical Android, iOS, release-AOT, process-death/background, storage/permissions, plugin/native integration, LogMate/MintTap artifact/runtime and production evidence remain OPEN.
-
-Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
+Canonical: `research/mobile/M002_android_force_stop_storage_transfer.md`.
 
 ## Retained evidence
-F006 bounded regression chain remains closed. S004 source acquisition remains a credential-context dependency. Architecture, Data and Quality evidence remains unchanged.
+M001 bounded Android-emulator state-transition transfer remains validated. F006 bounded regression chain remains closed. S004 source acquisition remains a credential-context dependency. Architecture, Data and Quality retained evidence is unchanged.
 
 ## HANDOFFS
-- Mobile → Foundations: bounded Flutter execution now spans host→Chrome→Android Emulator; do not generalize to physical/iOS/product/release runtime.
-- Mobile → Quality/Systems: preserve shell/CWD/compile/runtime-oracle/job-completion as separate evidence phases; exact workflow/run/ref provenance matters.
-- Systems → Mobile/Quality/LogMate release engineering: exact LogMate product PWA validation still requires the product-owned `make build-pwa` path and authorized exact-ref source acquisition.
+- Mobile → Data: distinguish process-memory loss + file recovery from physical power-loss durability, transactional atomicity and backup semantics.
+- Mobile → Quality: treat write, process disappearance, fresh PID, recovered-state oracle and natural completion as separate evidence phases.
+- Mobile → Systems: preserve exact workflow/ref/toolchain/API/ABI provenance; controlled force-stop is not system low-memory kill evidence.
 - Other repositories: no Design Studio, Web Manager, Marketing Manager or product canonical files edited.
 
 ## Current Balance Loop
-M001's named synthetic Android-emulator boundary is now closed; do not repeat equivalent counter variants. Next select a materially stronger independent evidence class: Android process-death/storage boundary, physical device/iOS/Safari when trustworthy infrastructure exists, canonical product artifact/runtime, physical storage/connectivity, natural ADR/release evidence, or another track's stronger Stage-1 gap.
+Continue M002 until terminal evidence is recovered. If it fails, isolate build/install/first-launch/write/force-stop/PID/relaunch/recovery/job phase and repair only the isolated defect. Do not switch topics while this professional boundary is cheaply closable.
 
 ## CHANGE WATCH / OPEN
+- M002 run `35513638513` terminal evidence is OPEN.
 - Physical Android/iOS, Safari/iPadOS/EFB and canonical product runtime remain OPEN.
-- Android/iOS process death/background/storage/permissions/plugin-native behavior remains OPEN.
+- System-initiated Android/iOS process death/background, storage-full/permissions and broader plugin-native behavior remain OPEN.
 - F006 cross-platform/native/product networking transfer remains OPEN.
 - S004 canonical LogMate source build/artifact identity remains dependent on execution-context source authorization.
 - Product/default branch is never assumed production without evidence.
