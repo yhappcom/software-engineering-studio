@@ -16,7 +16,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Mobile
 - `M001` — bounded Android Emulator application transfer validated; physical Android/iOS/product/release OPEN.
-- `M002` — controlled Android force-stop + app-specific persistent-file recovery validated; system kill/physical durability/iOS/product OPEN. New ordinary HOME background/resume transfer is **IN EXECUTION** at initial exact head `a278de3f2a9015195262b30662b1c240601f336e`, run `35529237932`; no PASS yet. Canonical: `research/mobile/M002_android_background_lifecycle_transfer.md`.
+- `M002` — controlled Android force-stop + app-specific persistent-file recovery validated. Ordinary HOME background/resume is also **VALIDATED** at exact Studio head `a278de3f2a9015195262b30662b1c240601f336e`, run `35529237932`, job `106126775150`: same PID across HOME/background/resume, Flutter `paused`/`resumed`, native `onPause`/`onStop`/second `onResume`, and natural completion were required. System kill/physical durability/iOS/product remain OPEN. Canonical: `research/mobile/M002_android_background_lifecycle_transfer.md`.
 - `M003` — bounded Android API-35 x86_64 dangerous-permission denied→granted→revoked transfer **VALIDATED** at exact Studio head `17d7e16dd1f25268f5d0f929cc106dabe56e6b48`, run `35522782572`, job `106109634570`. App/native state, package-manager state, process disappearance, fresh PID and natural completion were required. User-dialog/one-time/auto-reset, secure storage, physical device, iOS and product transfer remain OPEN. Canonical: `research/mobile/M003_android_runtime_permission_revocation_transfer.md`.
 - `M004`–`M005` — professional/model evidence retained; broader physical/native platform execution OPEN.
 - `M006` — Chromium offline/restart/update/cold-start evidence; Safari/iPadOS/EFB, physical network, Flutter/LogMate artifact and production OPEN.
@@ -34,7 +34,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `S001`–`S003` — Foundation executable/professional evidence.
 - `S004` — exact product baseline/lock/build-path transfer; canonical source build/artifact identity remains dependent on source acquisition.
 - `S005` — release identity + hosted attestation evidence; verifier contradiction retained.
-- `S006` — rollback/change-safety + directory-sync publication failure evidence; hard-power-loss/platform transfer OPEN.
+- `S006` — rollback/change-safety + directory-sync publication failure evidence; hard-power-loss transfer OPEN.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS.
