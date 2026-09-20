@@ -1,43 +1,43 @@
 # Research Index
 
-Canonical reusable research is organized by specialist ownership: `research/foundations/` (`F###`), `research/architecture/` (`A###`), `research/mobile/` (`M###`), `research/data/` (`D###`), `research/quality/` (`Q###`), and `research/systems/` (`S###`).
+Canonical reusable research is organized by specialist ownership: `research/foundations/`, `research/architecture/`, `research/mobile/`, `research/data/`, `research/quality/`, and `research/systems/`.
 
 ## Current studies
 
 ### Foundations
-- `F001` — direct Dart JIT/AOT, Flutter framework/test-binding execution, and host→Chrome bounded widget-oracle transfer validated; native/Safari/PWA/product/release transfer OPEN.
-- `F002`–`F005` — bounded direct Dart/Flutter Foundation evidence retained.
-- `F006` — bounded Dart/Linux loopback professional boundary closed with root-cause/fix/regression; cross-platform/native/product transfer OPEN.
+- `F001` — direct Dart JIT/AOT, Flutter host→Chrome bounded transfer validated; native/Safari/PWA/product/release transfer OPEN.
+- `F002`–`F005` — bounded direct evidence retained.
+- `F006` — Dart/Linux loopback professional boundary closed with root-cause/fix/regression; cross-platform/native/product transfer OPEN.
 
 ### Architecture
 - `A001`–`A003` — substantial Foundation blocks complete.
-- `A005` — repeated-change executable evidence + natural exact-ref LogMate evolution transfer; runtime/long-horizon transfer OPEN.
-- `A006` — evidence-preserving decisions + executable governance + natural LogMate decision-state transfer; natural ADR lifecycle OPEN.
+- `A005` — repeated-change evidence + natural exact-ref LogMate evolution transfer.
+- `A006` — executable governance + natural LogMate decision-state transfer; natural ADR lifecycle OPEN.
 
 ### Mobile
-- `M001` — direct Flutter host/Chrome evidence plus bounded Android Emulator transfer validated. Exact repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`, run `35507983649`, job `106070907373` completed success. Physical Android/iOS/product/release transfer OPEN. Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
-- `M002` — bounded Android Emulator force-stop + app-specific persistent-file recovery transfer validated. Repair head `659c6e266dbcc4fe20e5b1b842ba73c2ab564f20`, run `35516637659`, job `106093583857` completed success. System-initiated kill, physical durability, iOS and product transfer remain OPEN. Canonical: `research/mobile/M002_android_force_stop_storage_transfer.md`.
-- `M003` — Android dangerous runtime-permission grant/revoke transfer started. Exact initial head `17d7e16dd1f25268f5d0f929cc106dabe56e6b48`, run `35522782572`, job `106109634570` pending terminal verdict. Fixture requires app-observed + package-manager denied/granted/revoked state and fresh-process evidence. Canonical: `research/mobile/M003_android_runtime_permission_revocation_transfer.md`.
-- `M004`–`M005` — planned Foundation boundaries have professional/model evidence; M002 adds bounded Android app-specific storage/plugin transfer, while representative physical/native platform execution remains open.
-- `M006` — exact Chromium same-session offline, restart persistence, update/controller transition and offline-before-navigation cold-start evidence; storage eviction/physical network loss, Safari/iPadOS/EFB, Flutter/LogMate artifact and production transfer OPEN.
+- `M001` — bounded Android Emulator application transfer validated; physical Android/iOS/product/release OPEN.
+- `M002` — controlled Android force-stop + app-specific persistent-file recovery validated; system kill/physical durability/iOS/product OPEN.
+- `M003` — bounded Android API-35 x86_64 dangerous-permission denied→granted→revoked transfer **VALIDATED** at exact Studio head `17d7e16dd1f25268f5d0f929cc106dabe56e6b48`, run `35522782572`, job `106109634570`. App/native state, package-manager state, process disappearance, fresh PID and natural completion were required. User-dialog/one-time/auto-reset, secure storage, physical device, iOS and product transfer remain OPEN. Canonical: `research/mobile/M003_android_runtime_permission_revocation_transfer.md`.
+- `M004`–`M005` — professional/model evidence retained; broader physical/native platform execution OPEN.
+- `M006` — Chromium offline/restart/update/cold-start evidence; Safari/iPadOS/EFB, physical network, Flutter/LogMate artifact and production OPEN.
 
 ### Data
-- `D001`–`D004` — Foundation studies with executable/professional evidence.
-- `D005` — recovery/process crash/storage faults/WAL/checkpoint/live Online Backup/interrupted candidate-publication evidence; physical power/mobile durability OPEN.
-- `D006` — sync + real TCP ambiguous retry + isolated link interruption + LogMate inbound cursor atomicity transfer; actual LogMate persistence/Sync OPEN.
+- `D001`–`D004` — Foundation executable/professional evidence.
+- `D005` — recovery/storage/WAL/backup interruption evidence; physical power/mobile durability OPEN.
+- `D006` — sync/TCP/link interruption/LogMate protocol transfer; actual product persistence/Sync OPEN.
 
 ### Quality
-- `Q001`–`Q005` — professional Foundation boundaries; Q004 includes mutation/exhaustive-search evidence.
-- `Q006` — real child-process crash/restart + SQLite persistent-state oracle discrimination; mobile/backend/production transfer OPEN.
+- `Q001`–`Q005` — professional Foundation boundaries; Q004 mutation/search evidence.
+- `Q006` — process crash/restart + persistent-state oracle discrimination; mobile/backend/production OPEN.
 
 ### Systems
-- `S001`–`S003` — Foundation boundaries with executable/professional evidence.
-- `S004` — exact product-owned Flutter 3.38.7 baseline and dependency-lock transfer; product `make build-pwa` path recovered; canonical source build/artifact identity remains dependent on source acquisition.
+- `S001`–`S003` — Foundation executable/professional evidence.
+- `S004` — exact product baseline/lock/build-path transfer; canonical source build/artifact identity remains dependent on source acquisition.
 - `S005` — release identity + hosted attestation evidence; verifier contradiction retained.
 - `S006` — rollback/change-safety + directory-sync publication failure evidence; hard-power-loss/platform transfer OPEN.
 
 ## Research note minimum contract
-A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS. Do not create files merely to count activity; prefer coherent integrated studies.
+A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS.
 
 ## Product evidence
-When a study inspects a real product, record `repository → exact ref/tag/branch/commit → declared version if available → evidence date`. A product observation is not automatically reusable Studio truth; state mechanism and transfer limits.
+When a study inspects a real product, record `repository → exact ref/tag/branch/commit → declared version if available → evidence date`. Default branch is never assumed production without evidence.
