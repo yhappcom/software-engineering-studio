@@ -1,0 +1,33 @@
+name: F006 Socket Liveness AB
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/foundations/fixtures/F006_liveness_ab.dart'
+      - '.github/workflows/f006-liveness-ab.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [server-close, accepted-close, truncated-eof, refused-connect]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.13.3'
+      - name: Record environment
+        run: |
+          dart --version
+          uname -a
+          git rev-parse HEAD
+      - name: Run isolated liveness case
+        timeout-minutes: 1
+        run: dart run research/foundations/fixtures/F006_liveness_ab.dart '${{ matrix.mode }}'
