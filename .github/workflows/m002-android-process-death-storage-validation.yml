@@ -1,0 +1,102 @@
+name: M002 Android process-death storage validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m002-android-process-death-storage-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  android-process-death-storage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install current Flutter stable checkout
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          dart --version 2>&1 | tee dart-version.txt
+
+      - name: Create isolated persistence fixture
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "$RUNNER_TEMP"
+          flutter create --platforms android --org dev.yhapp.studio m002_process_storage_fixture
+          cd m002_process_storage_fixture
+          flutter pub add path_provider
+          cat > lib/main.dart <<'DART'
+          import 'dart:io';
+          import 'package:flutter/material.dart';
+          import 'package:path_provider/path_provider.dart';
+
+          Future<void> main() async {
+            WidgetsFlutterBinding.ensureInitialized();
+            final directory = await getApplicationDocumentsDirectory();
+            final file = File('${directory.path}/process-death-sentinel.txt');
+            final existed = await file.exists();
+            String state;
+            if (existed) {
+              final value = await file.readAsString();
+              state = value == 'persisted-v1' ? 'RECOVERED:persisted-v1' : 'CORRUPT:$value';
+            } else {
+              await file.writeAsString('persisted-v1', flush: true);
+              state = 'WROTE:persisted-v1';
+            }
+            runApp(MaterialApp(home: Scaffold(body: Center(child: Text(state, textDirection: TextDirection.ltr)))));
+          }
+          DART
+          flutter pub get
+          flutter build apk --debug
+
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Execute force-stop and recovery oracle on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: |
+            set -eu
+            adb shell getprop ro.build.version.release
+            adb shell getprop ro.build.version.sdk
+            adb shell getprop ro.product.cpu.abi
+            adb install -r "$RUNNER_TEMP/m002_process_storage_fixture/build/app/outputs/flutter-apk/app-debug.apk"
+            adb shell am start -W -n dev.yhapp.studio.m002_process_storage_fixture/.MainActivity
+            sleep 3
+            adb shell uiautomator dump /sdcard/m002-before.xml >/dev/null
+            adb shell cat /sdcard/m002-before.xml | grep 'WROTE:persisted-v1'
+            PID_BEFORE=$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')
+            test -n "$PID_BEFORE"
+            echo "pid_before=$PID_BEFORE"
+            adb shell am force-stop dev.yhapp.studio.m002_process_storage_fixture
+            sleep 1
+            test -z "$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')"
+            adb shell am start -W -n dev.yhapp.studio.m002_process_storage_fixture/.MainActivity
+            sleep 3
+            PID_AFTER=$(adb shell pidof dev.yhapp.studio.m002_process_storage_fixture | tr -d '\r')
+            test -n "$PID_AFTER"
+            test "$PID_AFTER" != "$PID_BEFORE"
+            echo "pid_after=$PID_AFTER"
+            adb shell uiautomator dump /sdcard/m002-after.xml >/dev/null
+            adb shell cat /sdcard/m002-after.xml | grep 'RECOVERED:persisted-v1'
+            echo 'M002_ANDROID_FORCE_STOP_STORAGE_RECOVERY_PASS'
