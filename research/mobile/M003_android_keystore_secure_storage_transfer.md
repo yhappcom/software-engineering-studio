@@ -1,6 +1,6 @@
 # M003 — Android Keystore secure-storage transfer
 
-Status: **IN STUDY — bounded emulator transfer validated once; independent rerun pending**  
+Status: **IN STUDY — bounded emulator transfer validated once; same-head replication failed at first-launch observation**  
 Evidence date: 2026-09-21
 
 ## Problem / selection
@@ -56,16 +56,20 @@ Run `35538756528`, attempt 1, job `106152447185`, exact head `0ea436129fa150b578
 
 **VERDICT: TRANSFER VALIDATION PASS for the bounded emulator claim above.** This is executable fresh-process recovery plus deliberate authenticated-tamper failure evidence, not reading-only evidence.
 
-The phase instrumentation traps exit status to expose a failed phase but deliberately returns zero to the emulator action; a separate final step emits PASS only when the oracle output reports `phase=complete` and `oracle_rc=0`. In attempt 1 the diagnostic failure-verdict steps were skipped and the bounded PASS step succeeded. This preserves semantic fail-fast behavior while making future failures diagnosable.
+The phase instrumentation traps exit status to expose a failed phase but deliberately returns zero to the emulator action; a separate final step emits PASS only when the oracle output reports `phase=complete` and `oracle_rc=0`.
 
-### REPLICATION
-A same-head rerun of job `106152447185` was explicitly requested on 2026-09-21. Run `35538756528` attempt 2 is queued at the time of this record. Replication is not claimed until terminal evidence is recovered.
+### REPLICATION — FAILED / NOT AWARDED
+Same-head run `35538756528`, attempt 2, job `106160817014`, exact head `0ea436129fa150b578c777abf1ac6a6500b84a4e` completed **failure** on 2026-09-21. Checkout, pinned Flutter install, toolchain recording, isolated fixture creation, phase-reporting oracle creation, KVM setup, and the wrapper emulator action all completed. The explicit diagnostic verdict failed at **`first launch`**; every later semantic phase (`force stop`, `recovery`, `tamper read/mutate/write`, `auth reject`, complete PASS) was skipped.
+
+**REPLICATION is therefore NOT awarded.** The same source head and semantic fixture have one complete success and one first-launch observation failure. This strengthens the evidence that the unresolved nondeterministic boundary is at or before first-launch semantic observation, rather than in recovery/tamper phases, but it still does not identify the causal mechanism.
 
 ## CONTRADICTION / root-cause discipline
-The initial failure and unchanged-semantic subsequent success establish a nondeterministic or environment/timing-sensitive contradiction, but they do **not** establish which mechanism caused the first failure. The first run stopped shortly after cold launch and before a visible UI-dump result; the successful run observed the expected first-launch state. A UI-automation readiness race is only a causal hypothesis, not ROOT CAUSE. Do not repair application semantics without a reproduced isolated failure.
+The evidence set now contains two first-launch observation failures (`35535674389` and same-head attempt 2) surrounding one complete success (attempt 1). This is a reproducible **CONTRADICTION class**, not a reproduced root cause. The diagnostic narrows the failure phase to first launch/observation, but available job metadata does not distinguish app startup failure, UI readiness/automation timing, emulator timing, or another pre-oracle condition. A UI-automation readiness race remains only a causal hypothesis.
+
+Do not change Keystore/AES-GCM/key-policy semantics to repair a failure that occurs before the first semantic oracle is observed. The next diagnostic must instrument first launch independently enough to separate process/activity startup, app log/native completion, UI publication, and UI-automation observation.
 
 ## Failure model / evidence limit
-This PASS does not establish hardware-backed/StrongBox storage, resistance to root/physical attacks, user-auth-bound keys, biometric invalidation, backup/restore semantics, reinstall/device migration, key rotation, physical-device behavior, iOS Keychain behavior, Flutter secure-storage plugin behavior, LogMate/MintTap behavior, production security, or physical durability. `encoded == null` is only bounded non-exportability through this API surface.
+The successful attempt remains valid bounded evidence that the semantic path can complete on the recorded emulator/toolchain; the failed replication means repeatability is not established. This work does not establish hardware-backed/StrongBox storage, resistance to root/physical attacks, user-auth-bound keys, biometric invalidation, backup/restore semantics, reinstall/device migration, key rotation, physical-device behavior, iOS Keychain behavior, Flutter secure-storage plugin behavior, LogMate/MintTap behavior, production security, or physical durability. `encoded == null` is only bounded non-exportability through this API surface.
 
 ## ALTERNATIVES / ENGINEERING JUDGMENT
 - Plain app-private file: isolation boundary, but no application-layer confidentiality or authenticated tamper oracle.
@@ -73,24 +77,24 @@ This PASS does not establish hardware-backed/StrongBox storage, resistance to ro
 - User-auth/StrongBox-bound key: materially stronger/different policy boundary; defer until suitable device/environment evidence exists.
 
 ## RELATED DOMAIN CHECK
-- Foundations: trustworthy direct Dart/Flutter execution now exists; this run also records exact Flutter/Dart identity.
+- Foundations: direct Dart/Flutter execution exists; this fixture records exact Flutter/Dart identity.
 - Architecture: callers should model key/ciphertext failure and recovery states explicitly rather than treating storage APIs as infallible.
 - Mobile: owns Android platform execution and transfer limits.
 - Data: fresh-process recovery is persistence evidence, not physical durability or backup correctness.
-- Quality: deliberate external tamper is an independent failure input; the unexplained initial failure remains a contradiction, not root cause.
+- Quality: same-head replication failure materially increases the need for observation-layer isolation; PASS and reproducibility are separate properties.
 - Systems S002: directly related to least privilege/secrets/secure storage; Mobile owns this Android execution while Systems owns reusable security-architecture conclusions.
 - Design Studio: user-facing authentication/recovery UX would be related for auth-bound keys, but this fixture has no such interaction contract.
 - Web Manager / Marketing Manager: considered; no material dependency for this native storage mechanism.
 - Product repositories: not materially required; this remains a Studio fixture and makes no LogMate/MintTap implementation claim.
 
 ## HANDOFFS
-- Mobile → Systems: bounded Android Keystore process/tamper mechanics are now executable PASS; do not infer hardware backing, StrongBox, auth policy, root resistance or complete secret management.
+- Mobile → Systems: one bounded Android Keystore process/tamper semantic run remains PASS, but same-head repeatability is not established; do not infer hardware backing, StrongBox, auth policy, root resistance or complete secret management.
 - Mobile → Data: authenticated decryption after process replacement does not establish fsync/power-loss durability or backup/restore semantics.
-- Mobile → Quality: preserve initial-failure → diagnostic-success contradiction; a plausible UI readiness race is not root cause without reproduced isolation. Same-head replication is pending.
+- Mobile → Quality: same-head attempt 2 reproduces the failure class at `first launch`; next work should separate app/native completion from UI publication and UI-automation observation before causal repair.
 
 ## OPEN / CHANGE WATCH
-- Same-head replication attempt 2 terminal result.
-- Exact root cause of initial run `35535674389` remains OPEN unless the failure is reproduced and isolated.
+- Root cause of first-launch observation failures remains OPEN.
+- REPLICATION remains OPEN; do not rerun the identical oracle again without stronger first-launch instrumentation.
 - Hardware-backed/StrongBox and physical-device transfer.
 - user-authentication-bound key invalidation and lock-state behavior.
 - backup/restore, reinstall, key rotation and device migration.
