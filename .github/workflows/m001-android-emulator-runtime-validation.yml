@@ -1,0 +1,109 @@
+name: M001 Android emulator Flutter runtime validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m001-android-emulator-runtime-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  android-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install current Flutter stable checkout
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          dart --version 2>&1 | tee dart-version.txt
+          flutter doctor -v
+
+      - name: Create isolated Android integration fixture
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "$RUNNER_TEMP"
+          flutter create --platforms android --org dev.yhapp.studio m001_android_fixture
+          cd m001_android_fixture
+          flutter pub add --dev integration_test --sdk=flutter
+          cat > lib/main.dart <<'DART'
+          import 'package:flutter/material.dart';
+
+          void main() => runApp(const BoundaryApp());
+
+          class BoundaryApp extends StatefulWidget {
+            const BoundaryApp({super.key});
+            @override
+            State<BoundaryApp> createState() => _BoundaryAppState();
+          }
+
+          class _BoundaryAppState extends State<BoundaryApp> {
+            int count = 0;
+            @override
+            Widget build(BuildContext context) {
+              return MaterialApp(
+                home: Scaffold(
+                  body: Center(child: Text('$count', key: const Key('count'))),
+                  floatingActionButton: FloatingActionButton(
+                    key: const Key('increment'),
+                    onPressed: () => setState(() => count++),
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+              );
+            }
+          }
+          DART
+          mkdir -p integration_test
+          cat > integration_test/runtime_boundary_test.dart <<'DART'
+          import 'package:flutter_test/flutter_test.dart';
+          import 'package:integration_test/integration_test.dart';
+          import 'package:m001_android_fixture/main.dart';
+
+          void main() {
+            IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+            testWidgets('state transition survives Android app integration boundary', (tester) async {
+              await tester.pumpWidget(const BoundaryApp());
+              expect(find.text('0'), findsOneWidget);
+              await tester.tap(find.byKey(const Key('increment')));
+              await tester.pumpAndSettle();
+              expect(find.text('1'), findsOneWidget);
+            });
+          }
+          DART
+          flutter pub get
+
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Execute on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: |
+            set -euxo pipefail
+            adb shell getprop ro.build.version.release
+            adb shell getprop ro.build.version.sdk
+            adb shell getprop ro.product.cpu.abi
+            flutter devices
+            cd "$RUNNER_TEMP/m001_android_fixture"
+            flutter test integration_test/runtime_boundary_test.dart -d emulator-5554 --reporter expanded
