@@ -16,7 +16,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Mobile
 - `M001` — bounded Android Emulator application transfer validated; physical Android/iOS/product/release OPEN.
-- `M002` — controlled Android force-stop + app-specific persistent-file recovery validated; system kill/physical durability/iOS/product OPEN.
+- `M002` — controlled Android force-stop + app-specific persistent-file recovery validated; system kill/physical durability/iOS/product OPEN. New ordinary HOME background/resume transfer is **IN EXECUTION** at initial exact head `a278de3f2a9015195262b30662b1c240601f336e`, run `35529237932`; no PASS yet. Canonical: `research/mobile/M002_android_background_lifecycle_transfer.md`.
 - `M003` — bounded Android API-35 x86_64 dangerous-permission denied→granted→revoked transfer **VALIDATED** at exact Studio head `17d7e16dd1f25268f5d0f929cc106dabe56e6b48`, run `35522782572`, job `106109634570`. App/native state, package-manager state, process disappearance, fresh PID and natural completion were required. User-dialog/one-time/auto-reset, secure storage, physical device, iOS and product transfer remain OPEN. Canonical: `research/mobile/M003_android_runtime_permission_revocation_transfer.md`.
 - `M004`–`M005` — professional/model evidence retained; broader physical/native platform execution OPEN.
 - `M006` — Chromium offline/restart/update/cold-start evidence; Safari/iPadOS/EFB, physical network, Flutter/LogMate artifact and production OPEN.
