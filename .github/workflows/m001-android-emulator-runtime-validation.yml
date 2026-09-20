@@ -105,5 +105,4 @@ jobs:
             adb shell getprop ro.build.version.sdk
             adb shell getprop ro.product.cpu.abi
             flutter devices
-            cd "$RUNNER_TEMP/m001_android_fixture"
-            flutter test integration_test/runtime_boundary_test.dart -d emulator-5554 --reporter expanded
+            cd "$RUNNER_TEMP/m001_android_fixture" && flutter test integration_test/runtime_boundary_test.dart -d emulator-5554 --reporter expanded
