@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [server-close, accepted-close, truncated-eof, refused-connect]
+        mode: [server-close, accepted-close, accepted-destroy, truncated-eof, refused-connect]
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
