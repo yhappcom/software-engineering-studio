@@ -1,15 +1,15 @@
 # M003 — Android Keystore secure-storage transfer
 
-Status: **IN STUDY — first executable run failed; phase-isolation diagnostic pending**  
+Status: **IN STUDY — bounded emulator transfer validated once; independent rerun pending**  
 Evidence date: 2026-09-21
 
 ## Problem / selection
-Balance Loop re-ranked the six Stage-1 tracks after M002 HOME/background closure. Physical Android/iOS/Safari and product-runtime evidence are stronger eventual rungs but are not available in the current execution context. Systems S004 product build remains source-authorization dependent. A materially independent high-risk gap that is executable now is Android secure-storage mechanics. This has direct Mobile ownership and cross-track leverage into Systems least privilege/security, Data persistence, and Quality tamper/recovery oracles.
+Balance Loop selected Android secure-storage mechanics after M002 lifecycle closure because physical Android/iOS/Safari and product-runtime evidence are stronger eventual rungs but unavailable in the current execution context, while S004 product build remains source-authorization dependent. This boundary has direct Mobile ownership and cross-track leverage into Systems least privilege/security, Data persistence, and Quality tamper/recovery oracles.
 
 ## SOURCE
-- Android security guidance recommends using established cryptographic primitives and a mechanism such as `KeyStore` for long-term storage/retrieval of cryptographic keys when a key must be reused.
-- Android Keystore/KeyMint APIs are platform facilities for cryptographic key material; the executable target below tests the stronger bounded property `SecretKey.encoded == null` rather than assuming hardware backing.
-- Android backup behavior is a separate boundary: app files may participate in Auto Backup depending on configuration. This study does not claim that ciphertext, key material, backup, restore, migration, or device transfer are secure merely because Keystore is used.
+- Android security guidance recommends established cryptographic primitives and a mechanism such as `KeyStore` for long-term storage/retrieval of cryptographic keys when a key must be reused.
+- Android Keystore/KeyMint APIs are platform facilities for cryptographic key material; this executable target tests the narrower property `SecretKey.encoded == null` rather than assuming hardware backing.
+- Android backup behavior is separate. Keystore use does not establish ciphertext/key backup, restore, migration or device-transfer safety.
 
 Primary sources checked 2026-09-21:
 - https://developer.android.com/privacy-and-security/security-tips
@@ -17,14 +17,14 @@ Primary sources checked 2026-09-21:
 - https://developer.android.com/identity/data/backup
 
 ## SYNTHESIS
-Secure local persistence is at least two coupled boundaries: cryptographic key authority and persisted ciphertext/integrity. App-private file placement alone is not encryption, and encryption without an integrity oracle does not establish tamper detection. Process survival is also not key persistence; recovery must be observed from a fresh process.
+Secure local persistence has at least two coupled boundaries: cryptographic key authority and persisted ciphertext/integrity. App-private file placement alone is not encryption, and encryption without an integrity oracle does not establish tamper detection. Process survival is not key persistence; recovery must be observed from a fresh process.
 
 ## Executable validation
 Workflow: `.github/workflows/m003-android-keystore-secure-storage-validation.yml`  
 Initial workflow commit: `af799592f4f27b67f4257c00113c6b97f0a79b31`  
 Pre-run oracle repair: `ed092abb3c81f4c47007499cd86edfd8cf6036cb`  
-Phase-isolation diagnostic: `0ea436129fa150b578c777abf1ac6a6500b84a4e`  
-Target: isolated Flutter-created Android app, API 35 x86_64 emulator, Flutter tag `3.47.5`.
+Phase-isolation diagnostic / successful semantic run: `0ea436129fa150b578c777abf1ac6a6500b84a4e`  
+Target: isolated Flutter-created Android app, Android 15 / API 35 x86_64 emulator, Flutter 3.47.5 framework revision `6a19cca56475dbfba1478ee68d7bd0c2ef891da1`, engine `af7e796e161ae0bb1ff0758c71a7105418bd9ded`, Dart 3.13.4 stable linux_x64, Ubuntu 24.04.5 runner image `20260907.300.1`.
 
 ### CLAIM
 At this bounded Android emulator target, an AES-256/GCM key generated through `AndroidKeyStore` can remain non-exportable through the Java `SecretKey` encoding interface, survive controlled app process replacement, decrypt authenticated ciphertext in a fresh process, and reject a deliberate ciphertext mutation.
@@ -35,48 +35,64 @@ The semantic workflow requires all of:
 2. a live PID exists;
 3. force-stop removes that process;
 4. relaunch has a different PID and reports `RECOVERED:secure-v1:NONEXPORTABLE`;
-5. external test logic mutates one Base64 ciphertext character while preserving the IV/key;
-6. relaunch reports `AUTH_FAIL` from the AES/GCM authentication failure;
+5. external test logic reads the app-private ciphertext via `run-as` and mutates one Base64 ciphertext character while preserving the IV/key;
+6. relaunch reports `AUTH_FAIL` from AES/GCM authentication failure;
 7. job completes naturally.
 
-The UI state is produced by native cryptographic execution; the tamper mutation is injected externally by the test harness, so the failure input is not generated by the decrypt implementation itself.
+The UI state is produced by native cryptographic execution; tamper mutation is injected externally by the harness, so the failure input is not generated by the decrypt implementation itself.
 
-## VALIDATION / FAILURE OBSERVATION
-Run `35535674389`, job `106144148283`, exact head `ed092abb3c81f4c47007499cd86edfd8cf6036cb` completed **failure**. Checkout, pinned Flutter installation, toolchain recording, isolated fixture creation/build, stateful-oracle creation and KVM setup all succeeded. Failure is localized only to the combined `Execute Keystore persistence and tamper oracle` step. This rules out treating the result as a Flutter fixture-build failure, but the available Actions metadata does not expose which semantic subphase failed.
+## VALIDATION / FAILURE → REPRODUCTION
+### Initial failure
+Run `35535674389`, job `106144148283`, exact head `ed092abb3c81f4c47007499cd86edfd8cf6036cb` completed **failure**. Build/setup succeeded and the app launched cold, but the combined oracle exited before the first UI dump produced visible semantic evidence. The available log does not identify a proven cause. **ROOT CAUSE remains OPEN.** Do not relabel this as a Keystore failure.
 
-**No ROOT CAUSE and no PASS are claimed from this observation.** The earlier `/data/local/tmp` concern remains only pre-execution defect prevention; it is not retroactively promoted to root cause.
+### Diagnostic execution — TRANSFER VALIDATION PASS
+Run `35538756528`, attempt 1, job `106152447185`, exact head `0ea436129fa150b578c777abf1ac6a6500b84a4e` completed **success** without changing application cryptography, key policy, ciphertext format, or semantic oracle. Logs record:
+- Android release 15, API 35, x86_64;
+- first cold launch UI `WROTE:secure-v1:NONEXPORTABLE`;
+- controlled force-stop and second cold launch UI `RECOVERED:secure-v1:NONEXPORTABLE`;
+- external ciphertext read/mutation/write through `run-as` while the app was stopped;
+- third cold launch UI `AUTH_FAIL`;
+- `M003_ANDROID_KEYSTORE_STORAGE_PASS` and natural job completion.
 
-### Phase-isolation diagnostic
-Commit `0ea436129fa150b578c777abf1ac6a6500b84a4e` preserves the application, cryptographic algorithm, key policy, ciphertext format and semantic oracle while instrumenting the runner script with explicit phases: `emulator_ready`, `install`, `first_launch`, `force_stop`, `recovery`, `tamper_read`, `tamper_mutate`, `tamper_write`, `auth_reject`, `complete`. The emulator action always returns its last reached phase through `GITHUB_OUTPUT`; subsequent named fail-fast steps make the phase visible in ordinary job metadata. This is diagnostic instrumentation, not a semantic fix. A terminal diagnostic result is required before changing application/oracle semantics.
+**VERDICT: TRANSFER VALIDATION PASS for the bounded emulator claim above.** This is executable fresh-process recovery plus deliberate authenticated-tamper failure evidence, not reading-only evidence.
+
+The phase instrumentation traps exit status to expose a failed phase but deliberately returns zero to the emulator action; a separate final step emits PASS only when the oracle output reports `phase=complete` and `oracle_rc=0`. In attempt 1 the diagnostic failure-verdict steps were skipped and the bounded PASS step succeeded. This preserves semantic fail-fast behavior while making future failures diagnosable.
+
+### REPLICATION
+A same-head rerun of job `106152447185` was explicitly requested on 2026-09-21. Run `35538756528` attempt 2 is queued at the time of this record. Replication is not claimed until terminal evidence is recovered.
+
+## CONTRADICTION / root-cause discipline
+The initial failure and unchanged-semantic subsequent success establish a nondeterministic or environment/timing-sensitive contradiction, but they do **not** establish which mechanism caused the first failure. The first run stopped shortly after cold launch and before a visible UI-dump result; the successful run observed the expected first-launch state. A UI-automation readiness race is only a causal hypothesis, not ROOT CAUSE. Do not repair application semantics without a reproduced isolated failure.
 
 ## Failure model / evidence limit
-Even a future PASS will not establish hardware-backed/StrongBox storage, resistance to root/physical attacks, user-auth-bound keys, biometric invalidation, backup/restore semantics, reinstall/device migration, key rotation, physical-device behavior, iOS Keychain behavior, Flutter secure-storage plugin behavior, LogMate/MintTap behavior, production security, or physical durability. `encoded == null` is only a bounded non-exportability observation through this API surface.
+This PASS does not establish hardware-backed/StrongBox storage, resistance to root/physical attacks, user-auth-bound keys, biometric invalidation, backup/restore semantics, reinstall/device migration, key rotation, physical-device behavior, iOS Keychain behavior, Flutter secure-storage plugin behavior, LogMate/MintTap behavior, production security, or physical durability. `encoded == null` is only bounded non-exportability through this API surface.
 
 ## ALTERNATIVES / ENGINEERING JUDGMENT
 - Plain app-private file: isolation boundary, but no application-layer confidentiality or authenticated tamper oracle.
-- Keystore-backed AEAD + ciphertext file: selected fixture because it separates key authority from persisted bytes and provides an explicit authentication-failure path.
-- User-auth/StrongBox-bound key: materially stronger/different policy boundary; defer until this basic Keystore process/tamper boundary is terminal and a suitable device/environment exists.
+- Keystore-backed AEAD + ciphertext file: selected because it separates key authority from persisted bytes and provides an explicit authentication-failure path.
+- User-auth/StrongBox-bound key: materially stronger/different policy boundary; defer until suitable device/environment evidence exists.
 
 ## RELATED DOMAIN CHECK
-- Foundations: direct Dart/Flutter execution exists; no Foundations gap explains the now-localized Android oracle-step failure.
+- Foundations: trustworthy direct Dart/Flutter execution now exists; this run also records exact Flutter/Dart identity.
 - Architecture: callers should model key/ciphertext failure and recovery states explicitly rather than treating storage APIs as infallible.
-- Mobile: owns Android platform execution evidence and the current phase isolation.
-- Data: process restart recovery is persistence evidence, not physical durability or backup correctness.
-- Quality: failure observation is not root cause; phase isolation preserves the required causal chain before repair.
-- Systems S002: directly related to least privilege, secrets and secure-storage claims; Mobile owns Android execution while Systems owns reusable security architecture conclusions.
-- Design Studio: user-facing authentication/recovery UX would be related for auth-bound keys, but this fixture has no such product interaction contract.
+- Mobile: owns Android platform execution and transfer limits.
+- Data: fresh-process recovery is persistence evidence, not physical durability or backup correctness.
+- Quality: deliberate external tamper is an independent failure input; the unexplained initial failure remains a contradiction, not root cause.
+- Systems S002: directly related to least privilege/secrets/secure storage; Mobile owns this Android execution while Systems owns reusable security-architecture conclusions.
+- Design Studio: user-facing authentication/recovery UX would be related for auth-bound keys, but this fixture has no such interaction contract.
 - Web Manager / Marketing Manager: considered; no material dependency for this native storage mechanism.
 - Product repositories: not materially required; this remains a Studio fixture and makes no LogMate/MintTap implementation claim.
 
 ## HANDOFFS
-- Mobile → Systems: even if later validated, treat it only as bounded Android Keystore mechanics; do not infer hardware backing or complete secret-management policy.
+- Mobile → Systems: bounded Android Keystore process/tamper mechanics are now executable PASS; do not infer hardware backing, StrongBox, auth policy, root resistance or complete secret management.
 - Mobile → Data: authenticated decryption after process replacement does not establish fsync/power-loss durability or backup/restore semantics.
-- Mobile → Quality: current evidence is a failure observation localized to the combined runtime oracle step; preserve phase-isolation evidence before any root-cause claim or repair.
+- Mobile → Quality: preserve initial-failure → diagnostic-success contradiction; a plausible UI readiness race is not root cause without reproduced isolation. Same-head replication is pending.
 
 ## OPEN / CHANGE WATCH
-- Terminal phase-isolation result for diagnostic head `0ea436129fa150b578c777abf1ac6a6500b84a4e`.
-- Exact root cause of run `35535674389` remains OPEN.
+- Same-head replication attempt 2 terminal result.
+- Exact root cause of initial run `35535674389` remains OPEN unless the failure is reproduced and isolated.
 - Hardware-backed/StrongBox and physical-device transfer.
 - user-authentication-bound key invalidation and lock-state behavior.
 - backup/restore, reinstall, key rotation and device migration.
 - iOS Keychain/Safari/PWA/product transfer.
+- Android emulator/system image and Flutter/Dart behavior are version-sensitive; retain exact identities above.
