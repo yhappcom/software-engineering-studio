@@ -11,11 +11,13 @@ Build deep Flutter/Dart and mobile-platform engineering capability while preserv
 ## Current evidence
 
 ### M001 — Dart/Flutter runtime model, widget/render/state pipeline, lifecycle and platform boundary
-**IN STUDY — SOURCE/MODEL + DIRECT FLUTTER HOST/CHROME EVIDENCE; ANDROID EMULATOR FAILURE ISOLATED / REPAIR RUNNING.** Hosted run `35426881450`, job `105854277141` validates a real `flutter_test` widget boundary; F001 later transferred a bounded widget oracle host→Chrome. Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
+**IN STUDY — SOURCE/MODEL + DIRECT FLUTTER HOST/CHROME EVIDENCE; ANDROID EMULATOR BUILD BOUNDARY REACHED / FIXTURE COMPILE REPAIR PENDING.** Hosted run `35426881450`, job `105854277141` validates a real `flutter_test` widget boundary; F001 later transferred a bounded widget oracle host→Chrome. Canonical: `research/mobile/M001_android_emulator_runtime_transfer.md`.
 
-First Android attempt: exact Studio head `869e1ca493b3dafdb8c19cb91174e5f83a9f77bd`, run `35499758484`, job `106049294338`, terminal **failure**. Flutter 3.47.5 / Dart 3.13.4 setup, fixture generation, KVM, API 35 x86_64 AVD creation and emulator boot all succeeded. After `sys.boot_completed=1`, `reactivecircus/android-emulator-runner@v2` invoked the supplied script with `/usr/bin/sh`; the Bash-specific `set -euxo pipefail` failed immediately with `set: Illegal option -o pipefail`. Android identity commands, Flutter device discovery and the integration test never ran.
+Android attempt 1 (`869e1ca...`, run `35499758484`) booted API35 x86_64 but failed because the emulator action ran Bash-only `pipefail` under `/usr/bin/sh`. Commit `ea3101b...` repaired the shell contract. Attempt 2 (`35502482760`) reached Android identity/device discovery but exposed that action script lines run as independent shell commands, so CWD did not persist; commit `a67c20ca...` joined `cd` and `flutter test` in one command.
 
-**ROOT CAUSE for attempt 1:** workflow shell-contract mismatch, not Flutter/Android application or oracle failure. Commit `ea3101b696f667b98ee8022afc7f71eef3a31d0e` changes only that script prologue to POSIX-compatible `set -eu`. Repair run `35502482760` is in progress. **No Android PASS or TRANSFER VALIDATION yet.**
+Attempt 3: exact Studio head `a67c20ca9b679eb3ba9b6bee2fcea8acae4ca70c`, run `35505103675`, job `106063467870`, terminal **failure**. The prior repairs held: Android 15/API35/x86_64 booted, `flutter devices` found `emulator-5554`, the generated project was selected, Flutter Android artifacts downloaded, and Gradle reached `assembleDebug`. Compilation then failed at `const Key('increment')` because the generated integration test lacked an import exporting Flutter `Key`. Installation/application runtime/oracle did not run.
+
+**ROOT CAUSE for attempt 3:** synthetic fixture compile defect, not Android runtime failure. Commit `b6bfc4bf7e07c004c43326fb1821fd54de3986ba` adds only `package:flutter/foundation.dart`; semantic oracle and target remain unchanged. **No Android PASS or TRANSFER VALIDATION yet.**
 
 ### M002 — Android/iOS process lifecycle, termination and background execution
 **IN STUDY — first integrated source/failure-model block complete.** Real platform execution OPEN.
@@ -42,23 +44,23 @@ Prior runs validate same-session controlled-cache offline behavior, browser-rest
 Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared version 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. Browser and Android fixtures are Studio validation, not LogMate builds or production evidence.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. M001 has direct Flutter framework execution and now a real Android-emulator infrastructure failure/root-cause chain, but no Android application runtime PASS yet. M006 has four real generic-browser lifecycle evidence classes. Representative Android process/storage/plugin behavior, physical device execution, iOS, Safari/iPadOS/EFB, canonical LogMate browser/native artifact/runtime, release/device evidence, storage eviction and physical connectivity-loss transfer remain materially absent.
+Mobile Stage 1 remains **NOT PASS**. M001 has direct Flutter framework execution and a three-step Android-emulator failure/root-cause chain that now reaches Android-target Gradle compilation, but no Android application runtime PASS yet. M006 has four real generic-browser lifecycle evidence classes. Representative Android process/storage/plugin behavior, physical device execution, iOS, Safari/iPadOS/EFB, canonical LogMate browser/native artifact/runtime, release/device evidence, storage eviction and physical connectivity-loss transfer remain materially absent.
 
 ## Dependencies / handoffs
-- **Foundations:** F001-F006 bounded direct Dart/Flutter evidence is available; do not generalize hosted/framework semantics to OS/platform behavior. Android M001 transfer remains pending.
-- **Architecture:** no contract change from this infrastructure failure.
+- **Foundations:** F001-F006 bounded direct Dart/Flutter evidence is available; Android M001 transfer remains pending, though Android-target compilation is now reached.
+- **Architecture:** no contract change from these fixture/infrastructure failures.
 - **Data:** the M001 state fixture makes no persistence/durability claim.
-- **Quality:** attempt 1 proves why emulator setup/boot, build/install, runtime/oracle and natural job completion need separate verdicts; semantic oracle never ran.
-- **Systems:** shell/interpreter identity is pipeline provenance. Flutter 3.47.5, Dart 3.13.4, Android emulator 37.1.11/API35/x86_64 and runner image 20260907.300.1 are retained for attempt 1.
+- **Quality:** shell, command/CWD, compilation, install/runtime and semantic-oracle verdicts must remain separate; attempt 3 is a compile failure before runtime.
+- **Systems:** shell/interpreter identity and per-command working-directory lifetime are pipeline provenance. Attempt 3 records Flutter 3.47.5, Dart 3.13.4, Android 15/API35/x86_64, emulator 37.1.11 and runner image 20260907.300.1.
 - **Design Studio / Web Manager / Marketing Manager:** RELATED DOMAIN CHECK performed; no canonical decisions changed and no files edited there.
 
 ## CHANGE WATCH / OPEN
 - Flutter/Dart/Android/browser behavior is version-sensitive; preserve exact runtime/build identity.
-- M001 repair run `35502482760` terminal result is OPEN; no Android PASS until build/install/runtime/oracle completes.
+- M001 repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba` terminal result is OPEN; no Android PASS until compile/install/runtime/oracle completes.
 - Physical Android and iOS platform execution remain OPEN even if emulator validation succeeds.
 - Safari/iPadOS/EFB remains OPEN.
 - CacheStorage/IndexedDB eviction, physical/real connectivity loss and deployed-origin behavior remain OPEN.
 - Flutter-generated/LogMate-postprocessed service-worker update/cold-start behavior remains OPEN pending canonical artifact access.
 
 ## Next work
-First recover repair run `35502482760`. If it succeeds, record Android release/API/ABI, device discovery, build/install/runtime/oracle and natural completion as bounded emulator transfer. If it fails, isolate the next phase rather than changing multiple variables. Do not repeat generic Chromium or Linux socket variants.
+First recover the workflow triggered by repaired head `b6bfc4bf7e07c004c43326fb1821fd54de3986ba`. If it succeeds, record Android release/API/ABI, device discovery, build/install/runtime/oracle and natural completion as bounded emulator transfer. If it fails, isolate the next phase rather than changing multiple variables. Do not repeat generic Chromium or Linux socket variants.
