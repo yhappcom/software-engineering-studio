@@ -1,72 +1,66 @@
 # M003 — Android repeated-denial / USER_FIXED lifecycle
 
-Status: **FAILURE OBSERVED — SECOND-DENIAL / USER_FIXED BOUNDARY ISOLATION REQUIRED**  
-Evidence date: 2026-09-21
+Status: **BOUNDED TRANSFER VALIDATION — API-35 EMULATOR; REPLICATION OPEN**  
+Evidence date: 2026-09-22
 
 ## Problem / professional boundary
-The prior user-dialog transfer validates one-time CAMERA grant and one fresh-install denial, but it does not validate Android's repeated-denial lifecycle. Android 11+ documents a materially different state transition: after the user denies the same permission more than once during an installation lifetime, subsequent requests do not show the system permission dialog. The platform exposes `USER_SET` after denial and `USER_FIXED` after permanent repeated denial for testing/diagnostics.
-
-This block tests that lifecycle as mutable OS authority rather than treating `DENIED` as one undifferentiated state.
+The prior user-dialog transfer validates one-time CAMERA grant and one fresh-install denial, but repeated denial is a distinct mutable-authority lifecycle. This block tests the transition from ordinary denial to a request-suppressed permanent denial state instead of treating every `DENIED` result as equivalent.
 
 ## SOURCE
 Android Developers, rechecked 2026-09-21:
-- `https://developer.android.com/about/versions/11/privacy/permissions` — repeated denial suppresses subsequent permission dialogs; denied-once is flagged `USER_SET`, denied-permanently after two denials is flagged `USER_FIXED`; the documented adb reset command clears those flags for testing.
-- `https://developer.android.com/training/permissions/requesting` — apps must check permission state at each protected operation and gracefully degrade after denial/revocation; one-time permission is a separate temporary-authority lifecycle.
-- `https://developer.android.com/guide/topics/permissions/overview` — runtime permission authority is system-managed and must not be assumed previously granted.
+- `https://developer.android.com/about/versions/11/privacy/permissions` — repeated denial suppresses subsequent permission dialogs; permission flags are available for testing/diagnostics.
+- `https://developer.android.com/training/permissions/requesting` — apps must check permission state at protected operations and degrade after denial/revocation; one-time permission is a separate lifecycle.
+- `https://developer.android.com/guide/topics/permissions/overview` — runtime permission authority is system-managed.
 
 ## SYNTHESIS
-A boolean granted/denied UI projection is insufficient to describe the request lifecycle. `DENIED + requestable` and `DENIED + USER_FIXED/dialog-suppressed` can present the same access result while requiring different interaction behavior. Therefore permission validation needs both an access-state oracle and a requestability/dialog-state oracle.
+A boolean granted/denied projection is insufficient for interaction design. `DENIED + requestable` and `DENIED + USER_FIXED/dialog-suppressed` have the same access result but different recovery behavior. Validation therefore needs independent access-state and requestability/dialog-state evidence.
 
-## ENGINEERING JUDGMENT
-Repeated denial remains a higher-value block than merely repeating the already-green one-time grant fixture. It adds a distinct failure/UX state with cross-track leverage for Mobile, Quality, Architecture and Design handoff, while remaining executable in the currently trustworthy Android emulator environment.
-
-## VALIDATION contract
+## VALIDATION — successful transfer execution
 Workflow: `.github/workflows/m003-android-user-permission-dialog.yml`  
-Exact executed validation head: `bab16cc993d72d1ca98f3c9f2aa2bf4a4bbf8aa4`  
-Run/job: `35599908037` / `106333291875`, attempt 1  
-Target environment: pinned Flutter 3.47.5; Android API 35 x86_64 Pixel 6 emulator; GitHub-hosted Ubuntu runner; Studio fixture only.
+Repository/ref: `yhappcom/software-engineering-studio` → `main` exact commit `5c088398f9f527b96b0da926b26e5aa77d9de000` → no product version (Studio fixture) → evidence 2026-09-22.  
+Run/job: `35619492437` / `106398675688`, attempt 1.  
+Target: Flutter 3.47.5 (`6a19cca56475dbfba1478ee68d7bd0c2ef891da1`), Dart 3.13.4, Android API 35 default x86_64 Pixel 6 emulator, emulator 37.1.11.0, GitHub-hosted Ubuntu 24.04 runner.
 
-The existing one-time grant path is retained as a control. After fresh reinstall, the extended oracle requires:
-1. first user denial through the real Permission Controller control;
-2. Flutter callback/UI remains `CAMERA:DENIED` and package state remains denied;
-3. package diagnostics contain `USER_SET`;
-4. a second app-originated request still exposes a denial control;
-5. second user denial completes and package diagnostics contain `USER_FIXED`;
-6. a third app-originated request does **not** expose the Permission Controller denial control;
-7. the app callback/UI remains denied;
-8. phase-specific CI classifiers expose the first failed lifecycle operation;
-9. natural workflow completion is required for PASS.
+The executable oracle completed naturally and printed `M003_REPEATED_DENIAL_USER_FIXED_PASS`; the final phase file was `complete`. It observed the following sequence rather than manufacturing state with permission-flag commands:
+1. initial app state `CAMERA:DENIED`;
+2. real one-time system grant through `permission_allow_one_time_button`, Flutter callback/UI `CAMERA:GRANTED`, and package `granted=true` control path;
+3. fresh reinstall and first user denial through `permission_deny_button`;
+4. denied callback/UI plus diagnostic `USER_SET` after first denial;
+5. second app-originated request exposed the state-specific Permission Controller control `permission_deny_and_dont_ask_again_button`;
+6. selecting that control returned denied callback/UI and package diagnostics contained `USER_FIXED`;
+7. a third app-originated request exposed neither ordinary deny nor deny-and-don't-ask-again Permission Controller controls;
+8. callback/UI remained `CAMERA:DENIED`;
+9. all phase classifiers and the complete-oracle gate succeeded.
 
-The oracle deliberately does not use `pm clear-permission-flags` to manufacture the target transition. The system/user interactions create the denial history; package diagnostics independently observe flags.
+## CAUSAL / ROOT-CAUSE RESULT
+The earlier second-dialog discovery failure was caused by an oracle that reused the first-denial control identity (`permission_deny_button`) after the platform had transitioned to a different state-specific control (`permission_deny_and_dont_ask_again_button`). Changing only that observation/interaction identity allowed the unchanged application permission sequence to complete. This closes that harness failure cause for this bounded target; it is not a claim that the resource IDs are portable across Android versions or OEM implementations.
 
-## FAILURE / CONTRADICTION — 2026-09-21
-Run `35599908037` completed **failure** at exact head `bab16cc993d72d1ca98f3c9f2aa2bf4a4bbf8aa4`. Checkout, pinned Flutter installation, toolchain recording, fixture build, oracle creation, KVM setup and emulator-oracle wrapper all completed successfully. The metadata-visible classifiers show baseline one-time path **success**, first-denial class **success**, `Fail — second denial and USER_FIXED transition` **failure**, post-USER_FIXED suppression classifier **success/non-match**, and the final complete-oracle gate **failure**.
+## TRANSFER VALIDATION
+**Awarded, bounded.** The Flutter/native request path, real Permission Controller user interactions, callback/UI projection, package diagnostic flags, and post-`USER_FIXED` dialog suppression were exercised together on the stated API-35 emulator target. This is stronger than source reading or shell-manufactured permission state.
 
-**VALIDATION:** this is useful failure isolation, not PASS. The first failure is bounded to one of five operations: `tap_request_denial_second`, `discover_second_denial_dialog`, `select_dont_allow_second`, `observe_denied_callback_second`, or `verify_user_fixed`.
+**Not REPLICATION.** There is one successful environment/run for this lifecycle. Physical devices, OEM Permission Controller variants, other Android/API versions, and a second independent green execution remain unvalidated.
 
-**CONTRADICTION:** the executed target did not complete the documented repeated-denial contract. This does not contradict Android documentation yet because the current CI classifier groups five distinct operations and does not expose which one failed.
+## ENGINEERING JUDGMENT / PROJECT DECISION
+For permission-gated product features, model at least access authority separately from requestability/recovery state. Do not promise that a repeated request will always redisplay a system dialog after permanent denial. Product code should derive recovery behavior from supported platform APIs/state rather than hard-code Permission Controller resource IDs; those IDs are test-harness observations here.
 
-**ROOT CAUSE: OPEN.** Do not infer that API 35 removed `USER_FIXED`, that Flutter failed to issue the second request, or that Permission Controller suppressed the second dialog. The next causal step is finer phase isolation inside the second-denial class before changing application/platform semantics.
-
-## OPEN / VALIDATION
-- Split the second-denial classifier so the exact failed operation is metadata-visible, then reproduce once before forming a causal hypothesis.
-- No PASS / TRANSFER VALIDATION / REPLICATION is awarded for repeated denial from this failed run.
-- Auto-reset/hibernation and one-time expiry/background grace are separate lifecycle classes and remain OPEN.
-- Physical Android/OEM/API-version replication remains OPEN.
-- Product runtime, iOS and production remain OPEN.
+## OPEN / CHANGE WATCH
+- REPLICATION: physical Android/OEM and another API/version or independent environment.
+- One-time expiry/background grace and auto-reset/hibernation remain separate lifecycle classes.
+- Product runtime, iOS, production and actual camera use remain OPEN.
+- CHANGE WATCH: Permission Controller presentation/resource identities and repeated-denial UX can vary by platform/OEM; the resource IDs are not a product API contract.
 
 ## RELATED DOMAIN CHECK
-- Foundations: OS-managed mutable authority and process callbacks; existing execution evidence sufficient for this bounded block.
-- Architecture: permission state needs access authority and requestability/interaction state rather than one boolean contract.
-- Mobile: owning track; extends M003 lifecycle coverage.
-- Data: not materially relevant; no durability claim.
-- Quality: independent UI/package-state oracles and phase classifiers are material; current failure demonstrates why grouped classifiers are insufficient for root-cause attribution.
-- Systems: least privilege/revocation implications noted; this is not complete authorization-policy evidence.
-- Design Studio: materially relevant downstream; a permanently denied/request-suppressed state may require settings/rationale recovery UX distinct from an ordinary first denial. No Design Studio canonical file edited.
+- Foundations: OS-managed mutable authority/callback execution; no new Foundations gate claim.
+- Architecture: permission access and requestability/recovery are separate externally meaningful state dimensions.
+- Mobile: owning track; repeated-denial lifecycle now has bounded transfer evidence.
+- Data: no durability claim.
+- Quality: independent UI, package-state and phase oracles materially prevented a false platform conclusion.
+- Systems: least-privilege/revocation implications noted; not complete authorization-policy evidence.
+- Design Studio: downstream permission UX should distinguish ordinary denial from a state where another request does not redisplay the system dialog. No external canonical file edited.
 - Web Manager / Marketing Manager: not materially relevant.
 - Product source/ref: no product repository audited; Studio fixture only.
 
 ## HANDOFFS
-- Design Studio: if product permission UX is designed, distinguish ordinary denial from a state where the system dialog will no longer reappear; repeated-denial behavior is currently failure-isolated but not validated.
-- Quality: preserve package permission flags as an independent diagnostic oracle; do not infer requestability from `granted=false` alone, and expose individual semantic phases before root-cause claims.
-- Architecture: model authority and requestability as separate externally meaningful state dimensions when permission-gated features need recovery flows.
+- Design Studio: recovery UX for permanent/request-suppressed denial should differ from ordinary first denial; settings/rationale guidance may be required by the eventual product design.
+- Quality: preserve access-state + package diagnostic + dialog-presence oracles; avoid presentation-string-only selectors and expose semantic phases individually.
+- Architecture: represent authority and requestability/recovery separately when permission-gated features need deterministic recovery flows.
