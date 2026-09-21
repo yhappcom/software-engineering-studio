@@ -114,6 +114,9 @@ jobs:
               if rid.endswith('/'+suffix) or rid.endswith(':id/'+suffix):
                 print(f'M003_SYSTEM_CONTROL resource_id={rid}',flush=True); return n
             raise AssertionError(f'resource id suffix {suffix!r} not found: '+ET.tostring(tree.getroot(),encoding='unicode'))
+          def resource_present(suffix,name):
+            tree=dump(name)
+            return any((n.attrib.get('resource-id','').endswith('/'+suffix) or n.attrib.get('resource-id','').endswith(':id/'+suffix)) for n in tree.iter('node'))
           def tap_resource(suffix,name): tap_node(find_resource(suffix,name),suffix)
           def require_ui(text,name):
             time.sleep(1); xml=ET.tostring(dump(name).getroot(),encoding='unicode'); assert text in xml,(text,xml)
@@ -129,11 +132,19 @@ jobs:
             mark('reset_install'); subprocess.run(['adb','uninstall',PKG],check=True); subprocess.run(['adb','install',APK],check=True)
             mark('launch_fresh_denial_case'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity')
             mark('observe_fresh_denied'); require_ui('CAMERA:DENIED','fresh_install')
-            mark('tap_request_denial'); tap_label('REQUEST CAMERA','deny_request'); time.sleep(1)
-            mark('select_dont_allow'); tap_resource('permission_deny_button','deny_dialog')
-            mark('observe_denied_callback'); require_ui('CAMERA:DENIED','user_denied')
-            mark('verify_denied_package_state'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg
-            mark('complete'); print('M003_USER_PERMISSION_DIALOG_PASS')
+            mark('tap_request_denial_first'); tap_label('REQUEST CAMERA','deny_request_1'); time.sleep(1)
+            mark('select_dont_allow_first'); tap_resource('permission_deny_button','deny_dialog_1')
+            mark('observe_denied_callback_first'); require_ui('CAMERA:DENIED','user_denied_1')
+            mark('verify_first_denial_flags'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg; assert 'USER_SET' in pkg,pkg
+            mark('tap_request_denial_second'); tap_label('REQUEST CAMERA','deny_request_2'); time.sleep(1)
+            mark('discover_second_denial_dialog'); find_resource('permission_deny_button','deny_dialog_2_discovery')
+            mark('select_dont_allow_second'); tap_resource('permission_deny_button','deny_dialog_2')
+            mark('observe_denied_callback_second'); require_ui('CAMERA:DENIED','user_denied_2')
+            mark('verify_user_fixed'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg; assert 'USER_FIXED' in pkg,pkg
+            mark('tap_request_after_user_fixed'); tap_label('REQUEST CAMERA','deny_request_3'); time.sleep(1)
+            mark('verify_no_third_permission_dialog'); assert not resource_present('permission_deny_button','after_user_fixed'), 'permission dialog unexpectedly visible after USER_FIXED'
+            mark('observe_denied_callback_after_user_fixed'); require_ui('CAMERA:DENIED','user_fixed_denied')
+            mark('complete'); print('M003_REPEATED_DENIAL_USER_FIXED_PASS')
           except Exception:
             failed=phase
             with open(VERDICT,'w') as f: f.write('FAILED:'+failed+'\n')
@@ -165,46 +176,26 @@ jobs:
         if: always()
         shell: bash
         run: "[[ -f m003-user-permission-phase.txt ]] || { echo 'M003_NO_PHASE_EVIDENCE'; exit 1; }"
-      - name: Fail — initial install
+      - name: Fail — baseline one-time path
         if: always()
         shell: bash
-        run: "! grep -qx 'FAILED:install_initial' m003-user-permission-phase.txt || { echo 'M003_FAIL_INITIAL_INSTALL'; exit 1; }"
-      - name: Fail — initial launch or denied observation
+        run: "! grep -Eq '^FAILED:(install_initial|launch_initial|observe_initial_denied|tap_request_one_time|discover_one_time_choice|select_one_time_choice|observe_granted_callback|verify_granted_package_state|reset_install|launch_fresh_denial_case|observe_fresh_denied)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_BASELINE_ONE_TIME_PATH'; exit 1; }"
+      - name: Fail — first denial
         if: always()
         shell: bash
-        run: "! grep -Eq '^FAILED:(launch_initial|observe_initial_denied)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_INITIAL_APP_STATE'; exit 1; }"
-      - name: Fail — one-time request tap
+        run: "! grep -Eq '^FAILED:(tap_request_denial_first|select_dont_allow_first|observe_denied_callback_first|verify_first_denial_flags)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_FIRST_DENIAL'; exit 1; }"
+      - name: Fail — second denial and USER_FIXED transition
         if: always()
         shell: bash
-        run: "! grep -qx 'FAILED:tap_request_one_time' m003-user-permission-phase.txt || { echo 'M003_FAIL_ONE_TIME_REQUEST_TAP'; exit 1; }"
-      - name: Fail — denial request tap
+        run: "! grep -Eq '^FAILED:(tap_request_denial_second|discover_second_denial_dialog|select_dont_allow_second|observe_denied_callback_second|verify_user_fixed)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_SECOND_DENIAL_USER_FIXED'; exit 1; }"
+      - name: Fail — post USER_FIXED request suppression
         if: always()
         shell: bash
-        run: "! grep -qx 'FAILED:tap_request_denial' m003-user-permission-phase.txt || { echo 'M003_FAIL_DENIAL_REQUEST_TAP'; exit 1; }"
-      - name: Fail — one-time choice discovery
-        if: always()
-        shell: bash
-        run: "! grep -qx 'FAILED:discover_one_time_choice' m003-user-permission-phase.txt || { echo 'M003_FAIL_ONE_TIME_CHOICE_DISCOVERY'; exit 1; }"
-      - name: Fail — system choice interaction
-        if: always()
-        shell: bash
-        run: "! grep -Eq '^FAILED:(select_one_time_choice|select_dont_allow)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_SYSTEM_CHOICE_INTERACTION'; exit 1; }"
-      - name: Fail — callback UI state
-        if: always()
-        shell: bash
-        run: "! grep -Eq '^FAILED:(observe_granted_callback|observe_denied_callback)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_CALLBACK_UI_STATE'; exit 1; }"
-      - name: Fail — package permission state
-        if: always()
-        shell: bash
-        run: "! grep -Eq '^FAILED:(verify_granted_package_state|verify_denied_package_state)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_PACKAGE_PERMISSION_STATE'; exit 1; }"
-      - name: Fail — fresh-install reset or relaunch
-        if: always()
-        shell: bash
-        run: "! grep -Eq '^FAILED:(reset_install|launch_fresh_denial_case|observe_fresh_denied)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_FRESH_INSTALL_RESET'; exit 1; }"
-      - name: Require complete user-dialog oracle
+        run: "! grep -Eq '^FAILED:(tap_request_after_user_fixed|verify_no_third_permission_dialog|observe_denied_callback_after_user_fixed)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_POST_USER_FIXED_SUPPRESSION'; exit 1; }"
+      - name: Require complete repeated-denial oracle
         if: always()
         shell: bash
         run: |
           grep -qx 'complete' m003-user-permission-phase.txt
           [[ '${{ steps.emulator_oracle.outcome }}' == 'success' ]]
-          echo 'M003 bounded user-driven permission dialog oracle passed'
+          echo 'M003 bounded repeated-denial USER_FIXED oracle passed'
