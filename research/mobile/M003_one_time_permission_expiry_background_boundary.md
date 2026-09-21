@@ -1,6 +1,6 @@
 # M003 — Android one-time permission expiry / background boundary
 
-Status: **SOURCE + SYNTHESIS + EXECUTABLE BOUNDED OBSERVATION; SEMANTIC VERDICT RETRIEVAL OPEN**  
+Status: **EXECUTABLE BOUNDED TRANSFER VALIDATION — NATURAL EXPIRY + REQUESTABILITY OBSERVED**  
 Evidence date: 2026-09-22
 
 ## Problem / professional boundary
@@ -25,22 +25,26 @@ The already validated M003 one-time grant does not contradict later revocation; 
 The executable target preserves the existing real user-dialog path and adds independent lifecycle/authority/process oracles. Ordinary background observation uses three semantic outcomes: `OBSERVED_EXPIRY_AND_REQUESTABILITY`, `INCONCLUSIVE_WINDOW_EXHAUSTED`, or `HARNESS_FAILURE:<phase>`. Window exhaustion is not platform failure.
 
 ## EXECUTABLE OBSERVATION — 2026-09-22
-Exact target `yhappcom/software-engineering-studio → main → 37812fccf3c52ae891f9ab13bc832557a57bd5ab → Studio fixture (no product version) → evidence 2026-09-22` executed as GitHub Actions run `35651688386`, attempt 1, job `106505361356`.
+Earlier exact target `37812fccf3c52ae891f9ab13bc832557a57bd5ab`, run `35651688386`, job `106505361356` completed successfully but did not preserve a retrievable semantic payload, so it established only that the bounded observation harness could terminate correctly.
 
-**VALIDATION:** the job completed `success`. Fixture creation, API-35 emulator execution, `Report observation verdict`, `Classify harness failure`, and `Require trustworthy bounded observation` all completed successfully. The gate at this exact ref accepts only `OBSERVED_EXPIRY_AND_REQUESTABILITY` or `INCONCLUSIVE_WINDOW_EXHAUSTED`, requires the emulator action outcome itself to be `success`, and separately fails a `HARNESS_FAILURE:<phase>` classifier. Therefore the preceding run-level gate failure is closed as a harness/observability-gate problem for this exact target: the bounded observation can now terminate cleanly without converting window exhaustion into Android failure.
+Exact evidence-preserving target: `yhappcom/software-engineering-studio → main → ae5597cc15fca07fcc63688a91f1cf8da9ac15f4 → Studio fixture (no product version) → evidence 2026-09-22`; GitHub Actions run `35662745671`, attempt 1, terminal `success`. Artifact `m003-expiry-semantic-evidence`, artifact id `10667827225`, digest `sha256:5f5784550773d99704067664263a46e3afd167fd9196fbfe41bc175c244b0c2f`, is bound to that exact run/head.
 
-**OPEN / evidence limit:** current connected GitHub metadata exposes terminal step outcomes but not the emitted verdict-file contents or job log text, and this workflow uploaded no artifact. Consequently this run proves a trustworthy bounded observation completed, but does **not** distinguish which of the two accepted semantic outcomes occurred. It is invalid to claim that natural expiry was observed, that it was not observed within 180 seconds, or that requestability after expiry was validated from the accessible evidence alone. No PASS, TRANSFER VALIDATION, REPLICATION, or ROOT CAUSE for Android expiry semantics is awarded.
+**ENVIRONMENT:** Flutter 3.47.5, framework revision `6a19cca56475dbfba1478ee68d7bd0c2ef891da1`, engine revision `af7e796e161ae0bb1ff0758c71a7105418bd9ded`, Dart 3.13.4 linux_x64; Android API-35 x86_64 Pixel 6 emulator as defined by the fixture.
 
-**ENGINEERING JUDGMENT:** the next useful change is evidence preservation, not a longer sleep or another semantic variant: publish the verdict and minimal authority/PID timeline as a workflow artifact or otherwise expose them through retrievable run metadata. Re-running the same target without making its semantic verdict independently retrievable has low evidence value.
+**OBSERVATION:** after real `Only this time` grant, initial app PID was `2246`. HOME transition produced `M003_ACTIVITY_AFTER_HOME=False`. Polling observed permission `granted=True` with PID `2246` from elapsed 0.0 through 55.4 seconds. At elapsed 60.4 seconds permission became `granted=False` and the PID observation became empty. The fixture then relaunched the app, made a new app-originated permission request, verified the system permission dialog was requestable, and recorded `M003_VERDICT=OBSERVED_EXPIRY_AND_REQUESTABILITY` followed by phase `complete`.
+
+**VALIDATION / TRANSFER VALIDATION:** this closes the prior semantic-verdict retrieval gap and validates, at this exact Studio/API-35 emulator context, the documented lifecycle shape: an app-originated one-time grant can survive ordinary HOME backgrounding briefly, then be revoked with process termination, after which a new request is possible. The observed `60.4s` is **not** a portable timeout contract, SLA, or Android guarantee.
+
+**REPLICATION:** not awarded. This is one exact emulator/API/toolchain execution. Physical devices, OEM variants, other Android API versions, independent reruns/environments, and product runtime remain OPEN.
 
 ## VALIDATION / OPEN
-- Semantic verdict for run `35651688386` remains OPEN because verdict/log payload is not retrievable through the current evidence channel.
-- Foreground-service discriminator remains a later alternative only after ordinary-background semantic evidence is preserved.
+- Matched foreground-service discriminator remains a later alternative if causal discrimination between ordinary-background expiry and supported foreground-service continuation becomes the highest-value Mobile block.
 - Physical/OEM/other-API behavior remains separate REPLICATION work.
 - Auto-reset/app-hibernation is a separate lifecycle and must not be simulated by editing permission flags and called production-equivalent evidence.
+- Product transfer remains OPEN; no MintTap/LogMate runtime claim follows from this Studio fixture.
 
 ## ENGINEERING JUDGMENT
-Product code should treat permission authority as revocable at use time and re-check at the protected operation boundary. It should not schedule logic around a presumed one-time-permission grace duration. If continued background access is truly required, the product must use the appropriate platform-supported execution/permission model rather than relying on incidental grace.
+Product code should treat permission authority as revocable at use time and re-check at the protected operation boundary. It should not schedule logic around the observed 60.4-second grace. If continued background access is truly required, the product must use the appropriate platform-supported execution/permission model rather than relying on incidental grace.
 
 ## CHANGE WATCH
 - Android permission lifecycle and Permission Controller implementation are version/OEM sensitive.
@@ -48,18 +52,18 @@ Product code should treat permission authority as revocable at use time and re-c
 - Permission Controller resource IDs remain test observations, not product APIs.
 
 ## RELATED DOMAIN CHECK
-- Foundations: mutable OS authority and process lifetime are relevant; no new Foundations gate claim.
-- Architecture: authority, lifecycle and requestability are separate state dimensions.
-- Mobile: owning track; executable bounded observation now terminates cleanly, semantic verdict retrieval remains OPEN.
+- Foundations: mutable OS authority and process lifetime are directly demonstrated; no new Foundations gate claim.
+- Architecture: authority, lifecycle and requestability remain separate state dimensions.
+- Mobile: owning track; bounded natural expiry/requestability transfer validated.
 - Data: not materially relevant to the permission lease itself.
-- Quality: three-valued verdict discipline worked at the gate; evidence preservation is now the limiting oracle/reproducibility issue.
-- Systems: CI artifact/log provenance is materially relevant because a green gate without retrievable semantic payload cannot support the stronger platform claim.
+- Quality: three-valued verdict plus run-bound semantic artifact prevented a green job from being overinterpreted and now supplies the missing observation/verdict/reproduction data.
+- Systems: artifact digest + exact run/head/toolchain bind the semantic payload to execution provenance.
 - Design Studio: recovery UX must tolerate authority disappearing after backgrounding. No Design Studio canonical file edited.
 - Web Manager / Marketing Manager: not materially relevant.
 - Product source/ref: no product repository audited; Studio fixture only.
 
 ## HANDOFFS
-- Quality: preserve semantic verdict payload independently from the job conclusion; a green gate is not self-interpreting evidence.
-- Systems: make verdict/timeline an artifact or equivalent retrievable evidence bound to exact run/ref.
-- Architecture: continue modeling temporary authority separately from lifecycle and requestability.
+- Quality: retain semantic verdict payload independently from job conclusion for platform lifecycle tests; elapsed observations must not silently become specifications.
+- Systems: retain artifact digest and exact run/head/toolchain identity when CI evidence supports semantic claims.
+- Architecture: temporary authority, process lifecycle, and requestability are independently observable dimensions.
 - Design Studio: permission-gated flows should recover from authority loss after backgrounding rather than assuming a prior one-time grant remains valid.
