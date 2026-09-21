@@ -1,0 +1,130 @@
+name: M003 Android user permission dialog transfer
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m003-android-user-permission-dialog.yml'
+  workflow_dispatch:
+
+jobs:
+  user-permission-dialog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Flutter
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch 3.47.5 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          dart --version 2>&1 | tee dart-version.txt
+      - name: Create isolated dialog fixture
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "$RUNNER_TEMP"
+          flutter create --platforms android --org dev.yhapp.studio m003_user_permission
+          cd m003_user_permission
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/src/main/AndroidManifest.xml')
+          s=p.read_text().replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">','<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.CAMERA" />')
+          p.write_text(s)
+          PY
+          cat > android/app/src/main/kotlin/dev/yhapp/studio/m003_user_permission/MainActivity.kt <<'KOTLIN'
+          package dev.yhapp.studio.m003_user_permission
+          import android.Manifest
+          import android.content.pm.PackageManager
+          import androidx.core.app.ActivityCompat
+          import androidx.core.content.ContextCompat
+          import io.flutter.embedding.android.FlutterActivity
+          import io.flutter.embedding.engine.FlutterEngine
+          import io.flutter.plugin.common.MethodChannel
+
+          class MainActivity: FlutterActivity() {
+            private var pending: MethodChannel.Result? = null
+            override fun configureFlutterEngine(engine: FlutterEngine) {
+              super.configureFlutterEngine(engine)
+              MethodChannel(engine.dartExecutor.binaryMessenger,"studio.m003/user_permission").setMethodCallHandler { call,result ->
+                when(call.method) {
+                  "status" -> result.success(status())
+                  "request" -> { pending=result; ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.CAMERA),77) }
+                  else -> result.notImplemented()
+                }
+              }
+            }
+            private fun status() = if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED) "GRANTED" else "DENIED"
+            override fun onRequestPermissionsResult(requestCode:Int, permissions:Array<out String>, grantResults:IntArray) {
+              super.onRequestPermissionsResult(requestCode,permissions,grantResults)
+              if(requestCode==77){ pending?.success(status()); pending=null }
+            }
+          }
+          KOTLIN
+          cat > lib/main.dart <<'DART'
+          import 'package:flutter/material.dart';
+          import 'package:flutter/services.dart';
+          void main()=>runApp(const App());
+          class App extends StatefulWidget { const App({super.key}); State<App> createState()=>_S(); }
+          class _S extends State<App>{
+            static const c=MethodChannel('studio.m003/user_permission'); String state='LOADING';
+            void initState(){super.initState(); _read();}
+            Future<void> _read() async { final s=await c.invokeMethod<String>('status')??'UNKNOWN'; if(mounted)setState(()=>state=s); }
+            Future<void> _request() async { final s=await c.invokeMethod<String>('request')??'UNKNOWN'; if(mounted)setState(()=>state=s); }
+            Widget build(BuildContext context)=>MaterialApp(home:Scaffold(body:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[Text('CAMERA:$state'),ElevatedButton(onPressed:_request,child:const Text('REQUEST CAMERA'))]))));
+          }
+          DART
+          flutter build apk --debug
+      - name: Create user-choice oracle
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat > "$RUNNER_TEMP/m003_user_oracle.py" <<'PY'
+          import re,subprocess,time,xml.etree.ElementTree as ET
+          PKG='dev.yhapp.studio.m003_user_permission'; APK=f'{__import__("os").environ["RUNNER_TEMP"]}/m003_user_permission/build/app/outputs/flutter-apk/app-debug.apk'
+          def sh(*a): return subprocess.check_output(['adb',*a],text=True).strip()
+          def dump(name):
+            subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL); subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL); return ET.parse(f'/tmp/{name}.xml')
+          def tap_text(text,name):
+            tree=dump(name)
+            for n in tree.iter('node'):
+              if n.attrib.get('text')==text:
+                m=re.match(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',n.attrib['bounds']); assert m,(text,n.attrib)
+                x1,y1,x2,y2=map(int,m.groups()); subprocess.run(['adb','shell','input','tap',str((x1+x2)//2),str((y1+y2)//2)],check=True); return
+            raise AssertionError(f'{text!r} not found: '+ET.tostring(tree.getroot(),encoding='unicode'))
+          def require_ui(text,name):
+            time.sleep(1); xml=ET.tostring(dump(name).getroot(),encoding='unicode'); assert text in xml,(text,xml)
+          subprocess.run(['adb','install','-r',APK],check=True)
+          sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); require_ui('CAMERA:DENIED','initial')
+          tap_text('REQUEST CAMERA','request_button'); time.sleep(1)
+          dialog=ET.tostring(dump('permission_dialog').getroot(),encoding='unicode'); assert 'Only this time' in dialog,dialog
+          tap_text('Only this time','permission_dialog_tap'); require_ui('CAMERA:GRANTED','one_time_granted')
+          pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=true' in pkg,pkg
+          # Reinstall resets installation-scoped permission state; exercise a real user denial path independently.
+          subprocess.run(['adb','uninstall',PKG],check=True); subprocess.run(['adb','install',APK],check=True)
+          sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); require_ui('CAMERA:DENIED','fresh_install')
+          tap_text('REQUEST CAMERA','deny_request'); time.sleep(1); tap_text("Don’t allow",'deny_dialog'); require_ui('CAMERA:DENIED','user_denied')
+          pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg
+          print('M003_USER_PERMISSION_DIALOG_PASS')
+          PY
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Execute user-driven permission oracle
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: python3 "$RUNNER_TEMP/m003_user_oracle.py"
