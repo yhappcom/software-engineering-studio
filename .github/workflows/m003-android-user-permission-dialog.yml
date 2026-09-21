@@ -81,13 +81,19 @@ jobs:
           }
           DART
           flutter build apk --debug
-      - name: Create user-choice oracle
+      - name: Create phase-reporting user-choice oracle
         shell: bash
         run: |
           set -euxo pipefail
           cat > "$RUNNER_TEMP/m003_user_oracle.py" <<'PY'
-          import re,subprocess,time,xml.etree.ElementTree as ET
-          PKG='dev.yhapp.studio.m003_user_permission'; APK=f'{__import__("os").environ["RUNNER_TEMP"]}/m003_user_permission/build/app/outputs/flutter-apk/app-debug.apk'
+          import os,re,subprocess,time,traceback,xml.etree.ElementTree as ET
+          PKG='dev.yhapp.studio.m003_user_permission'; APK=f'{os.environ["RUNNER_TEMP"]}/m003_user_permission/build/app/outputs/flutter-apk/app-debug.apk'
+          VERDICT=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-user-permission-phase.txt')
+          phase='setup'
+          def mark(value):
+            global phase; phase=value
+            with open(VERDICT,'w') as f: f.write(value+'\n')
+            print('M003_PHASE='+value,flush=True)
           def sh(*a): return subprocess.check_output(['adb',*a],text=True).strip()
           def dump(name):
             subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL); subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL); return ET.parse(f'/tmp/{name}.xml')
@@ -100,18 +106,27 @@ jobs:
             raise AssertionError(f'{text!r} not found: '+ET.tostring(tree.getroot(),encoding='unicode'))
           def require_ui(text,name):
             time.sleep(1); xml=ET.tostring(dump(name).getroot(),encoding='unicode'); assert text in xml,(text,xml)
-          subprocess.run(['adb','install','-r',APK],check=True)
-          sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); require_ui('CAMERA:DENIED','initial')
-          tap_text('REQUEST CAMERA','request_button'); time.sleep(1)
-          dialog=ET.tostring(dump('permission_dialog').getroot(),encoding='unicode'); assert 'Only this time' in dialog,dialog
-          tap_text('Only this time','permission_dialog_tap'); require_ui('CAMERA:GRANTED','one_time_granted')
-          pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=true' in pkg,pkg
-          # Reinstall resets installation-scoped permission state; exercise a real user denial path independently.
-          subprocess.run(['adb','uninstall',PKG],check=True); subprocess.run(['adb','install',APK],check=True)
-          sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); require_ui('CAMERA:DENIED','fresh_install')
-          tap_text('REQUEST CAMERA','deny_request'); time.sleep(1); tap_text("Don’t allow",'deny_dialog'); require_ui('CAMERA:DENIED','user_denied')
-          pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg
-          print('M003_USER_PERMISSION_DIALOG_PASS')
+          try:
+            mark('install_initial'); subprocess.run(['adb','install','-r',APK],check=True)
+            mark('launch_initial'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity')
+            mark('observe_initial_denied'); require_ui('CAMERA:DENIED','initial')
+            mark('tap_request_one_time'); tap_text('REQUEST CAMERA','request_button'); time.sleep(1)
+            mark('discover_one_time_choice'); dialog=ET.tostring(dump('permission_dialog').getroot(),encoding='unicode'); assert 'Only this time' in dialog,dialog
+            mark('select_one_time_choice'); tap_text('Only this time','permission_dialog_tap')
+            mark('observe_granted_callback'); require_ui('CAMERA:GRANTED','one_time_granted')
+            mark('verify_granted_package_state'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=true' in pkg,pkg
+            mark('reset_install'); subprocess.run(['adb','uninstall',PKG],check=True); subprocess.run(['adb','install',APK],check=True)
+            mark('launch_fresh_denial_case'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity')
+            mark('observe_fresh_denied'); require_ui('CAMERA:DENIED','fresh_install')
+            mark('tap_request_denial'); tap_text('REQUEST CAMERA','deny_request'); time.sleep(1)
+            mark('select_dont_allow'); tap_text("Don’t allow",'deny_dialog')
+            mark('observe_denied_callback'); require_ui('CAMERA:DENIED','user_denied')
+            mark('verify_denied_package_state'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg
+            mark('complete'); print('M003_USER_PERMISSION_DIALOG_PASS')
+          except Exception:
+            failed=phase
+            with open(VERDICT,'w') as f: f.write('FAILED:'+failed+'\n')
+            print('M003_FAILED_PHASE='+failed,flush=True); traceback.print_exc(); raise
           PY
       - name: Enable KVM
         shell: bash
@@ -119,7 +134,9 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Execute user-driven permission oracle
+      - name: Execute phase-reporting user-driven permission oracle
+        id: emulator_oracle
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -128,3 +145,57 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           script: python3 "$RUNNER_TEMP/m003_user_oracle.py"
+      - name: Report semantic phase
+        if: always()
+        shell: bash
+        run: |
+          if [[ -f m003-user-permission-phase.txt ]]; then
+            echo 'Recorded M003 phase:'
+            cat m003-user-permission-phase.txt
+          else
+            echo 'NO_PHASE_FILE'
+          fi
+      - name: Fail — no recoverable phase evidence
+        if: always()
+        shell: bash
+        run: |
+          [[ -f m003-user-permission-phase.txt ]] || { echo 'M003_NO_PHASE_EVIDENCE'; exit 1; }
+      - name: Fail — initial install
+        if: always()
+        shell: bash
+        run: "! grep -qx 'FAILED:install_initial' m003-user-permission-phase.txt || { echo 'M003_FAIL_INITIAL_INSTALL'; exit 1; }"
+      - name: Fail — initial launch or denied observation
+        if: always()
+        shell: bash
+        run: "! grep -Eq '^FAILED:(launch_initial|observe_initial_denied)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_INITIAL_APP_STATE'; exit 1; }"
+      - name: Fail — request interaction
+        if: always()
+        shell: bash
+        run: "! grep -Eq '^FAILED:tap_request_(one_time|denial)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_REQUEST_INTERACTION'; exit 1; }"
+      - name: Fail — one-time choice discovery
+        if: always()
+        shell: bash
+        run: "! grep -qx 'FAILED:discover_one_time_choice' m003-user-permission-phase.txt || { echo 'M003_FAIL_ONE_TIME_CHOICE_DISCOVERY'; exit 1; }"
+      - name: Fail — system choice interaction
+        if: always()
+        shell: bash
+        run: "! grep -Eq '^FAILED:(select_one_time_choice|select_dont_allow)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_SYSTEM_CHOICE_INTERACTION'; exit 1; }"
+      - name: Fail — callback UI state
+        if: always()
+        shell: bash
+        run: "! grep -Eq '^FAILED:(observe_granted_callback|observe_denied_callback)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_CALLBACK_UI_STATE'; exit 1; }"
+      - name: Fail — package permission state
+        if: always()
+        shell: bash
+        run: "! grep -Eq '^FAILED:(verify_granted_package_state|verify_denied_package_state)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_PACKAGE_PERMISSION_STATE'; exit 1; }"
+      - name: Fail — fresh-install reset or relaunch
+        if: always()
+        shell: bash
+        run: "! grep -Eq '^FAILED:(reset_install|launch_fresh_denial_case|observe_fresh_denied)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_FRESH_INSTALL_RESET'; exit 1; }"
+      - name: Require complete user-dialog oracle
+        if: always()
+        shell: bash
+        run: |
+          grep -qx 'complete' m003-user-permission-phase.txt
+          [[ '${{ steps.emulator_oracle.outcome }}' == 'success' ]]
+          echo 'M003 bounded user-driven permission dialog oracle passed'
