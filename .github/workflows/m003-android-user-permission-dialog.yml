@@ -94,16 +94,27 @@ jobs:
             print('M003_PHASE='+value,flush=True)
           def sh(*a): return subprocess.check_output(['adb',*a],text=True).strip()
           def dump(name):
-            subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL); subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL); return ET.parse(f'/tmp/{name}.xml')
+            subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
+            subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
+            return ET.parse(f'/tmp/{name}.xml')
+          def tap_node(n,identity):
+            m=re.match(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',n.attrib['bounds']); assert m,(identity,n.attrib)
+            x1,y1,x2,y2=map(int,m.groups()); subprocess.run(['adb','shell','input','tap',str((x1+x2)//2),str((y1+y2)//2)],check=True)
           def tap_label(label,name):
             tree=dump(name)
             for n in tree.iter('node'):
-              channel = 'text' if n.attrib.get('text')==label else ('content-desc' if n.attrib.get('content-desc')==label else None)
+              channel='text' if n.attrib.get('text')==label else ('content-desc' if n.attrib.get('content-desc')==label else None)
               if channel:
-                print(f'M003_SELECTOR label={label!r} channel={channel}',flush=True)
-                m=re.match(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',n.attrib['bounds']); assert m,(label,n.attrib)
-                x1,y1,x2,y2=map(int,m.groups()); subprocess.run(['adb','shell','input','tap',str((x1+x2)//2),str((y1+y2)//2)],check=True); return
+                print(f'M003_SELECTOR label={label!r} channel={channel}',flush=True); tap_node(n,label); return
             raise AssertionError(f'{label!r} not found in text/content-desc: '+ET.tostring(tree.getroot(),encoding='unicode'))
+          def find_resource(suffix,name):
+            tree=dump(name)
+            for n in tree.iter('node'):
+              rid=n.attrib.get('resource-id','')
+              if rid.endswith('/'+suffix) or rid.endswith(':id/'+suffix):
+                print(f'M003_SYSTEM_CONTROL resource_id={rid}',flush=True); return n
+            raise AssertionError(f'resource id suffix {suffix!r} not found: '+ET.tostring(tree.getroot(),encoding='unicode'))
+          def tap_resource(suffix,name): tap_node(find_resource(suffix,name),suffix)
           def require_ui(text,name):
             time.sleep(1); xml=ET.tostring(dump(name).getroot(),encoding='unicode'); assert text in xml,(text,xml)
           try:
@@ -111,15 +122,15 @@ jobs:
             mark('launch_initial'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity')
             mark('observe_initial_denied'); require_ui('CAMERA:DENIED','initial')
             mark('tap_request_one_time'); tap_label('REQUEST CAMERA','request_button'); time.sleep(1)
-            mark('discover_one_time_choice'); dialog=ET.tostring(dump('permission_dialog').getroot(),encoding='unicode'); assert 'Only this time' in dialog,dialog
-            mark('select_one_time_choice'); tap_label('Only this time','permission_dialog_tap')
+            mark('discover_one_time_choice'); find_resource('permission_allow_one_time_button','permission_dialog')
+            mark('select_one_time_choice'); tap_resource('permission_allow_one_time_button','permission_dialog_tap')
             mark('observe_granted_callback'); require_ui('CAMERA:GRANTED','one_time_granted')
             mark('verify_granted_package_state'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=true' in pkg,pkg
             mark('reset_install'); subprocess.run(['adb','uninstall',PKG],check=True); subprocess.run(['adb','install',APK],check=True)
             mark('launch_fresh_denial_case'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity')
             mark('observe_fresh_denied'); require_ui('CAMERA:DENIED','fresh_install')
             mark('tap_request_denial'); tap_label('REQUEST CAMERA','deny_request'); time.sleep(1)
-            mark('select_dont_allow'); tap_label("Don’t allow",'deny_dialog')
+            mark('select_dont_allow'); tap_resource('permission_deny_button','deny_dialog')
             mark('observe_denied_callback'); require_ui('CAMERA:DENIED','user_denied')
             mark('verify_denied_package_state'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg
             mark('complete'); print('M003_USER_PERMISSION_DIALOG_PASS')
