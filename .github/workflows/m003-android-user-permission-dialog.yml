@@ -184,10 +184,26 @@ jobs:
         if: always()
         shell: bash
         run: "! grep -Eq '^FAILED:(tap_request_denial_first|select_dont_allow_first|observe_denied_callback_first|verify_first_denial_flags)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_FIRST_DENIAL'; exit 1; }"
-      - name: Fail — second denial and USER_FIXED transition
+      - name: Fail — second denial request tap
         if: always()
         shell: bash
-        run: "! grep -Eq '^FAILED:(tap_request_denial_second|discover_second_denial_dialog|select_dont_allow_second|observe_denied_callback_second|verify_user_fixed)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_SECOND_DENIAL_USER_FIXED'; exit 1; }"
+        run: "! grep -qx 'FAILED:tap_request_denial_second' m003-user-permission-phase.txt || { echo 'M003_FAIL_SECOND_DENIAL_REQUEST_TAP'; exit 1; }"
+      - name: Fail — second denial dialog discovery
+        if: always()
+        shell: bash
+        run: "! grep -qx 'FAILED:discover_second_denial_dialog' m003-user-permission-phase.txt || { echo 'M003_FAIL_SECOND_DENIAL_DIALOG_DISCOVERY'; exit 1; }"
+      - name: Fail — second denial system interaction
+        if: always()
+        shell: bash
+        run: "! grep -qx 'FAILED:select_dont_allow_second' m003-user-permission-phase.txt || { echo 'M003_FAIL_SECOND_DENIAL_SYSTEM_INTERACTION'; exit 1; }"
+      - name: Fail — second denial callback UI
+        if: always()
+        shell: bash
+        run: "! grep -qx 'FAILED:observe_denied_callback_second' m003-user-permission-phase.txt || { echo 'M003_FAIL_SECOND_DENIAL_CALLBACK'; exit 1; }"
+      - name: Fail — USER_FIXED diagnostic state
+        if: always()
+        shell: bash
+        run: "! grep -qx 'FAILED:verify_user_fixed' m003-user-permission-phase.txt || { echo 'M003_FAIL_USER_FIXED_DIAGNOSTIC'; exit 1; }"
       - name: Fail — post USER_FIXED request suppression
         if: always()
         shell: bash
