@@ -137,12 +137,12 @@ jobs:
             mark('observe_denied_callback_first'); require_ui('CAMERA:DENIED','user_denied_1')
             mark('verify_first_denial_flags'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg; assert 'USER_SET' in pkg,pkg
             mark('tap_request_denial_second'); tap_label('REQUEST CAMERA','deny_request_2'); time.sleep(1)
-            mark('discover_second_denial_dialog'); find_resource('permission_deny_button','deny_dialog_2_discovery')
-            mark('select_dont_allow_second'); tap_resource('permission_deny_button','deny_dialog_2')
+            mark('discover_second_denial_dialog'); find_resource('permission_deny_and_dont_ask_again_button','deny_dialog_2_discovery')
+            mark('select_dont_allow_second'); tap_resource('permission_deny_and_dont_ask_again_button','deny_dialog_2')
             mark('observe_denied_callback_second'); require_ui('CAMERA:DENIED','user_denied_2')
             mark('verify_user_fixed'); pkg=sh('shell','dumpsys','package',PKG); assert 'android.permission.CAMERA: granted=false' in pkg,pkg; assert 'USER_FIXED' in pkg,pkg
             mark('tap_request_after_user_fixed'); tap_label('REQUEST CAMERA','deny_request_3'); time.sleep(1)
-            mark('verify_no_third_permission_dialog'); assert not resource_present('permission_deny_button','after_user_fixed'), 'permission dialog unexpectedly visible after USER_FIXED'
+            mark('verify_no_third_permission_dialog'); assert not resource_present('permission_deny_button','after_user_fixed') and not resource_present('permission_deny_and_dont_ask_again_button','after_user_fixed_2'), 'permission dialog unexpectedly visible after USER_FIXED'
             mark('observe_denied_callback_after_user_fixed'); require_ui('CAMERA:DENIED','user_fixed_denied')
             mark('complete'); print('M003_REPEATED_DENIAL_USER_FIXED_PASS')
           except Exception:
