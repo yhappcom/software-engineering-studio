@@ -85,13 +85,16 @@ jobs:
           cat > "$RUNNER_TEMP/m003_expiry_oracle.py" <<'PY'
           import os,re,subprocess,time,traceback,xml.etree.ElementTree as ET
           PKG='dev.yhapp.studio.m003_expiry'; APK=f'{os.environ["RUNNER_TEMP"]}/m003_expiry/build/app/outputs/flutter-apk/app-debug.apk'
-          VERDICT=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-expiry-verdict.txt'); phase='setup'
+          VERDICT=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-expiry-verdict.txt'); TIMELINE=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-expiry-timeline.txt'); phase='setup'
           WINDOW=180; POLL=5
+          def record(s):
+            print(s,flush=True)
+            with open(TIMELINE,'a') as f:f.write(s+'\n')
           def mark(v):
-            global phase; phase=v; print('M003_PHASE='+v,flush=True)
+            global phase; phase=v; record('M003_PHASE='+v)
           def write(v):
             with open(VERDICT,'w') as f:f.write(v+'\n')
-            print('M003_VERDICT='+v,flush=True)
+            record('M003_VERDICT='+v)
           def sh(*a): return subprocess.check_output(['adb',*a],text=True).strip()
           def dump(name):
             subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
@@ -123,21 +126,21 @@ jobs:
             mark('launch'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); time.sleep(1)
             mark('request'); tap_label('REQUEST CAMERA','request'); time.sleep(1)
             mark('grant_one_time'); tap_resource('permission_allow_one_time_button','dialog'); time.sleep(1)
-            mark('verify_initial_grant'); assert granted(); initial_pid=pid(); assert initial_pid; print('M003_INITIAL_PID='+initial_pid)
+            mark('verify_initial_grant'); assert granted(); initial_pid=pid(); assert initial_pid; record('M003_INITIAL_PID='+initial_pid)
             mark('background_home'); sh('shell','input','keyevent','KEYCODE_HOME'); time.sleep(1)
-            bg=sh('shell','dumpsys','activity','activities'); print('M003_ACTIVITY_AFTER_HOME='+str('mResumedActivity' in bg and PKG in bg))
+            bg=sh('shell','dumpsys','activity','activities'); record('M003_ACTIVITY_AFTER_HOME='+str('mResumedActivity' in bg and PKG in bg))
             mark('observe_bounded_expiry'); start=time.monotonic(); expired=False; expired_at=None; last_pid=initial_pid
             while time.monotonic()-start < WINDOW:
               now=time.monotonic()-start; g=granted(); current_pid=pid(); last_pid=current_pid
-              print(f'M003_POLL elapsed={now:.1f}s granted={g} pid={current_pid!r}',flush=True)
+              record(f'M003_POLL elapsed={now:.1f}s granted={g} pid={current_pid!r}')
               if not g:
                 expired=True; expired_at=now; break
               time.sleep(POLL)
             if not expired:
               write('INCONCLUSIVE_WINDOW_EXHAUSTED')
-              print(f'M003_WINDOW={WINDOW}s final_granted={granted()} final_pid={pid()!r}',flush=True)
+              record(f'M003_WINDOW={WINDOW}s final_granted={granted()} final_pid={pid()!r}')
             else:
-              print(f'M003_EXPIRY_OBSERVED elapsed={expired_at:.1f}s initial_pid={initial_pid!r} post_pid={last_pid!r}',flush=True)
+              record(f'M003_EXPIRY_OBSERVED elapsed={expired_at:.1f}s initial_pid={initial_pid!r} post_pid={last_pid!r}')
               mark('relaunch_after_expiry'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); time.sleep(1)
               mark('request_after_expiry'); tap_label('REQUEST CAMERA','request_after_expiry'); time.sleep(1)
               mark('verify_dialog_requestable'); assert resource_present('permission_allow_one_time_button','dialog_after_expiry')
@@ -174,6 +177,19 @@ jobs:
           else
             echo 'M003_VERDICT_FILE=NO_VERDICT'
           fi
+      - name: Preserve semantic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m003-expiry-semantic-evidence
+          path: |
+            m003-expiry-verdict.txt
+            m003-expiry-timeline.txt
+            flutter-version.json
+            flutter-git-head.txt
+            dart-version.txt
+          if-no-files-found: error
+          retention-days: 30
       - name: Classify harness failure
         if: always()
         shell: bash
