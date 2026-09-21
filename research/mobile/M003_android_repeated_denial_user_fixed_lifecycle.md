@@ -1,6 +1,6 @@
 # M003 — Android repeated-denial / USER_FIXED lifecycle
 
-Status: **VALIDATION IN PROGRESS — EXECUTABLE API-35 EMULATOR ORACLE COMMITTED**  
+Status: **FAILURE OBSERVED — SECOND-DENIAL / USER_FIXED BOUNDARY ISOLATION REQUIRED**  
 Evidence date: 2026-09-21
 
 ## Problem / professional boundary
@@ -18,11 +18,12 @@ Android Developers, rechecked 2026-09-21:
 A boolean granted/denied UI projection is insufficient to describe the request lifecycle. `DENIED + requestable` and `DENIED + USER_FIXED/dialog-suppressed` can present the same access result while requiring different interaction behavior. Therefore permission validation needs both an access-state oracle and a requestability/dialog-state oracle.
 
 ## ENGINEERING JUDGMENT
-Repeated denial is a higher-value next block than merely repeating the already-green one-time grant fixture. It adds a distinct failure/UX state with cross-track leverage for Mobile, Quality, Architecture and Design handoff, while remaining executable in the currently trustworthy Android emulator environment.
+Repeated denial remains a higher-value block than merely repeating the already-green one-time grant fixture. It adds a distinct failure/UX state with cross-track leverage for Mobile, Quality, Architecture and Design handoff, while remaining executable in the currently trustworthy Android emulator environment.
 
 ## VALIDATION contract
 Workflow: `.github/workflows/m003-android-user-permission-dialog.yml`  
-Exact committed validation head: `bab16cc993d72d1ca98f3c9f2aa2bf4a4bbf8aa4`  
+Exact executed validation head: `bab16cc993d72d1ca98f3c9f2aa2bf4a4bbf8aa4`  
+Run/job: `35599908037` / `106333291875`, attempt 1  
 Target environment: pinned Flutter 3.47.5; Android API 35 x86_64 Pixel 6 emulator; GitHub-hosted Ubuntu runner; Studio fixture only.
 
 The existing one-time grant path is retained as a control. After fresh reinstall, the extended oracle requires:
@@ -38,9 +39,18 @@ The existing one-time grant path is retained as a control. After fresh reinstall
 
 The oracle deliberately does not use `pm clear-permission-flags` to manufacture the target transition. The system/user interactions create the denial history; package diagnostics independently observe flags.
 
+## FAILURE / CONTRADICTION — 2026-09-21
+Run `35599908037` completed **failure** at exact head `bab16cc993d72d1ca98f3c9f2aa2bf4a4bbf8aa4`. Checkout, pinned Flutter installation, toolchain recording, fixture build, oracle creation, KVM setup and emulator-oracle wrapper all completed successfully. The metadata-visible classifiers show baseline one-time path **success**, first-denial class **success**, `Fail — second denial and USER_FIXED transition` **failure**, post-USER_FIXED suppression classifier **success/non-match**, and the final complete-oracle gate **failure**.
+
+**VALIDATION:** this is useful failure isolation, not PASS. The first failure is bounded to one of five operations: `tap_request_denial_second`, `discover_second_denial_dialog`, `select_dont_allow_second`, `observe_denied_callback_second`, or `verify_user_fixed`.
+
+**CONTRADICTION:** the executed target did not complete the documented repeated-denial contract. This does not contradict Android documentation yet because the current CI classifier groups five distinct operations and does not expose which one failed.
+
+**ROOT CAUSE: OPEN.** Do not infer that API 35 removed `USER_FIXED`, that Flutter failed to issue the second request, or that Permission Controller suppressed the second dialog. The next causal step is finer phase isolation inside the second-denial class before changing application/platform semantics.
+
 ## OPEN / VALIDATION
-- No PASS is awarded until the committed workflow executes successfully and the exact run/job/environment are recorded.
-- If the run fails, the first named phase is failure evidence only; root cause requires reproduction/isolation before attribution.
+- Split the second-denial classifier so the exact failed operation is metadata-visible, then reproduce once before forming a causal hypothesis.
+- No PASS / TRANSFER VALIDATION / REPLICATION is awarded for repeated denial from this failed run.
 - Auto-reset/hibernation and one-time expiry/background grace are separate lifecycle classes and remain OPEN.
 - Physical Android/OEM/API-version replication remains OPEN.
 - Product runtime, iOS and production remain OPEN.
@@ -50,13 +60,13 @@ The oracle deliberately does not use `pm clear-permission-flags` to manufacture 
 - Architecture: permission state needs access authority and requestability/interaction state rather than one boolean contract.
 - Mobile: owning track; extends M003 lifecycle coverage.
 - Data: not materially relevant; no durability claim.
-- Quality: independent UI/package-state oracles and phase classifiers are material.
+- Quality: independent UI/package-state oracles and phase classifiers are material; current failure demonstrates why grouped classifiers are insufficient for root-cause attribution.
 - Systems: least privilege/revocation implications noted; this is not complete authorization-policy evidence.
 - Design Studio: materially relevant downstream; a permanently denied/request-suppressed state may require settings/rationale recovery UX distinct from an ordinary first denial. No Design Studio canonical file edited.
 - Web Manager / Marketing Manager: not materially relevant.
 - Product source/ref: no product repository audited; Studio fixture only.
 
 ## HANDOFFS
-- Design Studio: if product permission UX is designed, distinguish ordinary denial from a state where the system dialog will no longer reappear; Engineering validation is still bounded to API-35 emulator until the run completes.
-- Quality: preserve package permission flags as an independent diagnostic oracle; do not infer requestability from `granted=false` alone.
+- Design Studio: if product permission UX is designed, distinguish ordinary denial from a state where the system dialog will no longer reappear; repeated-denial behavior is currently failure-isolated but not validated.
+- Quality: preserve package permission flags as an independent diagnostic oracle; do not infer requestability from `granted=false` alone, and expose individual semantic phases before root-cause claims.
 - Architecture: model authority and requestability as separate externally meaningful state dimensions when permission-gated features need recovery flows.
