@@ -47,7 +47,6 @@ jobs:
           import io.flutter.embedding.android.FlutterActivity
           import io.flutter.embedding.engine.FlutterEngine
           import io.flutter.plugin.common.MethodChannel
-
           class MainActivity: FlutterActivity() {
             private var pending: MethodChannel.Result? = null
             override fun configureFlutterEngine(engine: FlutterEngine) {
@@ -88,8 +87,7 @@ jobs:
           cat > "$RUNNER_TEMP/m003_user_oracle.py" <<'PY'
           import os,re,subprocess,time,traceback,xml.etree.ElementTree as ET
           PKG='dev.yhapp.studio.m003_user_permission'; APK=f'{os.environ["RUNNER_TEMP"]}/m003_user_permission/build/app/outputs/flutter-apk/app-debug.apk'
-          VERDICT=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-user-permission-phase.txt')
-          phase='setup'
+          VERDICT=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-user-permission-phase.txt'); phase='setup'
           def mark(value):
             global phase; phase=value
             with open(VERDICT,'w') as f: f.write(value+'\n')
@@ -149,17 +147,11 @@ jobs:
         if: always()
         shell: bash
         run: |
-          if [[ -f m003-user-permission-phase.txt ]]; then
-            echo 'Recorded M003 phase:'
-            cat m003-user-permission-phase.txt
-          else
-            echo 'NO_PHASE_FILE'
-          fi
+          if [[ -f m003-user-permission-phase.txt ]]; then cat m003-user-permission-phase.txt; else echo 'NO_PHASE_FILE'; fi
       - name: Fail — no recoverable phase evidence
         if: always()
         shell: bash
-        run: |
-          [[ -f m003-user-permission-phase.txt ]] || { echo 'M003_NO_PHASE_EVIDENCE'; exit 1; }
+        run: "[[ -f m003-user-permission-phase.txt ]] || { echo 'M003_NO_PHASE_EVIDENCE'; exit 1; }"
       - name: Fail — initial install
         if: always()
         shell: bash
@@ -168,10 +160,14 @@ jobs:
         if: always()
         shell: bash
         run: "! grep -Eq '^FAILED:(launch_initial|observe_initial_denied)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_INITIAL_APP_STATE'; exit 1; }"
-      - name: Fail — request interaction
+      - name: Fail — one-time request tap
         if: always()
         shell: bash
-        run: "! grep -Eq '^FAILED:tap_request_(one_time|denial)$' m003-user-permission-phase.txt || { echo 'M003_FAIL_REQUEST_INTERACTION'; exit 1; }"
+        run: "! grep -qx 'FAILED:tap_request_one_time' m003-user-permission-phase.txt || { echo 'M003_FAIL_ONE_TIME_REQUEST_TAP'; exit 1; }"
+      - name: Fail — denial request tap
+        if: always()
+        shell: bash
+        run: "! grep -qx 'FAILED:tap_request_denial' m003-user-permission-phase.txt || { echo 'M003_FAIL_DENIAL_REQUEST_TAP'; exit 1; }"
       - name: Fail — one-time choice discovery
         if: always()
         shell: bash
