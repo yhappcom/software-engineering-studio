@@ -1,6 +1,6 @@
 # M003 — Android user-driven permission dialog transfer
 
-Status: **IN STUDY — FIRST EXECUTION FAILED; PHASE ISOLATION REQUIRED**  
+Status: **IN STUDY — FIRST EXECUTION FAILED; PHASE-ISOLATION HARNESS ADDED**  
 Evidence date: 2026-09-21
 
 ## Problem / professional boundary
@@ -34,10 +34,19 @@ Observed job evidence:
 - `Execute user-driven permission oracle`: **FAIL** after emulator execution began;
 - natural workflow verdict: **FAIL**.
 
-The current externally recoverable Actions job metadata does not reveal whether the first failing semantic phase was initial app observation, request-button interaction, presence/text of `Only this time`, grant callback/UI, package-manager grant state, reinstall, `Don’t allow` interaction, denial callback/UI, or package-manager denied state. Therefore the failure is a `VALIDATION` failure observation only. It is **not** ROOT CAUSE and does not justify claims that Android 15 lacks the documented choice, that Flutter permission bridging failed, or that UI automation is the cause.
+The externally recoverable Actions job metadata did not reveal whether the first failing semantic phase was initial app observation, request-button interaction, presence/text of `Only this time`, grant callback/UI, package-manager grant state, reinstall, `Don’t allow` interaction, denial callback/UI, or package-manager denied state. Therefore the failure is a `VALIDATION` failure observation only. It is **not** ROOT CAUSE and does not justify claims that Android 15 lacks the documented choice, that Flutter permission bridging failed, or that UI automation is the cause.
+
+## VALIDATION — phase-isolation repair
+Exact workflow head: `1426e11bd7ef708dcb126579de3eab7e7ff72472`.
+
+The application, manifest, MethodChannel, Android permission request, user-choice sequence, package-state checks, API level and emulator profile are preserved. Only the evidence channel changes. The oracle now writes the current semantic phase to a workspace verdict file before each operation and rewrites it as `FAILED:<phase>` on exception. The emulator wrapper is allowed to return control after failure; named post-run steps expose the failure class in Actions metadata and a final step still requires both `complete` and a successful emulator outcome.
+
+Recoverable phases are: initial install/launch/denied observation; request interaction; one-time-choice discovery; system-choice interaction; callback/UI state; package permission state; fresh-install reset/relaunch; denial path; complete. This is diagnostic instrumentation, not a semantic fix. A reproduced phase failure will support isolation but still will not establish ROOT CAUSE without a causal hypothesis and falsification.
+
+At the first post-commit query no Actions run was yet associated with this head. No execution verdict is inferred from that absence.
 
 ## CONTRADICTION / diagnostic defect
-The workflow's oracle has useful internal assertions but collapses all semantic phases into one `android-emulator-runner` job step. That is insufficient observability for the Studio failure→isolation→causal-hypothesis standard. The next execution must preserve the application/platform semantics while exporting the first failed phase into metadata-visible evidence (for example, capture a phase verdict file while allowing the emulator wrapper to return, then use named conditional steps to expose the phase). Merely rerunning the same opaque oracle has low evidence value.
+Execution 1 showed that a useful internal assertion chain can still be weak debugging evidence when the CI wrapper collapses all semantic phases into one externally visible failure. The repaired harness treats observability as part of the test evidence contract. Merely rerunning the original opaque oracle remains low-value.
 
 ## Target contract retained
 1. fresh install starts `CAMERA:DENIED`;
@@ -50,7 +59,7 @@ The workflow's oracle has useful internal assertions but collapses all semantic 
 8. app UI and package-manager state independently agree on denied state;
 9. natural completion is required.
 
-No PASS or TRANSFER VALIDATION is awarded from execution 1.
+No PASS or TRANSFER VALIDATION is awarded from execution 1 or from instrumentation alone.
 
 ## FAILURE MODEL
 The oracle can expose: request never reaching the platform dialog; expected one-time choice absent; callback/app state disagreeing with platform state; user denial incorrectly treated as grant; package-manager disagreement; or automation unable to identify the actual system choice. A reproduced failing phase still requires causal isolation before ROOT CAUSE.
@@ -63,7 +72,7 @@ A future success will still not establish one-time permission expiry timing, bac
 - Architecture: denied/granted are explicit feature contract states.
 - Mobile: directly extends M003 beyond prior `pm grant/revoke` evidence.
 - Data: not materially relevant; no durability claim.
-- Quality: the failed execution exposed an observability defect in the test harness; first-failed-phase evidence is required before causal claims.
+- Quality: execution 1 exposed an observability defect; the repaired evidence channel preserves first-failed-phase state outside the emulator wrapper.
 - Systems: least-privilege/user authority is related; this does not establish complete authorization or secure-storage design.
 - Design Studio: prior repository check found no directly relevant canonical permission research; denial/rationale UX remains a handoff rather than an Engineering-owned design decision.
 - Web Manager: not materially relevant to this native Android block.
@@ -71,12 +80,12 @@ A future success will still not establish one-time permission expiry timing, bac
 - Product source/ref: no product repository audited; Studio fixture only.
 
 ## HANDOFFS
-- Quality: preserve actual system-dialog interaction separately from shell permission mutation; make semantic phase verdicts externally recoverable before another run.
+- Quality: treat externally recoverable phase evidence as part of CI oracle design when a wrapper can swallow the useful failing assertion context.
 - Design Studio: future permission-request/denial UX should consume the mutable-authority and user-choice contract; Engineering does not define visual/content treatment here.
 - Systems: one-time grant is a least-privilege mechanism, not evidence of a complete permission/security policy.
 
 ## OPEN / CHANGE WATCH
-- First failing phase of run `35564720878` remains unknown from current metadata.
+- First failing phase of run `35564720878` remains unknown; phase-isolation head `1426e11...` awaits executable evidence.
 - One-time expiry/background grace and process behavior.
 - repeated denial / `USER_FIXED` behavior.
 - auto-reset/hibernation after real inactivity.
