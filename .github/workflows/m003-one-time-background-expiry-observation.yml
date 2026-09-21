@@ -125,7 +125,7 @@ jobs:
             mark('grant_one_time'); tap_resource('permission_allow_one_time_button','dialog'); time.sleep(1)
             mark('verify_initial_grant'); assert granted(); initial_pid=pid(); assert initial_pid; print('M003_INITIAL_PID='+initial_pid)
             mark('background_home'); sh('shell','input','keyevent','KEYCODE_HOME'); time.sleep(1)
-            bg=sh('shell','dumpsys','activity','activities'); print('M003_ACTIVITY_AFTER_HOME='+('mResumedActivity' in bg and PKG in bg))
+            bg=sh('shell','dumpsys','activity','activities'); print('M003_ACTIVITY_AFTER_HOME='+str('mResumedActivity' in bg and PKG in bg))
             mark('observe_bounded_expiry'); start=time.monotonic(); expired=False; expired_at=None; last_pid=initial_pid
             while time.monotonic()-start < WINDOW:
               now=time.monotonic()-start; g=granted(); current_pid=pid(); last_pid=current_pid
@@ -167,13 +167,30 @@ jobs:
         if: always()
         shell: bash
         run: |
-          [[ -f m003-expiry-verdict.txt ]] && cat m003-expiry-verdict.txt || echo NO_VERDICT
+          echo "M003_EMULATOR_OUTCOME=${{ steps.emulator_oracle.outcome }}"
+          if [[ -f m003-expiry-verdict.txt ]]; then
+            printf 'M003_VERDICT_FILE='
+            cat m003-expiry-verdict.txt
+          else
+            echo 'M003_VERDICT_FILE=NO_VERDICT'
+          fi
+      - name: Classify harness failure
+        if: always()
+        shell: bash
+        run: |
+          if [[ -f m003-expiry-verdict.txt ]] && grep -q '^HARNESS_FAILURE:' m003-expiry-verdict.txt; then
+            cat m003-expiry-verdict.txt
+            exit 1
+          fi
+          echo 'M003_NO_HARNESS_FAILURE_CLASSIFIER'
       - name: Require trustworthy bounded observation
         if: always()
         shell: bash
         run: |
           [[ -f m003-expiry-verdict.txt ]]
-          ! grep -q '^HARNESS_FAILURE:' m003-expiry-verdict.txt
-          grep -Eq '^(OBSERVED_EXPIRY_AND_REQUESTABILITY|INCONCLUSIVE_WINDOW_EXHAUSTED)$' m003-expiry-verdict.txt
+          verdict="$(cat m003-expiry-verdict.txt)"
+          echo "M003_GATE_VERDICT=$verdict"
+          echo "M003_GATE_EMULATOR_OUTCOME=${{ steps.emulator_oracle.outcome }}"
+          [[ "$verdict" == 'OBSERVED_EXPIRY_AND_REQUESTABILITY' || "$verdict" == 'INCONCLUSIVE_WINDOW_EXHAUSTED' ]]
           [[ '${{ steps.emulator_oracle.outcome }}' == 'success' ]]
           echo 'M003 bounded observation completed without converting window exhaustion into platform failure'
