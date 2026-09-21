@@ -1,0 +1,119 @@
+name: M003 first-launch isolation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m003-first-launch-isolation.yml'
+  workflow_dispatch:
+
+jobs:
+  isolate-first-launch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Flutter
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch 3.47.5 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          flutter --version --machine
+          dart --version
+      - name: Create isolated startup fixture
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "$RUNNER_TEMP"
+          flutter create --platforms android --org dev.yhapp.studio m003_startup_fixture
+          cd m003_startup_fixture
+          cat > android/app/src/main/kotlin/dev/yhapp/studio/m003_startup_fixture/MainActivity.kt <<'KOTLIN'
+          package dev.yhapp.studio.m003_startup_fixture
+          import android.os.Bundle
+          import android.util.Log
+          import android.widget.TextView
+          import io.flutter.embedding.android.FlutterActivity
+
+          class MainActivity : FlutterActivity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  Log.i("M003ISO", "ACTIVITY_ONCREATE_ENTER")
+                  super.onCreate(savedInstanceState)
+                  Log.i("M003ISO", "NATIVE_WORK_BEGIN")
+                  val result = "NATIVE_COMPLETE:m003-first-launch"
+                  Log.i("M003ISO", result)
+                  setContentView(TextView(this).apply { text = result; textSize = 20f })
+                  Log.i("M003ISO", "UI_PUBLISHED")
+              }
+              override fun onResume() {
+                  super.onResume()
+                  Log.i("M003ISO", "ACTIVITY_ONRESUME")
+              }
+          }
+          KOTLIN
+          flutter build apk --debug
+      - name: Create independent phase oracle
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat > "$RUNNER_TEMP/m003_first_launch_isolation.sh" <<'BASH'
+          #!/usr/bin/env bash
+          set -uo pipefail
+          PKG=dev.yhapp.studio.m003_startup_fixture
+          APK="$RUNNER_TEMP/m003_startup_fixture/build/app/outputs/flutter-apk/app-debug.apk"
+          OUT="$RUNNER_TEMP/m003-first-launch-evidence.txt"
+          : > "$OUT"
+          fail() { echo "VERDICT:FAIL:$1" | tee -a "$OUT"; exit 1; }
+          adb install -r "$APK" || fail install
+          adb logcat -c
+          adb shell am force-stop "$PKG"
+          echo "SIGNAL:START_REQUEST" | tee -a "$OUT"
+          adb shell am start -W -n "$PKG/.MainActivity" | tee -a "$OUT" || fail am_start
+          # Signal 1: process existence, independent of UI automation.
+          PID=""
+          for i in $(seq 1 20); do PID=$(adb shell pidof "$PKG" | tr -d '\r'); [ -n "$PID" ] && break; sleep 0.25; done
+          [ -n "$PID" ] || fail process_missing
+          echo "SIGNAL:PROCESS:$PID" | tee -a "$OUT"
+          # Signal 2/3/4: activity entry, native completion, and UI publication from logcat.
+          for marker in ACTIVITY_ONCREATE_ENTER NATIVE_COMPLETE:m003-first-launch UI_PUBLISHED ACTIVITY_ONRESUME; do
+            found=0
+            for i in $(seq 1 40); do
+              if adb logcat -d -s M003ISO:I '*:S' | grep -F "$marker" >/dev/null; then found=1; break; fi
+              sleep 0.25
+            done
+            [ "$found" -eq 1 ] || { adb logcat -d -s M003ISO:I '*:S' | tee -a "$OUT"; fail "log_marker_missing:$marker"; }
+            echo "SIGNAL:LOG:$marker" | tee -a "$OUT"
+          done
+          # Signal 5: UI hierarchy observation, intentionally last and independently classified.
+          ui=0
+          for i in $(seq 1 20); do
+            if adb shell uiautomator dump /sdcard/m003-iso.xml >/dev/null 2>&1 && adb shell cat /sdcard/m003-iso.xml | grep -F 'NATIVE_COMPLETE:m003-first-launch' >/dev/null; then ui=1; break; fi
+            sleep 0.5
+          done
+          if [ "$ui" -ne 1 ]; then
+            adb shell dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|m003_startup_fixture' | tee -a "$OUT" || true
+            adb logcat -d -s M003ISO:I '*:S' | tee -a "$OUT" || true
+            fail ui_observation_missing
+          fi
+          echo "SIGNAL:UI_AUTOMATION:OBSERVED" | tee -a "$OUT"
+          echo "M003_FIRST_LAUNCH_ISOLATION_PASS" | tee -a "$OUT"
+          BASH
+          chmod +x "$RUNNER_TEMP/m003_first_launch_isolation.sh"
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Execute first-launch isolation oracle
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: bash "$RUNNER_TEMP/m003_first_launch_isolation.sh"
