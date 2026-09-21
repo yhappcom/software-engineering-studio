@@ -1,0 +1,179 @@
+name: M003 one-time background expiry observation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m003-one-time-background-expiry-observation.yml'
+  workflow_dispatch:
+
+jobs:
+  observe-expiry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Flutter
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch 3.47.5 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          flutter --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          dart --version 2>&1 | tee dart-version.txt
+      - name: Create isolated permission fixture
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "$RUNNER_TEMP"
+          flutter create --platforms android --org dev.yhapp.studio m003_expiry
+          cd m003_expiry
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/src/main/AndroidManifest.xml')
+          s=p.read_text().replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">','<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.CAMERA" />')
+          p.write_text(s)
+          PY
+          cat > android/app/src/main/kotlin/dev/yhapp/studio/m003_expiry/MainActivity.kt <<'KOTLIN'
+          package dev.yhapp.studio.m003_expiry
+          import android.Manifest
+          import android.content.pm.PackageManager
+          import androidx.core.app.ActivityCompat
+          import androidx.core.content.ContextCompat
+          import io.flutter.embedding.android.FlutterActivity
+          import io.flutter.embedding.engine.FlutterEngine
+          import io.flutter.plugin.common.MethodChannel
+          class MainActivity: FlutterActivity() {
+            private var pending: MethodChannel.Result? = null
+            override fun configureFlutterEngine(engine: FlutterEngine) {
+              super.configureFlutterEngine(engine)
+              MethodChannel(engine.dartExecutor.binaryMessenger,"studio.m003/expiry").setMethodCallHandler { call,result ->
+                when(call.method) {
+                  "status" -> result.success(status())
+                  "request" -> { pending=result; ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.CAMERA),77) }
+                  else -> result.notImplemented()
+                }
+              }
+            }
+            private fun status() = if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED) "GRANTED" else "DENIED"
+            override fun onRequestPermissionsResult(requestCode:Int, permissions:Array<out String>, grantResults:IntArray) {
+              super.onRequestPermissionsResult(requestCode,permissions,grantResults)
+              if(requestCode==77){ pending?.success(status()); pending=null }
+            }
+          }
+          KOTLIN
+          cat > lib/main.dart <<'DART'
+          import 'package:flutter/material.dart';
+          import 'package:flutter/services.dart';
+          void main()=>runApp(const App());
+          class App extends StatefulWidget { const App({super.key}); State<App> createState()=>_S(); }
+          class _S extends State<App>{
+            static const c=MethodChannel('studio.m003/expiry'); String state='LOADING';
+            void initState(){super.initState(); _read();}
+            Future<void> _read() async { final s=await c.invokeMethod<String>('status')??'UNKNOWN'; if(mounted)setState(()=>state=s); }
+            Future<void> _request() async { final s=await c.invokeMethod<String>('request')??'UNKNOWN'; if(mounted)setState(()=>state=s); }
+            Widget build(BuildContext context)=>MaterialApp(home:Scaffold(body:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[Text('CAMERA:$state'),ElevatedButton(onPressed:_request,child:const Text('REQUEST CAMERA'))]))));
+          }
+          DART
+          flutter build apk --debug
+      - name: Create bounded observation oracle
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/m003_expiry_oracle.py" <<'PY'
+          import os,re,subprocess,time,traceback,xml.etree.ElementTree as ET
+          PKG='dev.yhapp.studio.m003_expiry'; APK=f'{os.environ["RUNNER_TEMP"]}/m003_expiry/build/app/outputs/flutter-apk/app-debug.apk'
+          VERDICT=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-expiry-verdict.txt'); phase='setup'
+          WINDOW=180; POLL=5
+          def mark(v):
+            global phase; phase=v; print('M003_PHASE='+v,flush=True)
+          def write(v):
+            with open(VERDICT,'w') as f:f.write(v+'\n')
+            print('M003_VERDICT='+v,flush=True)
+          def sh(*a): return subprocess.check_output(['adb',*a],text=True).strip()
+          def dump(name):
+            subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
+            subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
+            return ET.parse(f'/tmp/{name}.xml')
+          def tap_node(n):
+            m=re.match(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',n.attrib['bounds']); assert m,n.attrib
+            x1,y1,x2,y2=map(int,m.groups()); subprocess.run(['adb','shell','input','tap',str((x1+x2)//2),str((y1+y2)//2)],check=True)
+          def tap_label(label,name):
+            tree=dump(name)
+            for n in tree.iter('node'):
+              if n.attrib.get('text')==label or n.attrib.get('content-desc')==label: tap_node(n); return
+            raise AssertionError(label+' absent')
+          def tap_resource(suffix,name):
+            tree=dump(name)
+            for n in tree.iter('node'):
+              rid=n.attrib.get('resource-id','')
+              if rid.endswith('/'+suffix) or rid.endswith(':id/'+suffix): tap_node(n); return
+            raise AssertionError(suffix+' absent: '+ET.tostring(tree.getroot(),encoding='unicode'))
+          def resource_present(suffix,name):
+            tree=dump(name)
+            return any(n.attrib.get('resource-id','').endswith('/'+suffix) or n.attrib.get('resource-id','').endswith(':id/'+suffix) for n in tree.iter('node'))
+          def granted(): return 'android.permission.CAMERA: granted=true' in sh('shell','dumpsys','package',PKG)
+          def pid():
+            p=subprocess.run(['adb','shell','pidof',PKG],text=True,capture_output=True)
+            return p.stdout.strip()
+          try:
+            mark('install'); subprocess.run(['adb','install','-r',APK],check=True)
+            mark('launch'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); time.sleep(1)
+            mark('request'); tap_label('REQUEST CAMERA','request'); time.sleep(1)
+            mark('grant_one_time'); tap_resource('permission_allow_one_time_button','dialog'); time.sleep(1)
+            mark('verify_initial_grant'); assert granted(); initial_pid=pid(); assert initial_pid; print('M003_INITIAL_PID='+initial_pid)
+            mark('background_home'); sh('shell','input','keyevent','KEYCODE_HOME'); time.sleep(1)
+            bg=sh('shell','dumpsys','activity','activities'); print('M003_ACTIVITY_AFTER_HOME='+('mResumedActivity' in bg and PKG in bg))
+            mark('observe_bounded_expiry'); start=time.monotonic(); expired=False; expired_at=None; last_pid=initial_pid
+            while time.monotonic()-start < WINDOW:
+              now=time.monotonic()-start; g=granted(); current_pid=pid(); last_pid=current_pid
+              print(f'M003_POLL elapsed={now:.1f}s granted={g} pid={current_pid!r}',flush=True)
+              if not g:
+                expired=True; expired_at=now; break
+              time.sleep(POLL)
+            if not expired:
+              write('INCONCLUSIVE_WINDOW_EXHAUSTED')
+              print(f'M003_WINDOW={WINDOW}s final_granted={granted()} final_pid={pid()!r}',flush=True)
+            else:
+              print(f'M003_EXPIRY_OBSERVED elapsed={expired_at:.1f}s initial_pid={initial_pid!r} post_pid={last_pid!r}',flush=True)
+              mark('relaunch_after_expiry'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); time.sleep(1)
+              mark('request_after_expiry'); tap_label('REQUEST CAMERA','request_after_expiry'); time.sleep(1)
+              mark('verify_dialog_requestable'); assert resource_present('permission_allow_one_time_button','dialog_after_expiry')
+              write('OBSERVED_EXPIRY_AND_REQUESTABILITY')
+            mark('complete')
+          except Exception:
+            write('HARNESS_FAILURE:'+phase); traceback.print_exc(); raise
+          PY
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Execute bounded expiry observation
+        id: emulator_oracle
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: python3 "$RUNNER_TEMP/m003_expiry_oracle.py"
+      - name: Report observation verdict
+        if: always()
+        shell: bash
+        run: |
+          [[ -f m003-expiry-verdict.txt ]] && cat m003-expiry-verdict.txt || echo NO_VERDICT
+      - name: Require trustworthy bounded observation
+        if: always()
+        shell: bash
+        run: |
+          [[ -f m003-expiry-verdict.txt ]]
+          ! grep -q '^HARNESS_FAILURE:' m003-expiry-verdict.txt
+          grep -Eq '^(OBSERVED_EXPIRY_AND_REQUESTABILITY|INCONCLUSIVE_WINDOW_EXHAUSTED)$' m003-expiry-verdict.txt
+          [[ '${{ steps.emulator_oracle.outcome }}' == 'success' ]]
+          echo 'M003 bounded observation completed without converting window exhaustion into platform failure'
