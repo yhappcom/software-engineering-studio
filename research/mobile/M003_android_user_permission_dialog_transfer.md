@@ -1,93 +1,68 @@
 # M003 — Android user-driven permission dialog transfer
 
-Status: **IN STUDY — FIRST EXECUTION FAILED; PHASE-ISOLATION HARNESS ADDED**  
+Status: **IN STUDY — FAILURE REPRODUCED; REQUEST-INTERACTION CLASS ISOLATED**  
 Evidence date: 2026-09-21
 
 ## Problem / professional boundary
-Prior M003 permission evidence used `pm grant` / `pm revoke`. That is valuable controlled platform-state evidence but does not validate the user-facing Android permission dialog, the `Only this time` choice, or a real user denial path. This block advances to a materially different evidence class rather than repeating shell-controlled permission mutation.
+Prior M003 permission evidence used `pm grant` / `pm revoke`. This block validates a materially different evidence class: an app-originated Android runtime-permission request plus actual system-dialog interaction and independent package-state observation.
 
 ## SOURCE
 Android Developers, rechecked 2026-09-21:
-- `https://developer.android.com/training/permissions/requesting` — dangerous runtime permissions are requested at feature need; denial must be handled; Android 11/API 30+ exposes `Only this time` for location/microphone/camera; one-time authority is temporary and platform controlled.
-- `https://developer.android.com/about/versions/11/privacy/permissions` — Android 11 introduced one-time permissions and automatic reset for unused apps; repeated denial affects future dialog behavior.
-- `https://developer.android.com/topic/performance/app-hibernation` — unused-app restrictions/hibernation can reset runtime permissions and remain a separate system-managed lifecycle.
+- `https://developer.android.com/training/permissions/requesting` — dangerous permissions are requested at feature need; denial is an ordinary state; Android 11/API 30+ provides `Only this time` for camera/microphone/location.
+- `https://developer.android.com/about/versions/11/privacy/permissions` — one-time permissions and unused-app reset are platform-managed lifecycle behavior.
+- `https://developer.android.com/topic/performance/app-hibernation` — unused-app restrictions can reset runtime permissions and remain a separate lifecycle.
 
 ## SYNTHESIS
-Shell-controlled grant/revoke and actual user-dialog choices are different evidence classes. A robust application contract must treat authority as mutable platform state and must not infer current authority merely from manifest declaration or from a previous grant. A user denial is a valid ordinary state, not an exceptional corruption state.
+Shell grant/revoke and actual user-dialog choices are different evidence classes. Authority is mutable OS state. CI observability is part of the validation contract: a failed combined oracle is insufficient when it cannot identify the first failed semantic operation.
 
-## ENGINEERING JUDGMENT
-The highest-value executable increment available in the current environment remains an API-35 emulator user-choice transfer: app requests CAMERA through the native Android permission API; automation interacts with the actual system permission UI rather than mutating permission state; application state and independent package-manager state are both checked. Auto-reset and physical-device behavior are intentionally not simulated.
+## VALIDATION — execution 1
+Workflow `.github/workflows/m003-android-user-permission-dialog.yml`; exact head `63f96e010691db87fea13bc7e08866c082dfb656`; run `35564720878`; job `106224179388`; attempt 1; Flutter `3.47.5`; Android API 35 x86_64 emulator, Pixel 6 profile. Build/setup succeeded; combined emulator oracle failed. The first semantic phase was not externally recoverable. No PASS, TRANSFER VALIDATION, or ROOT CAUSE.
 
-## VALIDATION — execution 1 failed
-Workflow: `.github/workflows/m003-android-user-permission-dialog.yml`  
-Exact Studio head: `63f96e010691db87fea13bc7e08866c082dfb656`  
-Run: `35564720878`; job: `106224179388`; attempt: 1.  
-Environment contract: pinned Flutter `3.47.5`; Android API 35 x86_64 emulator; Pixel 6 profile.
+## VALIDATION — execution 2: phase isolation
+Exact head `1426e11bd7ef708dcb126579de3eab7e7ff72472`; run `35573084874`; job `106248740578`; attempt 1; completed **failure**.
 
-Observed job evidence:
-- checkout: PASS;
-- pinned Flutter install: PASS;
-- toolchain identity: PASS;
-- isolated fixture creation/build: PASS;
-- user-choice oracle creation: PASS;
-- KVM enablement: PASS;
-- `Execute user-driven permission oracle`: **FAIL** after emulator execution began;
-- natural workflow verdict: **FAIL**.
+Checkout, pinned Flutter install, toolchain recording, fixture build, phase-reporting oracle creation and KVM setup all passed. The emulator wrapper returned control successfully and the metadata-visible diagnostic steps classified the saved verdict as **request interaction failure**. `Fail — request interaction` is the only semantic classifier that failed; initial install/app-state, one-time-choice discovery classifier, system-choice interaction classifier, callback/UI classifier, package-state classifier, and fresh-install classifier did not match the saved failure verdict. The final completeness gate also failed, as required.
 
-The externally recoverable Actions job metadata did not reveal whether the first failing semantic phase was initial app observation, request-button interaction, presence/text of `Only this time`, grant callback/UI, package-manager grant state, reinstall, `Don’t allow` interaction, denial callback/UI, or package-manager denied state. Therefore the failure is a `VALIDATION` failure observation only. It is **not** ROOT CAUSE and does not justify claims that Android 15 lacks the documented choice, that Flutter permission bridging failed, or that UI automation is the cause.
+### Interpretation
+This is meaningful isolation but not ROOT CAUSE. The classifier at head `1426e11...` intentionally grouped two possible phases: `tap_request_one_time` and `tap_request_denial`. Therefore the evidence proves the failure occurred while automation attempted to tap the app's `REQUEST CAMERA` control in either the initial one-time path or the fresh-install denial path. It does **not** prove which of the two, nor whether the causal mechanism is UI publication/readiness, text-node discovery, bounds/tap automation, activity state, or another interaction-layer defect. It does not establish an Android permission-platform failure because the failing phase precedes or is separate from system-choice validation.
 
-## VALIDATION — phase-isolation repair
-Exact workflow head: `1426e11bd7ef708dcb126579de3eab7e7ff72472`.
+## VALIDATION — classifier refinement
+Exact head `c9328340a77c010c1b3b67a8f7ab42350f637bd8` changes only externally visible diagnostic classification: `tap_request_one_time` and `tap_request_denial` now have separate named failure steps. Application code, manifest, MethodChannel, Android permission semantics, system-choice sequence, package-state checks, Flutter pin, API level, emulator profile, and oracle operations are unchanged. This is diagnostic instrumentation, not a semantic fix. A resulting execution may isolate the failing request tap but still cannot establish ROOT CAUSE without a causal hypothesis and falsification.
 
-The application, manifest, MethodChannel, Android permission request, user-choice sequence, package-state checks, API level and emulator profile are preserved. Only the evidence channel changes. The oracle now writes the current semantic phase to a workspace verdict file before each operation and rewrites it as `FAILED:<phase>` on exception. The emulator wrapper is allowed to return control after failure; named post-run steps expose the failure class in Actions metadata and a final step still requires both `complete` and a successful emulator outcome.
-
-Recoverable phases are: initial install/launch/denied observation; request interaction; one-time-choice discovery; system-choice interaction; callback/UI state; package permission state; fresh-install reset/relaunch; denial path; complete. This is diagnostic instrumentation, not a semantic fix. A reproduced phase failure will support isolation but still will not establish ROOT CAUSE without a causal hypothesis and falsification.
-
-At the first post-commit query no Actions run was yet associated with this head. No execution verdict is inferred from that absence.
-
-## CONTRADICTION / diagnostic defect
-Execution 1 showed that a useful internal assertion chain can still be weak debugging evidence when the CI wrapper collapses all semantic phases into one externally visible failure. The repaired harness treats observability as part of the test evidence contract. Merely rerunning the original opaque oracle remains low-value.
+## CONTRADICTION / debugging model
+Execution 1 was opaque. Execution 2 reproduced failure and narrowed it to the request-interaction class. The next evidence boundary is exact request-tap identity. Repeating the same grouped classifier has low value; splitting it is justified because it changes observability rather than target semantics.
 
 ## Target contract retained
 1. fresh install starts `CAMERA:DENIED`;
 2. app invokes Android runtime permission request for CAMERA;
-3. actual system dialog exposes the one-time choice expected for this API/environment;
+3. actual system dialog exposes expected one-time choice;
 4. automation selects the actual system control;
-5. app callback/UI and `dumpsys package` independently agree on granted state;
-6. uninstall/reinstall creates an independent fresh-install authority state;
+5. callback/UI and `dumpsys package` independently agree on grant;
+6. uninstall/reinstall resets authority for an independent denial path;
 7. actual system denial is selected;
-8. app UI and package-manager state independently agree on denied state;
-9. natural completion is required.
-
-No PASS or TRANSFER VALIDATION is awarded from execution 1 or from instrumentation alone.
-
-## FAILURE MODEL
-The oracle can expose: request never reaching the platform dialog; expected one-time choice absent; callback/app state disagreeing with platform state; user denial incorrectly treated as grant; package-manager disagreement; or automation unable to identify the actual system choice. A reproduced failing phase still requires causal isolation before ROOT CAUSE.
+8. UI and package state independently agree on denial;
+9. natural completion required.
 
 ## Evidence limits
-A future success will still not establish one-time permission expiry timing, background grace duration, system auto-reset/hibernation, repeated-denial `USER_FIXED` behavior, physical Android, OEM behavior, actual camera-device access, iOS permission semantics, product code, release builds, or production behavior. Uninstall/reinstall is used only to obtain an independent fresh user-denial path; it is not evidence about one-time expiry.
+No PASS or TRANSFER VALIDATION. One-time expiry/background grace, repeated-denial behavior, auto-reset/hibernation, physical Android/OEM, actual camera access, iOS, product/release/production behavior remain OPEN.
 
 ## RELATED DOMAIN CHECK
-- Foundations: permission authority is OS-managed mutable state; no language/runtime guarantee.
-- Architecture: denied/granted are explicit feature contract states.
-- Mobile: directly extends M003 beyond prior `pm grant/revoke` evidence.
-- Data: not materially relevant; no durability claim.
-- Quality: execution 1 exposed an observability defect; the repaired evidence channel preserves first-failed-phase state outside the emulator wrapper.
-- Systems: least-privilege/user authority is related; this does not establish complete authorization or secure-storage design.
-- Design Studio: prior repository check found no directly relevant canonical permission research; denial/rationale UX remains a handoff rather than an Engineering-owned design decision.
-- Web Manager: not materially relevant to this native Android block.
-- Marketing Manager: not materially relevant to this native Android block.
+- Foundations: OS-managed mutable authority; no language/runtime guarantee.
+- Architecture: granted/denied are explicit feature states.
+- Mobile: extends M003 beyond shell mutation.
+- Data: no material durability claim.
+- Quality: phase evidence materially improved failure isolation; classifier granularity itself was a debugging limitation.
+- Systems: least privilege related; no complete security-policy claim.
+- Design Studio: denial/rationale UX remains a handoff; no canonical design file edited.
+- Web Manager / Marketing Manager: not materially relevant.
 - Product source/ref: no product repository audited; Studio fixture only.
 
 ## HANDOFFS
-- Quality: treat externally recoverable phase evidence as part of CI oracle design when a wrapper can swallow the useful failing assertion context.
-- Design Studio: future permission-request/denial UX should consume the mutable-authority and user-choice contract; Engineering does not define visual/content treatment here.
-- Systems: one-time grant is a least-privilege mechanism, not evidence of a complete permission/security policy.
+- Quality: externally recoverable semantic-phase evidence and non-overbroad classifiers are part of a useful CI debugging oracle.
+- Design Studio: future permission request/denial UX should consume mutable-authority behavior; Engineering does not own visual/content treatment.
+- Systems: one-time authority is a least-privilege mechanism, not a complete permission/security policy.
 
 ## OPEN / CHANGE WATCH
-- First failing phase of run `35564720878` remains unknown; phase-isolation head `1426e11...` awaits executable evidence.
-- One-time expiry/background grace and process behavior.
-- repeated denial / `USER_FIXED` behavior.
-- auto-reset/hibernation after real inactivity.
-- physical Android/OEM and iOS transfer.
-- exact product/runtime transfer.
+- Exact failing request-tap phase at execution 2 remains unresolved by its grouped classifier; head `c9328340...` separates it for the next execution.
+- ROOT CAUSE remains OPEN pending causal hypothesis + falsification.
+- One-time expiry/background grace, repeated denial / `USER_FIXED`, auto-reset/hibernation, physical/OEM/iOS, and exact product runtime remain OPEN.
