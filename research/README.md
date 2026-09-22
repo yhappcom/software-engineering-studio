@@ -5,7 +5,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ## Current studies
 
 ### Foundations
-- `F001` — direct Dart JIT/AOT, Flutter host→Chrome bounded transfer validated; native/Safari/PWA/product/release transfer OPEN.
+- `F001` — direct Dart JIT/AOT, Flutter host→Chrome, and bounded macOS Safari runtime transfer validated; native/iOS/iPadOS/PWA lifecycle/product/release transfer OPEN.
 - `F002`–`F005` — bounded direct evidence retained.
 - `F006` — Dart/Linux loopback professional boundary closed with root-cause/fix/regression; cross-platform/native/product transfer OPEN.
 
@@ -17,9 +17,9 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ### Mobile
 - `M001` — bounded Android Emulator application transfer validated; physical Android/iOS/product/release OPEN.
 - `M002` — controlled Android force-stop + app-specific persistent-file recovery and ordinary HOME background/resume validated; system kill/physical durability/iOS/product remain OPEN.
-- `M003` — runtime dangerous-permission shell grant/revoke, user-dialog, repeated-denial/`USER_FIXED`, and ordinary one-time expiry have bounded transfer evidence. Android Keystore semantics have bounded REPLICATION at API-35 emulator scope; intermittent first-launch ROOT CAUSE remains OPEN. The one-time CAMERA foreground-service causal path is now closed at bounded transfer scope by exact head `07b389dfbbe3abf9440a00e7f80668a367b556f3`, run `35695122004`, artifact `10680900102`, digest `sha256:fe3ab7cbe28ec5a210c210cb27444d41da349787fe6e46d812451f603447ad0c`: authority/PID/service state survived the 90-second HOME hold while the camera FGS was active; app-owned stop was independently confirmed by UI acknowledgement via `content-desc` and Android `service_active=False`; after HOME without the FGS, authority expired at the observed 60.9s point and a new app-originated request exposed the permission dialog again. Verdict `FGS_HELD_THEN_APP_STOPPED_EXPIRED_AND_REQUESTABLE`. 60.9s is an observation, not a timeout contract; physical/OEM/other-API independent replication remains OPEN. Canonical includes `research/mobile/M003_fgs_discriminator_run4_post_stop_closure.md` plus prior run/failure-isolation notes.
+- `M003` — runtime dangerous-permission shell grant/revoke, user-dialog, repeated-denial/`USER_FIXED`, ordinary one-time expiry and FGS held→app-stop→expiry→requestability have bounded transfer evidence. Android Keystore semantics have bounded REPLICATION at API-35 emulator scope; intermittent first-launch ROOT CAUSE remains OPEN. The observed expiry timings are not portable timeout contracts; physical/OEM/other-API independent replication remains OPEN.
 - `M004`–`M005` — professional/model evidence retained; broader physical/native platform execution OPEN.
-- `M006` — Chromium offline/restart/update/cold-start evidence; Safari/iPadOS/EFB, physical network, Flutter/LogMate artifact and production OPEN.
+- `M006` — Chromium offline/restart/update/cold-start evidence plus bounded macOS Safari runtime **TRANSFER VALIDATION**. Safari exact repaired head `44c8be44bb53f2b67c08f40a0738f29858018bdd`, run `35727646652`, job `106745123287`, artifact `10694445918`, digest `sha256:f1274228bdbfaf29b6eca507a6e490385dbf3756777ce7e130007ecbb75bdf35`; fail-closed WebDriver semantic oracle completed successfully. Safari PWA offline/update, iOS/iPadOS/EFB, physical network, LogMate product artifact and production remain OPEN. Canonical: `research/mobile/M006_flutter_safari_runtime_transfer.md`.
 
 ### Data
 - `D001`–`D004` — Foundation executable/professional evidence.
