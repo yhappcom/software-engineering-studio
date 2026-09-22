@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>M006_SW_BOOT</title>
+<script>
+window.m006 = {events: []};
+function rec(x){ window.m006.events.push(x); document.title=x; }
+window.registerSW = async function(){
+  if (!('serviceWorker' in navigator)) { rec('M006_SW_UNSUPPORTED'); return; }
+  navigator.serviceWorker.addEventListener('controllerchange', () => rec('M006_SW_CONTROLLER_CHANGED'));
+  const r = await navigator.serviceWorker.register('/sw.js', {updateViaCache:'none'});
+  window.m006.registration = r;
+  await navigator.serviceWorker.ready;
+  if (!navigator.serviceWorker.controller) { location.reload(); return; }
+  const v = await new Promise((resolve,reject)=>{
+    const ch=new MessageChannel(); ch.port1.onmessage=e=>resolve(e.data); ch.port1.onmessageerror=reject;
+    navigator.serviceWorker.controller.postMessage('version',[ch.port2]);
+    setTimeout(()=>reject(new Error('version timeout')),5000);
+  });
+  rec('M006_SW_READY_'+v);
+};
+window.updateSW = async function(){
+  const r = window.m006.registration || await navigator.serviceWorker.getRegistration('/');
+  await r.update();
+  return true;
+};
+</script>
+<body>M006 Safari service-worker lifecycle fixture</body>
