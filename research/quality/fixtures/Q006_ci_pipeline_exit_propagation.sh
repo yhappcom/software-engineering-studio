@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eu
 
 producer='printf "PRIMARY_ORACLE_FAIL\n"; exit 23'
 
+# Deliberately disable pipefail for the control case. The fixture itself must
+# not inherit the workflow shell's fail-closed setting into this discriminator.
+set +o pipefail
 set +e
 bash -c "$producer" 2>&1 | tee /tmp/q006-without-pipefail.txt >/dev/null
 without_pipefail=$?
 set -e
 
+set -o pipefail
 set +e
-bash -o pipefail -c "$producer" 2>&1 | tee /tmp/q006-with-pipefail.txt >/dev/null
+bash -c "$producer" 2>&1 | tee /tmp/q006-with-pipefail.txt >/dev/null
 with_pipefail=$?
 set -e
 
