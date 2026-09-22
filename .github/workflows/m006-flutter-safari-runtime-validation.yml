@@ -46,24 +46,16 @@ jobs:
         run: |
           set -uo pipefail
           : > safaridriver-enable.txt
-          echo 'ATTEMPT=unprivileged' | tee -a safaridriver-enable.txt
-          /usr/bin/safaridriver --enable >> safaridriver-enable.txt 2>&1
-          UNPRIVILEGED_RC=$?
-          echo "UNPRIVILEGED_RC=$UNPRIVILEGED_RC" | tee -a safaridriver-enable.txt
-
-          SUDO_RC=not_attempted
-          if [ "$UNPRIVILEGED_RC" -ne 0 ]; then
-            echo 'ATTEMPT=sudo' | tee -a safaridriver-enable.txt
-            sudo -n /usr/bin/safaridriver --enable >> safaridriver-enable.txt 2>&1
-            SUDO_RC=$?
-            echo "SUDO_RC=$SUDO_RC" | tee -a safaridriver-enable.txt
-          fi
+          echo 'ATTEMPT=sudo-noninteractive' | tee -a safaridriver-enable.txt
+          sudo -n /usr/bin/safaridriver --enable >> safaridriver-enable.txt 2>&1
+          ENABLE_RC=$?
+          echo "ENABLE_RC=$ENABLE_RC" | tee -a safaridriver-enable.txt
 
           python3 -m pip install --user selenium >> safaridriver-enable.txt 2>&1
           PIP_RC=$?
           echo "PIP_RC=$PIP_RC" | tee -a safaridriver-enable.txt
 
-          if [ "$UNPRIVILEGED_RC" -ne 0 ] && [ "$SUDO_RC" != "0" ]; then
+          if [ "$ENABLE_RC" -ne 0 ]; then
             echo 'VERDICT=SAFARIDRIVER_ENABLE_FAILED' | tee -a safaridriver-enable.txt
             exit 1
           fi
