@@ -1,0 +1,243 @@
+name: M003 one-time permission foreground-service discriminator
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m003-one-time-fgs-discriminator.yml'
+  workflow_dispatch:
+
+jobs:
+  discriminate-fgs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Flutter
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch 3.47.5 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Record toolchain identity
+        shell: bash
+        run: |
+          flutter --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          dart --version 2>&1 | tee dart-version.txt
+      - name: Create isolated foreground-service fixture
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "$RUNNER_TEMP"
+          flutter create --platforms android --org dev.yhapp.studio m003_fgs
+          cd m003_fgs
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/src/main/AndroidManifest.xml')
+          s=p.read_text()
+          s=s.replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">','<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />')
+          s=s.replace('</application>','        <service android:name=".CameraForegroundService" android:exported="false" android:foregroundServiceType="camera" />\n    </application>')
+          p.write_text(s)
+          PY
+          cat > android/app/src/main/kotlin/dev/yhapp/studio/m003_fgs/CameraForegroundService.kt <<'KOTLIN'
+          package dev.yhapp.studio.m003_fgs
+          import android.app.NotificationChannel
+          import android.app.NotificationManager
+          import android.app.Service
+          import android.content.Intent
+          import android.content.pm.ServiceInfo
+          import android.os.Build
+          import android.os.IBinder
+          import androidx.core.app.NotificationCompat
+          class CameraForegroundService: Service() {
+            companion object { const val CHANNEL="m003_camera_fgs"; const val ID=3003 }
+            override fun onBind(intent: Intent?): IBinder? = null
+            override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+              val nm=getSystemService(NotificationManager::class.java)
+              if(Build.VERSION.SDK_INT>=26) nm.createNotificationChannel(NotificationChannel(CHANNEL,"M003 camera FGS",NotificationManager.IMPORTANCE_LOW))
+              val n=NotificationCompat.Builder(this,CHANNEL).setContentTitle("M003 camera foreground service").setContentText("Permission lifecycle validation").setSmallIcon(android.R.drawable.ic_menu_camera).setOngoing(true).build()
+              if(Build.VERSION.SDK_INT>=29) startForeground(ID,n,ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA) else startForeground(ID,n)
+              return START_NOT_STICKY
+            }
+          }
+          KOTLIN
+          cat > android/app/src/main/kotlin/dev/yhapp/studio/m003_fgs/MainActivity.kt <<'KOTLIN'
+          package dev.yhapp.studio.m003_fgs
+          import android.Manifest
+          import android.content.Intent
+          import android.content.pm.PackageManager
+          import androidx.core.app.ActivityCompat
+          import androidx.core.content.ContextCompat
+          import io.flutter.embedding.android.FlutterActivity
+          import io.flutter.embedding.engine.FlutterEngine
+          import io.flutter.plugin.common.MethodChannel
+          class MainActivity: FlutterActivity() {
+            private var pending: MethodChannel.Result? = null
+            override fun configureFlutterEngine(engine: FlutterEngine) {
+              super.configureFlutterEngine(engine)
+              MethodChannel(engine.dartExecutor.binaryMessenger,"studio.m003/fgs").setMethodCallHandler { call,result ->
+                when(call.method) {
+                  "status" -> result.success(status())
+                  "request" -> { pending=result; ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.CAMERA),77) }
+                  "startFgs" -> { ContextCompat.startForegroundService(this,Intent(this,CameraForegroundService::class.java)); result.success("START_REQUESTED") }
+                  "stopFgs" -> { stopService(Intent(this,CameraForegroundService::class.java)); result.success("STOP_REQUESTED") }
+                  else -> result.notImplemented()
+                }
+              }
+            }
+            private fun status() = if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED) "GRANTED" else "DENIED"
+            override fun onRequestPermissionsResult(requestCode:Int, permissions:Array<out String>, grantResults:IntArray) {
+              super.onRequestPermissionsResult(requestCode,permissions,grantResults)
+              if(requestCode==77){ pending?.success(status()); pending=null }
+            }
+          }
+          KOTLIN
+          cat > lib/main.dart <<'DART'
+          import 'package:flutter/material.dart';
+          import 'package:flutter/services.dart';
+          void main()=>runApp(const App());
+          class App extends StatefulWidget { const App({super.key}); State<App> createState()=>_S(); }
+          class _S extends State<App>{
+            static const c=MethodChannel('studio.m003/fgs'); String state='LOADING';
+            void initState(){super.initState(); _read();}
+            Future<void> _read() async { final s=await c.invokeMethod<String>('status')??'UNKNOWN'; if(mounted)setState(()=>state=s); }
+            Future<void> _request() async { final s=await c.invokeMethod<String>('request')??'UNKNOWN'; if(mounted)setState(()=>state=s); }
+            Future<void> _start() async { await c.invokeMethod('startFgs'); }
+            Future<void> _stop() async { await c.invokeMethod('stopFgs'); }
+            Widget build(BuildContext context)=>MaterialApp(home:Scaffold(body:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[Text('CAMERA:$state'),ElevatedButton(onPressed:_request,child:const Text('REQUEST CAMERA')),ElevatedButton(onPressed:_start,child:const Text('START CAMERA FGS')),ElevatedButton(onPressed:_stop,child:const Text('STOP CAMERA FGS'))]))));
+          }
+          DART
+          flutter build apk --debug
+      - name: Create causal discriminator oracle
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/m003_fgs_oracle.py" <<'PY'
+          import os,re,subprocess,time,traceback,xml.etree.ElementTree as ET
+          PKG='dev.yhapp.studio.m003_fgs'; APK=f'{os.environ["RUNNER_TEMP"]}/m003_fgs/build/app/outputs/flutter-apk/app-debug.apk'
+          VERDICT=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-fgs-verdict.txt'); TIMELINE=os.path.join(os.environ['GITHUB_WORKSPACE'],'m003-fgs-timeline.txt'); phase='setup'
+          HOLD=90; POST=180; POLL=5
+          def record(s):
+            print(s,flush=True)
+            with open(TIMELINE,'a') as f:f.write(s+'\n')
+          def mark(v):
+            global phase; phase=v; record('M003_FGS_PHASE='+v)
+          def write(v):
+            with open(VERDICT,'w') as f:f.write(v+'\n')
+            record('M003_FGS_VERDICT='+v)
+          def sh(*a): return subprocess.check_output(['adb',*a],text=True).strip()
+          def dump(name):
+            subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
+            subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
+            return ET.parse(f'/tmp/{name}.xml')
+          def tap_node(n):
+            m=re.match(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',n.attrib['bounds']); assert m,n.attrib
+            x1,y1,x2,y2=map(int,m.groups()); subprocess.run(['adb','shell','input','tap',str((x1+x2)//2),str((y1+y2)//2)],check=True)
+          def tap_label(label,name):
+            tree=dump(name)
+            for n in tree.iter('node'):
+              if n.attrib.get('text')==label or n.attrib.get('content-desc')==label: tap_node(n); return
+            raise AssertionError(label+' absent')
+          def tap_resource(suffix,name):
+            tree=dump(name)
+            for n in tree.iter('node'):
+              rid=n.attrib.get('resource-id','')
+              if rid.endswith('/'+suffix) or rid.endswith(':id/'+suffix): tap_node(n); return
+            raise AssertionError(suffix+' absent')
+          def resource_present(suffix,name):
+            tree=dump(name)
+            return any(n.attrib.get('resource-id','').endswith('/'+suffix) or n.attrib.get('resource-id','').endswith(':id/'+suffix) for n in tree.iter('node'))
+          def granted(): return 'android.permission.CAMERA: granted=true' in sh('shell','dumpsys','package',PKG)
+          def pid():
+            p=subprocess.run(['adb','shell','pidof',PKG],text=True,capture_output=True); return p.stdout.strip()
+          def service_active():
+            p=subprocess.run(['adb','shell','dumpsys','activity','services',PKG],text=True,capture_output=True)
+            return 'CameraForegroundService' in p.stdout and 'isForeground=true' in p.stdout
+          try:
+            mark('install'); subprocess.run(['adb','install','-r',APK],check=True)
+            mark('launch_visible'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); time.sleep(1)
+            mark('request'); tap_label('REQUEST CAMERA','request'); time.sleep(1)
+            mark('grant_one_time'); tap_resource('permission_allow_one_time_button','dialog'); time.sleep(1)
+            mark('verify_grant'); assert granted(); initial_pid=pid(); assert initial_pid; record('M003_FGS_INITIAL_PID='+initial_pid)
+            mark('start_fgs_visible'); tap_label('START CAMERA FGS','start_fgs'); time.sleep(2)
+            assert service_active(), 'camera foreground service not active'; assert granted(); record('M003_FGS_ACTIVE_BEFORE_HOME=true')
+            mark('background_home'); sh('shell','input','keyevent','KEYCODE_HOME'); time.sleep(1)
+            mark('hold_with_fgs'); start=time.monotonic()
+            while time.monotonic()-start < HOLD:
+              elapsed=time.monotonic()-start; g=granted(); p=pid(); svc=service_active()
+              record(f'M003_FGS_HOLD elapsed={elapsed:.1f}s granted={g} pid={p!r} service_active={svc}')
+              if not svc: raise AssertionError('foreground service disappeared during hold')
+              if not g:
+                write('CONTRADICTION_REVOKED_WHILE_FGS_ACTIVE'); return
+              time.sleep(POLL)
+            record(f'M003_FGS_HOLD_COMPLETE hold={HOLD}s granted={granted()} service_active={service_active()}')
+            mark('stop_fgs'); sh('shell','am','stopservice','-n',PKG+'/.CameraForegroundService'); time.sleep(1)
+            assert not service_active(), 'foreground service still active after explicit stop'
+            mark('observe_post_stop'); start=time.monotonic(); expired=False; expired_at=None
+            while time.monotonic()-start < POST:
+              elapsed=time.monotonic()-start; g=granted(); p=pid(); svc=service_active()
+              record(f'M003_FGS_POST_STOP elapsed={elapsed:.1f}s granted={g} pid={p!r} service_active={svc}')
+              if svc: raise AssertionError('foreground service unexpectedly active after stop')
+              if not g: expired=True; expired_at=elapsed; break
+              time.sleep(POLL)
+            if not expired:
+              write('INCONCLUSIVE_POST_STOP_WINDOW_EXHAUSTED')
+            else:
+              record(f'M003_FGS_POST_STOP_EXPIRY elapsed={expired_at:.1f}s pid={pid()!r}')
+              mark('relaunch_after_expiry'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); time.sleep(1)
+              mark('request_after_expiry'); tap_label('REQUEST CAMERA','request_after_expiry'); time.sleep(1)
+              mark('verify_dialog_requestable'); assert resource_present('permission_allow_one_time_button','dialog_after_expiry')
+              write('FGS_HELD_THEN_EXPIRED_AND_REQUESTABLE')
+            mark('complete')
+          except Exception:
+            if not os.path.exists(VERDICT): write('HARNESS_FAILURE:'+phase)
+            traceback.print_exc(); raise
+          PY
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Execute foreground-service discriminator
+        id: emulator_oracle
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: python3 "$RUNNER_TEMP/m003_fgs_oracle.py"
+      - name: Report semantic verdict
+        if: always()
+        shell: bash
+        run: |
+          echo "M003_FGS_EMULATOR_OUTCOME=${{ steps.emulator_oracle.outcome }}"
+          if [[ -f m003-fgs-verdict.txt ]]; then cat m003-fgs-verdict.txt; else echo 'NO_VERDICT'; fi
+      - name: Preserve semantic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m003-fgs-semantic-evidence
+          path: |
+            m003-fgs-verdict.txt
+            m003-fgs-timeline.txt
+            flutter-version.json
+            flutter-git-head.txt
+            dart-version.txt
+          if-no-files-found: error
+          retention-days: 30
+      - name: Require classified trustworthy observation
+        if: always()
+        shell: bash
+        run: |
+          [[ -f m003-fgs-verdict.txt ]]
+          verdict="$(cat m003-fgs-verdict.txt)"
+          echo "M003_FGS_GATE_VERDICT=$verdict"
+          case "$verdict" in
+            FGS_HELD_THEN_EXPIRED_AND_REQUESTABLE|INCONCLUSIVE_POST_STOP_WINDOW_EXHAUSTED) [[ '${{ steps.emulator_oracle.outcome }}' == 'success' ]] ;;
+            CONTRADICTION_REVOKED_WHILE_FGS_ACTIVE) echo 'Platform-contract contradiction requires isolation'; exit 1 ;;
+            HARNESS_FAILURE:*) echo 'Harness failure requires isolation'; exit 1 ;;
+            *) echo 'Unknown verdict'; exit 1 ;;
+          esac
