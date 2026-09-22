@@ -1,0 +1,105 @@
+name: M006 Flutter Safari runtime validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/m006-flutter-safari-runtime-validation.yml'
+      - 'research/mobile/fixtures/m006_flutter_safari_runtime/**'
+  workflow_dispatch:
+
+jobs:
+  safari-runtime:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install current Flutter stable checkout
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Record toolchain and Safari identity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          "$RUNNER_TEMP/flutter/bin/flutter" --version --machine | tee flutter-version.json
+          git -C "$RUNNER_TEMP/flutter" rev-parse HEAD | tee flutter-git-head.txt
+          "$RUNNER_TEMP/flutter/bin/dart" --version 2>&1 | tee dart-version.txt
+          sw_vers | tee macos-version.txt
+          /usr/bin/safaridriver --version | tee safaridriver-version.txt
+          defaults read /Applications/Safari.app/Contents/Info CFBundleShortVersionString | tee safari-version.txt
+
+      - name: Generate web shell and build JavaScript Flutter artifact
+        working-directory: research/mobile/fixtures/m006_flutter_safari_runtime
+        shell: bash
+        run: |
+          set -euxo pipefail
+          "$RUNNER_TEMP/flutter/bin/flutter" create --platforms web --project-name m006_flutter_safari_runtime .
+          "$RUNNER_TEMP/flutter/bin/flutter" pub get
+          "$RUNNER_TEMP/flutter/bin/flutter" build web --release
+
+      - name: Enable Safari WebDriver
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo /usr/bin/safaridriver --enable
+          python3 -m pip install --user selenium
+
+      - name: Execute Safari runtime oracle
+        working-directory: research/mobile/fixtures/m006_flutter_safari_runtime
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 -m http.server 8765 --directory build/web > "$RUNNER_TEMP/m006-http.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          python3 - <<'PY' | tee "$GITHUB_WORKSPACE/m006-safari-semantic-evidence.txt"
+          import json, time
+          from selenium import webdriver
+          from selenium.webdriver.safari.options import Options
+
+          url = 'http://127.0.0.1:8765/'
+          driver = webdriver.Safari(options=Options())
+          try:
+              driver.get(url)
+              deadline = time.time() + 30
+              observations = []
+              while time.time() < deadline:
+                  title = driver.title
+                  observations.append({'elapsed_s': round(30 - (deadline-time.time()), 2), 'title': title})
+                  if title == 'M006_ASYNC_READY':
+                      break
+                  time.sleep(0.25)
+              payload = {
+                  'url': url,
+                  'browserName': driver.capabilities.get('browserName'),
+                  'browserVersion': driver.capabilities.get('browserVersion'),
+                  'platformName': driver.capabilities.get('platformName'),
+                  'observations': observations,
+                  'final_title': driver.title,
+                  'verdict': 'SAFARI_FLUTTER_JS_ASYNC_READY' if driver.title == 'M006_ASYNC_READY' else 'ORACLE_TIMEOUT',
+              }
+              print(json.dumps(payload, indent=2))
+              if payload['verdict'] != 'SAFARI_FLUTTER_JS_ASYNC_READY':
+                  raise SystemExit(1)
+          finally:
+              driver.quit()
+          PY
+
+      - name: Preserve run-bound evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m006-flutter-safari-runtime-evidence
+          path: |
+            flutter-version.json
+            flutter-git-head.txt
+            dart-version.txt
+            macos-version.txt
+            safaridriver-version.txt
+            safari-version.txt
+            m006-safari-semantic-evidence.txt
+          if-no-files-found: warn
