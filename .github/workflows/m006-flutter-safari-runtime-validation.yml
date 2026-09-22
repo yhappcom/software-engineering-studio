@@ -41,7 +41,7 @@ jobs:
           "$RUNNER_TEMP/flutter/bin/flutter" pub get
           "$RUNNER_TEMP/flutter/bin/flutter" build web --release
 
-      - name: Enable Safari WebDriver with diagnostics
+      - name: Enable Safari WebDriver and provision isolated Selenium
         shell: bash
         run: |
           set -uo pipefail
@@ -51,19 +51,30 @@ jobs:
           ENABLE_RC=$?
           echo "ENABLE_RC=$ENABLE_RC" | tee -a safaridriver-enable.txt
 
-          python3 -m pip install --user selenium >> safaridriver-enable.txt 2>&1
-          PIP_RC=$?
+          python3 -m venv "$RUNNER_TEMP/m006-venv" >> safaridriver-enable.txt 2>&1
+          VENV_RC=$?
+          echo "VENV_RC=$VENV_RC" | tee -a safaridriver-enable.txt
+          if [ "$VENV_RC" -eq 0 ]; then
+            "$RUNNER_TEMP/m006-venv/bin/python" -m pip install selenium >> safaridriver-enable.txt 2>&1
+            PIP_RC=$?
+          else
+            PIP_RC=125
+          fi
           echo "PIP_RC=$PIP_RC" | tee -a safaridriver-enable.txt
 
           if [ "$ENABLE_RC" -ne 0 ]; then
             echo 'VERDICT=SAFARIDRIVER_ENABLE_FAILED' | tee -a safaridriver-enable.txt
             exit 1
           fi
+          if [ "$VENV_RC" -ne 0 ]; then
+            echo 'VERDICT=VENV_CREATE_FAILED' | tee -a safaridriver-enable.txt
+            exit 1
+          fi
           if [ "$PIP_RC" -ne 0 ]; then
             echo 'VERDICT=SELENIUM_INSTALL_FAILED' | tee -a safaridriver-enable.txt
             exit 1
           fi
-          echo 'VERDICT=SAFARIDRIVER_ENABLED' | tee -a safaridriver-enable.txt
+          echo 'VERDICT=SAFARIDRIVER_ENABLED_SELENIUM_READY' | tee -a safaridriver-enable.txt
 
       - name: Execute Safari runtime oracle
         working-directory: research/mobile/fixtures/m006_flutter_safari_runtime
@@ -73,7 +84,7 @@ jobs:
           python3 -m http.server 8765 --directory build/web > "$RUNNER_TEMP/m006-http.log" 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
-          python3 - <<'PY' | tee "$GITHUB_WORKSPACE/m006-safari-semantic-evidence.txt"
+          "$RUNNER_TEMP/m006-venv/bin/python" - <<'PY' | tee "$GITHUB_WORKSPACE/m006-safari-semantic-evidence.txt"
           import json, time
           from selenium import webdriver
           from selenium.webdriver.safari.options import Options
