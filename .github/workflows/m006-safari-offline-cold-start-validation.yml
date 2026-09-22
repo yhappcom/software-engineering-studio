@@ -1,0 +1,45 @@
+name: M006 Safari Offline Cold Start Validation
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/mobile/fixtures/m006_safari_offline_cold_start/**'
+      - '.github/workflows/m006-safari-offline-cold-start-validation.yml'
+concurrency:
+  group: m006-safari-offline-cold-start-validation
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: macos-15
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record environment
+        run: |
+          sw_vers | tee "$RUNNER_TEMP/environment.txt"
+          /usr/bin/safaridriver --version | tee -a "$RUNNER_TEMP/environment.txt"
+          defaults read /Applications/Safari.app/Contents/Info CFBundleShortVersionString | tee -a "$RUNNER_TEMP/environment.txt" || true
+      - name: Enable Safari WebDriver and provision Selenium
+        run: |
+          set +e
+          sudo -n /usr/bin/safaridriver --enable > "$RUNNER_TEMP/enable.txt" 2>&1
+          rc=$?
+          echo "ENABLE_RC=$rc" >> "$RUNNER_TEMP/enable.txt"
+          cat "$RUNNER_TEMP/enable.txt"
+          test "$rc" -eq 0 || exit "$rc"
+          python3 -m venv "$RUNNER_TEMP/m006-offline-venv"
+          "$RUNNER_TEMP/m006-offline-venv/bin/python" -m pip install selenium
+      - name: Execute Safari offline cold-start oracle
+        working-directory: research/mobile/fixtures/m006_safari_offline_cold_start
+        run: |
+          "$RUNNER_TEMP/m006-offline-venv/bin/python" validate.py | tee "$RUNNER_TEMP/oracle.json"
+      - name: Preserve run-bound evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m006-safari-offline-cold-start-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/environment.txt
+            ${{ runner.temp }}/enable.txt
+            ${{ runner.temp }}/oracle.json
+          if-no-files-found: warn
