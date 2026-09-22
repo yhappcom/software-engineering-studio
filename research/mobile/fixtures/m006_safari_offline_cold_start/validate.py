@@ -1,6 +1,6 @@
 from selenium import webdriver
 from pathlib import Path
-import subprocess,time,json,urllib.request
+import subprocess,time,json,urllib.request,traceback
 ROOT=Path(__file__).parent
 obs=[]
 def wait_title(d,title,label,seconds=30):
@@ -34,7 +34,11 @@ try:
     controlled=d.execute_script('return Boolean(navigator.serviceWorker.controller)')
     obs.append({'label':'offline-controller','value':controlled})
     assert controlled,'offline page loaded without service-worker controller'
-    print(json.dumps({'verdict':'SAFARI_OFFLINE_COLD_START_PASS','observations':obs},indent=2))
+    print(json.dumps({'verdict':'SAFARI_OFFLINE_COLD_START_PASS','observations':obs},indent=2),flush=True)
+except Exception as e:
+    print(json.dumps({'verdict':'SAFARI_OFFLINE_COLD_START_FAIL','error':repr(e),'observations':obs},indent=2),flush=True)
+    traceback.print_exc()
+    raise
 finally:
     if d:
         try:d.quit()
