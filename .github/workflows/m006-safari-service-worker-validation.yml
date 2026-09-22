@@ -1,0 +1,50 @@
+name: M006 Safari Service Worker Validation
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/mobile/fixtures/m006_safari_service_worker/**'
+      - '.github/workflows/m006-safari-service-worker-validation.yml'
+concurrency:
+  group: m006-safari-service-worker-validation
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: macos-15
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record Safari environment
+        run: |
+          sw_vers
+          /usr/bin/safaridriver --version
+          defaults read /Applications/Safari.app/Contents/Info CFBundleShortVersionString || true
+      - name: Enable Safari WebDriver and provision isolated Selenium
+        run: |
+          set +e
+          sudo -n /usr/bin/safaridriver --enable > "$RUNNER_TEMP/enable.txt" 2>&1
+          rc=$?
+          echo "ENABLE_RC=$rc" >> "$RUNNER_TEMP/enable.txt"
+          cat "$RUNNER_TEMP/enable.txt"
+          test "$rc" -eq 0 || exit "$rc"
+          python3 -m venv "$RUNNER_TEMP/m006-sw-venv"
+          "$RUNNER_TEMP/m006-sw-venv/bin/python" -m pip install selenium
+      - name: Execute Safari service-worker lifecycle oracle
+        working-directory: research/mobile/fixtures/m006_safari_service_worker
+        run: |
+          printf 'V1\n' > version.txt
+          python3 server.py > "$RUNNER_TEMP/server.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          sleep 1
+          "$RUNNER_TEMP/m006-sw-venv/bin/python" validate.py | tee "$RUNNER_TEMP/oracle.json"
+      - name: Preserve run-bound evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m006-safari-service-worker-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/enable.txt
+            ${{ runner.temp }}/server.log
+            ${{ runner.temp }}/oracle.json
+          if-no-files-found: warn
