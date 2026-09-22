@@ -1,6 +1,6 @@
 # M006 — Flutter JavaScript runtime transfer to Safari
 
-Status: **IN STUDY — FIRST EXECUTION FAILED AT WEBDRIVER ENABLEMENT; SEMANTIC SAFARI ORACLE NOT EXECUTED**  
+Status: **IN STUDY — RUN 2 ISOLATED INTERACTIVE WEBDRIVER ENABLEMENT FAILURE; SEMANTIC SAFARI ORACLE NOT YET EXECUTED**  
 Evidence date: 2026-09-22
 
 ## Problem and Balance Loop selection
@@ -57,19 +57,20 @@ Recorded environment:
 
 **OPEN:** execution 1 did not preserve the enable command's stderr/exit details in its artifact. Therefore the exact root cause is not established. It would be invalid to label this a Safari/Flutter compatibility failure or to assert an authorization mechanism without the missing diagnostics.
 
-**SOURCE comparison:** Apple's current documentation confirms `safaridriver --enable` is the supported Terminal operation, with `sudo` only conditionally needed. This supports treating enablement as a harness/environment prerequisite, not as the target Flutter runtime verdict.
+## Execution 2 — interactive enablement failure isolated
 
-## FIX / regression target
+Exact workflow head: `ebd7030de8efb04cec71e3c888d202232cab6a70`.  
+GitHub Actions run: `35710948055`; job `106691136838`; runner label `macos-15`; terminal conclusion **failure**. The build stages completed and the semantic Safari runtime step was skipped after the WebDriver enablement step failed.
 
-Commit `ebd7030de8efb04cec71e3c888d202232cab6a70` changes the workflow so the enable boundary becomes diagnosable rather than opaque:
+Run-bound artifact: `10686147472`, digest `sha256:c4d2baf7c21c0833467889ac59491b20a4aff445334daf914e4d040027128549`.
 
-1. attempt `/usr/bin/safaridriver --enable` unprivileged and preserve stdout/stderr + return code;
-2. only if that fails, attempt `sudo -n /usr/bin/safaridriver --enable` and preserve stdout/stderr + return code;
-3. preserve Selenium installation return code;
-4. emit a classified setup verdict;
-5. include `safaridriver-enable.txt` in the always-uploaded run-bound artifact.
+Recorded environment again identifies Flutter `3.47.5` / Dart `3.13.4` / macOS `15.7.9` build `24G830` / Safari `26.6.1` / safaridriver `20624.5.1.18.3`.
 
-This does not weaken the gate. If both enable attempts fail, the job still fails and the Safari semantic oracle remains unexecuted. The purpose is failure isolation and reproducible diagnostics, not forcing green CI.
+**OBSERVATION:** `safaridriver-enable.txt` contains `ATTEMPT=unprivileged` followed by `Password:Password is not valid, please try again.` It contains no `UNPRIVILEGED_RC`, no sudo-attempt marker, and no Selenium-install marker. The unprivileged command therefore entered an interactive authorization path before the scripted fallback and diagnostic sequence could run.
+
+**ROOT CAUSE (bounded harness failure):** the run-2 workflow attempted unprivileged `safaridriver --enable` first in a non-interactive hosted CI context. That command requested interactive authorization, so the harness did not reach its intended return-code capture/fallback path. This is a setup-orchestration defect; it is not evidence about Flutter-on-Safari runtime semantics.
+
+**FIX:** exact workflow commit `e4c68d1418eb5cda6193dbbb98b1171031053153` removes the interactive-first path and uses `sudo -n /usr/bin/safaridriver --enable` directly, preserving the enable return code and Selenium-install return code. A failed non-interactive privileged enable still fails closed; no green result is synthesized.
 
 ## Alternative comparison
 
@@ -77,12 +78,12 @@ Existing F001/M006 Chromium evidence remains the comparison context. Safari uses
 
 ## RELATED DOMAIN CHECK
 
-- Foundations: directly advances F001 browser/runtime transfer beyond Chromium; no new F001 PASS from execution 1.
+- Foundations: directly advances F001 browser/runtime transfer beyond Chromium; no new F001 PASS from executions 1–2.
 - Architecture: no architecture decision changed; browser support remains an external runtime boundary.
-- Mobile: owner; advances M006 browser-family coverage and now has a concrete setup failure boundary.
+- Mobile: owner; advances M006 browser-family coverage and now has a bounded setup-harness root cause plus regression target.
 - Data: not materially tested; no persistence/durability claim.
-- Quality: execution 1 demonstrates why setup/harness failure must remain separate from semantic target failure; missing stderr prevented root-cause assignment, and the regression target now preserves it.
-- Systems: exact run/head/artifact/toolchain/browser identity is preserved; hosted runner configuration is part of the execution environment.
+- Quality: execution 2 demonstrates that diagnostic fallback logic is ineffective when the first command can block on interactive authorization; CI prerequisite probes must themselves be non-interactive and evidence-preserving.
+- Systems: exact run/head/artifact/toolchain/browser identity is preserved; hosted runner authorization behavior is part of the execution environment.
 - Design Studio: no visual/interaction semantic contract evaluated.
 - Web Manager: PWA/browser overlap considered; no website operational decision changed.
 - Marketing Manager: not materially relevant.
@@ -90,15 +91,15 @@ Existing F001/M006 Chromium evidence remains the comparison context. Safari uses
 
 ## OPEN / VALIDATION / CHANGE WATCH
 
-- **VALIDATION:** inspect the regression execution at exact commit `ebd7030d...`; only award Safari runtime transfer if the semantic title oracle actually executes and passes.
-- **OPEN:** exact execution-1 WebDriver-enable root cause because stderr was not preserved.
+- **VALIDATION:** inspect the regression execution from exact workflow commit `e4c68d1418eb5cda6193dbbb98b1171031053153`; only award Safari runtime transfer if the semantic title oracle actually executes and passes.
+- **OPEN:** whether non-interactive privileged enablement is permitted on the hosted macOS runner and, if so, whether Safari can establish a WebDriver session.
 - **OPEN:** iOS/iPadOS Safari/EFB, physical device, offline/service-worker/update lifecycle, product-owned LogMate build, release/production artifact.
 - **CHANGE WATCH:** Flutter Safari support matrix, Safari/WebDriver behavior, hosted macOS image and browser version.
 - **OPEN:** fixture uses `dart:html`, a legacy/deprecated API surface; retain only as a narrow browser-observable probe, not product guidance.
 
 ## HANDOFFS
 
-- Foundations: execution 1 adds no Safari runtime verdict; retain F001 Safari as OPEN pending semantic execution.
-- Quality: preserve prerequisite/setup stderr and return codes before classifying browser/runtime contradictions.
+- Foundations: executions 1–2 add no Safari semantic runtime verdict; retain F001 Safari as OPEN pending actual semantic execution.
+- Quality: prerequisite probes that may request interactive authorization must not precede non-interactive fallback/diagnostic collection in unattended CI.
 - Systems: runner-level Safari automation enablement is an environment prerequisite; preserve exact hosted-image/browser identity and do not conflate it with artifact semantics.
 - LogMate/Web Manager: no canonical files edited. A later product transfer must use the product-owned PWA build/post-build path and exact product ref rather than this fixture.
