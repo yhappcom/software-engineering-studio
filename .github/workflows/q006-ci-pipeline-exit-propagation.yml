@@ -1,0 +1,34 @@
+name: Q006 CI Pipeline Exit Propagation
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/quality/fixtures/Q006_ci_pipeline_exit_propagation.sh'
+      - '.github/workflows/q006-ci-pipeline-exit-propagation.yml'
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record environment
+        run: |
+          bash --version | head -1 | tee "$RUNNER_TEMP/environment.txt"
+          uname -a | tee -a "$RUNNER_TEMP/environment.txt"
+      - name: Execute exit-propagation oracle
+        run: |
+          set -o pipefail
+          bash research/quality/fixtures/Q006_ci_pipeline_exit_propagation.sh 2>&1 | tee "$RUNNER_TEMP/oracle.txt"
+          test -s "$RUNNER_TEMP/oracle.txt"
+          grep -q 'without_pipefail_rc=0' "$RUNNER_TEMP/oracle.txt"
+          grep -q 'with_pipefail_rc=23' "$RUNNER_TEMP/oracle.txt"
+          grep -q 'Q006_CI_PIPELINE_EXIT_PROPAGATION_PASS' "$RUNNER_TEMP/oracle.txt"
+      - name: Preserve run-bound evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: q006-ci-pipeline-exit-propagation-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/environment.txt
+            ${{ runner.temp }}/oracle.txt
+          if-no-files-found: warn
