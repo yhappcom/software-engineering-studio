@@ -5,7 +5,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 ## Current studies
 
 ### Foundations
-- `F001` — direct Dart JIT/AOT, Flutter host→Chrome, and bounded macOS Safari runtime transfer validated; native/iOS/iPadOS/PWA lifecycle/product/release transfer OPEN.
+- `F001` — direct Dart JIT/AOT, Flutter host→Chrome, and bounded macOS Safari runtime transfer validated; native/iOS/iPadOS/product/release transfer OPEN.
 - `F002`–`F005` — bounded direct evidence retained.
 - `F006` — Dart/Linux loopback professional boundary closed with root-cause/fix/regression; cross-platform/native/product transfer OPEN.
 
@@ -19,7 +19,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `M002` — controlled Android force-stop + app-specific persistent-file recovery and ordinary HOME background/resume validated; system kill/physical durability/iOS/product remain OPEN.
 - `M003` — runtime dangerous-permission shell grant/revoke, user-dialog, repeated-denial/`USER_FIXED`, ordinary one-time expiry and FGS held→app-stop→expiry→requestability have bounded transfer evidence. Android Keystore semantics have bounded REPLICATION at API-35 emulator scope; intermittent first-launch ROOT CAUSE remains OPEN. The observed expiry timings are not portable timeout contracts; physical/OEM/other-API independent replication remains OPEN.
 - `M004`–`M005` — professional/model evidence retained; broader physical/native platform execution OPEN.
-- `M006` — Chromium offline/restart/update/cold-start evidence plus bounded macOS Safari runtime **TRANSFER VALIDATION**. Safari exact repaired head `44c8be44bb53f2b67c08f40a0738f29858018bdd`, run `35727646652`, job `106745123287`, artifact `10694445918`, digest `sha256:f1274228bdbfaf29b6eca507a6e490385dbf3756777ce7e130007ecbb75bdf35`; fail-closed WebDriver semantic oracle completed successfully. Safari PWA offline/update, iOS/iPadOS/EFB, physical network, LogMate product artifact and production remain OPEN. Canonical: `research/mobile/M006_flutter_safari_runtime_transfer.md`.
+- `M006` — Chromium offline/restart/update/cold-start evidence plus bounded macOS Safari runtime and Safari service-worker register/update/controller/restart **TRANSFER VALIDATION**. Service-worker exact head `d31cc310f7444a3b1880b1faae7901314a801a34`, run `35741047017`, job `106790579808`, artifact `10698973958`, digest `sha256:3b103c6d08afcaf4dfae79add9fc56f292bf8c7b01797a78a7ddb85c634bcbb4`; fail-closed semantic oracle completed successfully. Safari offline fetch/cache/cold-start, iOS/iPadOS/EFB, physical network, LogMate product artifact and production remain OPEN. Canonical: `research/mobile/M006_flutter_safari_runtime_transfer.md`, `research/mobile/M006_safari_service_worker_lifecycle_transfer.md`.
 
 ### Data
 - `D001`–`D004` — Foundation executable/professional evidence.
