@@ -13,6 +13,16 @@ def wait_title(d,title,label,seconds=30):
         except Exception as e:obs.append({'t':round(time.time(),3),'label':label,'error':repr(e)})
         time.sleep(.5)
     raise AssertionError(f'timeout {label}: wanted {title}')
+def wait_controller(d,label,seconds=30):
+    end=time.time()+seconds
+    while time.time()<end:
+        try:
+            controlled=bool(d.execute_script('return Boolean(navigator.serviceWorker.controller)'))
+            obs.append({'t':round(time.time(),3),'label':label,'controlled':controlled,'title':d.title})
+            if controlled:return
+        except Exception as e:obs.append({'t':round(time.time(),3),'label':label,'error':repr(e)})
+        time.sleep(.5)
+    raise AssertionError(f'timeout {label}: service-worker controller absent')
 def origin_down():
     try:urllib.request.urlopen('http://127.0.0.1:8770/',timeout=1);return False
     except Exception:return True
@@ -21,7 +31,10 @@ d=None
 try:
     time.sleep(1)
     d=webdriver.Safari();d.get('http://127.0.0.1:8770/');wait_title(d,'M006_APP_READY','online-app')
-    d.execute_script('registerSW();');wait_title(d,'M006_CONTROLLED','online-controlled')
+    # registerSW() deliberately reloads the first uncontrolled document once the
+    # worker is ready.  After that navigation the app script resets the title to
+    # M006_APP_READY, so document.title is not a valid controller oracle.
+    d.execute_script('registerSW();');wait_controller(d,'online-controlled')
     cache_ok=d.execute_async_script("const done=arguments[0]; caches.open('m006-offline-v1').then(async c=>done(Boolean(await c.match('/'))&&Boolean(await c.match('/app.js')))).catch(()=>done(false));")
     obs.append({'label':'cache-precondition','value':cache_ok})
     assert cache_ok,'cache precondition failed'
