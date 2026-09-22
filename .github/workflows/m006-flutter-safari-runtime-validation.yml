@@ -41,12 +41,37 @@ jobs:
           "$RUNNER_TEMP/flutter/bin/flutter" pub get
           "$RUNNER_TEMP/flutter/bin/flutter" build web --release
 
-      - name: Enable Safari WebDriver
+      - name: Enable Safari WebDriver with diagnostics
         shell: bash
         run: |
-          set -euxo pipefail
-          sudo /usr/bin/safaridriver --enable
-          python3 -m pip install --user selenium
+          set -uo pipefail
+          : > safaridriver-enable.txt
+          echo 'ATTEMPT=unprivileged' | tee -a safaridriver-enable.txt
+          /usr/bin/safaridriver --enable >> safaridriver-enable.txt 2>&1
+          UNPRIVILEGED_RC=$?
+          echo "UNPRIVILEGED_RC=$UNPRIVILEGED_RC" | tee -a safaridriver-enable.txt
+
+          SUDO_RC=not_attempted
+          if [ "$UNPRIVILEGED_RC" -ne 0 ]; then
+            echo 'ATTEMPT=sudo' | tee -a safaridriver-enable.txt
+            sudo -n /usr/bin/safaridriver --enable >> safaridriver-enable.txt 2>&1
+            SUDO_RC=$?
+            echo "SUDO_RC=$SUDO_RC" | tee -a safaridriver-enable.txt
+          fi
+
+          python3 -m pip install --user selenium >> safaridriver-enable.txt 2>&1
+          PIP_RC=$?
+          echo "PIP_RC=$PIP_RC" | tee -a safaridriver-enable.txt
+
+          if [ "$UNPRIVILEGED_RC" -ne 0 ] && [ "$SUDO_RC" != "0" ]; then
+            echo 'VERDICT=SAFARIDRIVER_ENABLE_FAILED' | tee -a safaridriver-enable.txt
+            exit 1
+          fi
+          if [ "$PIP_RC" -ne 0 ]; then
+            echo 'VERDICT=SELENIUM_INSTALL_FAILED' | tee -a safaridriver-enable.txt
+            exit 1
+          fi
+          echo 'VERDICT=SAFARIDRIVER_ENABLED' | tee -a safaridriver-enable.txt
 
       - name: Execute Safari runtime oracle
         working-directory: research/mobile/fixtures/m006_flutter_safari_runtime
@@ -101,5 +126,6 @@ jobs:
             macos-version.txt
             safaridriver-version.txt
             safari-version.txt
+            safaridriver-enable.txt
             m006-safari-semantic-evidence.txt
           if-no-files-found: warn
