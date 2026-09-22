@@ -26,23 +26,25 @@ Keystore bounded REPLICATION retained at API-35 x86_64 emulator scope; intermitt
 **IN STUDY.** Plugin/native and broader physical/native product transfer remain OPEN.
 
 ### M006
-**IN STUDY — REAL CHROMIUM OFFLINE/RESTART/UPDATE/COLD-START TRANSFER VALIDATED; SAFARI SEMANTIC TRANSFER BLOCKED AT HOSTED WEBDRIVER ENABLEMENT.**
+**IN STUDY — REAL CHROMIUM OFFLINE/RESTART/UPDATE/COLD-START TRANSFER + BOUNDED macOS SAFARI RUNTIME TRANSFER VALIDATED.**
 
-Safari execution 3: exact workflow head `e4c68d1418eb5cda6193dbbb98b1171031053153`, run `35716201875`, job `106708178990`, `macos-15`, terminal failure. Checkout/toolchain capture/release Flutter JavaScript build succeeded; `Enable Safari WebDriver with diagnostics` failed promptly and the semantic Safari oracle was skipped. Artifact `10690100321`, digest `sha256:def6b87ba8d1bab89eb3bd749eb0cdf277a45f36a7d243291141e2edf369ef47` was preserved. The current connector cannot retrieve its payload/job logs, so exact enable stderr/return code remains OPEN. No Safari PASS/CONTRADICTION/TRANSFER VALIDATION is awarded. Canonical: `research/mobile/M006_flutter_safari_runtime_transfer.md`.
+Safari repaired execution: exact workflow head `44c8be44bb53f2b67c08f40a0738f29858018bdd`, run `35727646652`, job `106745123287`, runner `macos-15`, terminal success. The release JavaScript build, noninteractive Safari WebDriver enablement, isolated Selenium provisioning, and fail-closed Safari semantic oracle all completed successfully. Artifact `10694445918`, digest `sha256:f1274228bdbfaf29b6eca507a6e490385dbf3756777ce7e130007ecbb75bdf35` is bound to the exact head/run. The committed oracle creates `webdriver.Safari`, loads the release artifact, polls browser-owned `driver.title`, and fails unless it observes `M006_ASYNC_READY`; therefore this is bounded executable **TRANSFER VALIDATION** beyond Chromium. The artifact ZIP payload was not downloadable through the current connector, so per-poll observations/capability payload are not invented.
+
+The failure chain is retained: interactive WebDriver enablement probe defect → noninteractive repair; then PEP 668 system-Python Selenium provisioning defect → isolated venv repair → green semantic regression. Canonical: `research/mobile/M006_flutter_safari_runtime_transfer.md`.
 
 ## Product transfer scope
 Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. Current permission/Safari-fixture evidence makes no product-runtime claim.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. API-35 emulator permission/FGS causal evidence is substantial, but physical Android/OEM/other API, iOS lifecycle, broader plugin/native behavior, Safari/iPadOS/EFB, canonical product runtime and production evidence remain materially absent. Safari hosted validation is currently an environment/diagnostic-access dependency, not a semantic runtime verdict.
+Mobile Stage 1 remains **NOT PASS**. Browser-engine transfer is stronger now, but physical Android/OEM/other API, iOS/iPadOS lifecycle, broader plugin/native behavior, Safari PWA offline/update semantics, EFB, canonical product runtime and production evidence remain materially absent.
 
 ## Dependencies / handoffs
-- **Foundations:** Safari semantic runtime remains OPEN; do not infer it from a successful Flutter web build.
-- **Quality:** run-3 Safari prerequisite now fails closed without the prior interactive hang, but diagnostic payload retrievability is part of the validation harness contract.
+- **Foundations:** bounded macOS Safari runtime transfer is now executable evidence; do not infer native/iOS/iPadOS/product execution.
+- **Quality:** Safari chain supplies setup failure→root cause→repair→semantic regression evidence; preserve the fail-closed oracle contract.
 - **Architecture:** lifecycle/platform/browser state dimensions remain externally meaningful boundaries.
-- **Data:** process/lifecycle recovery does not establish physical durability/backup correctness.
-- **Systems:** preserve exact run/head/artifact identity; hosted Safari automation enablement and artifact/log retrieval are environment capabilities.
-- **Design Studio:** no new visual/interaction semantic evidence.
+- **Data:** browser execution does not establish persistence/durability semantics.
+- **Systems:** preserve exact run/head/artifact identity; product transfer still requires product-owned build provenance.
+- **Design Studio:** no visual/interaction semantic evidence.
 - **Web Manager / Marketing Manager:** considered; no canonical file changes required.
 
 ## CHANGE WATCH / OPEN
@@ -50,8 +52,8 @@ Mobile Stage 1 remains **NOT PASS**. API-35 emulator permission/FGS causal evide
 - Permission Controller resource IDs and UIAutomator semantics attributes are implementation/version-sensitive observations.
 - Auto-reset/hibernation, user revocation while FGS active and actual camera-resource continuation remain separate OPEN paths.
 - Keystore intermittent first-launch ROOT CAUSE OPEN.
-- Safari run-3 exact enable stderr/return code OPEN until artifact/log payload is readable; semantic Safari WebDriver session and `M006_ASYNC_READY` remain unexecuted.
-- Physical Android/iOS, hardware-backed/StrongBox, Safari/iPadOS/EFB and canonical product runtime OPEN.
+- macOS Safari runtime is validated only for the bounded fixture; Safari service-worker/offline/update, iOS/iPadOS/EFB and physical device remain OPEN.
+- Hardware-backed/StrongBox and canonical product runtime remain OPEN.
 
 ## Next work
-Do not repeat Safari privilege/flag permutations without the preserved run-3 diagnostic payload or a trustworthy environment with Safari remote automation already enabled. Return to Balance Loop and prefer a materially independent evidence class until that dependency changes: physical/native runtime, exact-product authorized build/runtime, physical storage/connectivity, natural release/ADR evidence, or another stronger Stage-1 gap.
+Do not repeat the same macOS Safari async-title fixture. Return to Balance Loop and prefer a materially independent evidence class: physical/native runtime, Safari PWA lifecycle, exact-product authorized build/runtime, physical storage/connectivity, natural release/ADR evidence, or another stronger Stage-1 gap.
