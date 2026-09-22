@@ -32,21 +32,32 @@ try:
     time.sleep(1)
     d=webdriver.Safari();d.get('http://127.0.0.1:8770/');wait_title(d,'M006_APP_READY','online-app')
     # registerSW() deliberately reloads the first uncontrolled document once the
-    # worker is ready.  After that navigation the app script resets the title to
-    # M006_APP_READY, so document.title is not a valid controller oracle.
+    # worker is ready. After that navigation the app script resets the title, so
+    # browser-owned controller state is the online-control oracle.
     d.execute_script('registerSW();');wait_controller(d,'online-controlled')
     cache_ok=d.execute_async_script("const done=arguments[0]; caches.open('m006-offline-v1').then(async c=>done(Boolean(await c.match('/'))&&Boolean(await c.match('/app.js')))).catch(()=>done(false));")
     obs.append({'label':'cache-precondition','value':cache_ok})
     assert cache_ok,'cache precondition failed'
-    d.quit();d=None
+
+    # Diagnostic discriminator: first prove origin-down offline navigation while
+    # retaining the same Safari WebDriver/browser session. Only then recreate the
+    # WebDriver session. This separates fetch/cache capability from persistence
+    # across WebDriver browsing-session recreation.
     server.terminate();server.wait(timeout=5)
     assert origin_down(),'origin still reachable after server termination'
     obs.append({'label':'origin-down','value':True})
+    d.get('http://127.0.0.1:8770/?offline-same-session=1')
+    wait_title(d,'M006_APP_READY','offline-same-session-app')
+    same_controlled=d.execute_script('return Boolean(navigator.serviceWorker.controller)')
+    obs.append({'label':'offline-same-session-controller','value':same_controlled})
+    assert same_controlled,'same-session offline page loaded without service-worker controller'
+
+    d.quit();d=None
     d=webdriver.Safari();d.get('http://127.0.0.1:8770/?offline-cold-start=1')
-    wait_title(d,'M006_APP_READY','offline-cold-start-app')
+    wait_title(d,'M006_APP_READY','offline-fresh-webdriver-app')
     controlled=d.execute_script('return Boolean(navigator.serviceWorker.controller)')
-    obs.append({'label':'offline-controller','value':controlled})
-    assert controlled,'offline page loaded without service-worker controller'
+    obs.append({'label':'offline-fresh-webdriver-controller','value':controlled})
+    assert controlled,'fresh-WebDriver offline page loaded without service-worker controller'
     print(json.dumps({'verdict':'SAFARI_OFFLINE_COLD_START_PASS','observations':obs},indent=2),flush=True)
 except Exception as e:
     print(json.dumps({'verdict':'SAFARI_OFFLINE_COLD_START_FAIL','error':repr(e),'observations':obs},indent=2),flush=True)
