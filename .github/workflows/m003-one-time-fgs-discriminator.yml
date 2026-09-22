@@ -167,7 +167,8 @@ jobs:
               record(f'M003_FGS_HOLD elapsed={elapsed:.1f}s granted={g} pid={p!r} service_active={svc}')
               if not svc: raise AssertionError('foreground service disappeared during hold')
               if not g:
-                write('CONTRADICTION_REVOKED_WHILE_FGS_ACTIVE'); return
+                write('CONTRADICTION_REVOKED_WHILE_FGS_ACTIVE')
+                raise AssertionError('camera authority revoked while foreground service remained active')
               time.sleep(POLL)
             record(f'M003_FGS_HOLD_COMPLETE hold={HOLD}s granted={granted()} service_active={service_active()}')
             mark('stop_fgs'); sh('shell','am','stopservice','-n',PKG+'/.CameraForegroundService'); time.sleep(1)
@@ -192,6 +193,7 @@ jobs:
             if not os.path.exists(VERDICT): write('HARNESS_FAILURE:'+phase)
             traceback.print_exc(); raise
           PY
+          python3 -m py_compile "$RUNNER_TEMP/m003_fgs_oracle.py"
       - name: Enable KVM
         shell: bash
         run: |
