@@ -26,25 +26,27 @@ Keystore bounded REPLICATION retained at API-35 x86_64 emulator scope; intermitt
 **IN STUDY.** Plugin/native and broader physical/native product transfer remain OPEN.
 
 ### M006
-**IN STUDY — REAL CHROMIUM OFFLINE/RESTART/UPDATE/COLD-START + BOUNDED macOS SAFARI RUNTIME + SAFARI SERVICE-WORKER REGISTER/UPDATE/RESTART TRANSFERS VALIDATED.**
+**IN STUDY — REAL CHROMIUM OFFLINE/RESTART/UPDATE/COLD-START + BOUNDED macOS SAFARI RUNTIME + SAFARI SERVICE-WORKER REGISTER/UPDATE/RESTART TRANSFERS VALIDATED; SAFARI ORIGIN-DOWN OFFLINE COLD-START VALIDATION STARTED.**
 
 Safari runtime repaired execution: exact head `44c8be44bb53f2b67c08f40a0738f29858018bdd`, run `35727646652`, job `106745123287`, runner `macos-15`, terminal success. Artifact `10694445918`, digest `sha256:f1274228bdbfaf29b6eca507a6e490385dbf3756777ce7e130007ecbb75bdf35`.
 
-Safari service-worker lifecycle transfer: exact head `d31cc310f7444a3b1880b1faae7901314a801a34`, run `35741047017`, job `106790579808`, runner `macos-15`, terminal success. Exact fail-closed oracle requires V1 registration/control, byte-different V2 explicit update with actual `controllerchange`, V2 control, and V2 registration/control after quitting and recreating Safari WebDriver. Artifact `10698973958`, digest `sha256:3b103c6d08afcaf4dfae79add9fc56f292bf8c7b01797a78a7ddb85c634bcbb4`. **TRANSFER VALIDATION** is awarded only to those bounded lifecycle assertions. Artifact payload was not exposed through the current connector, so per-poll observations and exact Safari version are not invented.
+Safari service-worker lifecycle transfer: exact head `d31cc310f7444a3b1880b1faae7901314a801a34`, run `35741047017`, job `106790579808`, runner `macos-15`, terminal success. Exact fail-closed oracle requires V1 registration/control, byte-different V2 explicit update with actual `controllerchange`, V2 control, and V2 registration/control after quitting and recreating Safari WebDriver. Artifact `10698973958`, digest `sha256:3b103c6d08afcaf4dfae79add9fc56f292bf8c7b01797a78a7ddb85c634bcbb4`. **TRANSFER VALIDATION** is awarded only to those bounded lifecycle assertions.
 
-Canonical: `research/mobile/M006_flutter_safari_runtime_transfer.md`, `research/mobile/M006_safari_service_worker_lifecycle_transfer.md`.
+New Safari offline/cold-start fixture: `research/mobile/fixtures/m006_safari_offline_cold_start/`; workflow `.github/workflows/m006-safari-offline-cold-start-validation.yml`; initial executable target head `ad49f26ddae6cf547e13375f18987523661dfe18`. The fail-closed oracle requires online app execution/control, explicit CacheStorage shell/script matches, Safari quit, origin-server termination plus an independent failed HTTP probe, a fresh Safari WebDriver session, offline navigation reaching `M006_APP_READY`, and a non-null service-worker controller. At first post-commit check no workflow run was yet exposed, so verdict is **OPEN** and no new PASS/TRANSFER VALIDATION is awarded.
+
+Canonical: `research/mobile/M006_flutter_safari_runtime_transfer.md`, `research/mobile/M006_safari_service_worker_lifecycle_transfer.md`, `research/mobile/M006_safari_offline_cold_start_transfer.md`.
 
 ## Product transfer scope
 Exact LogMate ref retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`. Default branch is not assumed production. Current Safari fixture evidence makes no product-runtime claim.
 
 ## Gate assessment
-Mobile Stage 1 remains **NOT PASS**. Safari registration/update/controller/restart lifecycle is no longer an evidence gap at bounded macOS fixture scope, but Safari offline fetch/cache/cold-start remains OPEN. Physical Android/OEM/other API, iOS/iPadOS lifecycle, broader plugin/native behavior, EFB, canonical product runtime and production evidence remain materially absent.
+Mobile Stage 1 remains **NOT PASS**. Safari registration/update/controller/restart lifecycle is closed at bounded macOS fixture scope; origin-down offline fetch/cache/cold-start is now under executable validation but has no verdict yet. Physical Android/OEM/other API, iOS/iPadOS lifecycle, broader plugin/native behavior, EFB, canonical product runtime and production evidence remain materially absent.
 
 ## Dependencies / handoffs
 - **Foundations:** bounded Safari runtime and service-worker lifecycle transfers are executable browser evidence; do not infer native/iOS/iPadOS/product execution.
-- **Quality:** preserve fail-closed semantic stages and exact oracle scope; workflow green alone is insufficient.
+- **Quality:** preserve fail-closed semantic stages and exact oracle scope; for offline cold start, cache precondition and origin-down proof are independent assertions and must not be weakened to obtain green CI.
 - **Architecture:** lifecycle/platform/browser state dimensions remain externally meaningful boundaries.
-- **Data:** service-worker registration/control does not establish cached-data correctness or durable persistence.
+- **Data:** app-shell CacheStorage success does not establish application-data correctness or durable persistence.
 - **Systems:** preserve exact run/head/job/artifact identity; product transfer still requires product-owned build provenance.
 - **Design Studio:** no visual/interaction semantic evidence.
 - **Web Manager / Marketing Manager:** considered; no canonical file changes required.
@@ -53,9 +55,9 @@ Mobile Stage 1 remains **NOT PASS**. Safari registration/update/controller/resta
 - M003 permission/FGS transfers remain bounded to exact API-35 emulator environments; physical/OEM/other-API replication OPEN.
 - Keystore intermittent first-launch ROOT CAUSE OPEN.
 - macOS Safari runtime and service-worker lifecycle are validated only for bounded Studio fixtures.
-- Safari offline fetch/cache and cold-start-under-offline conditions remain OPEN.
+- Safari origin-down offline fetch/cache/cold-start executable verdict OPEN; OS-wide offline, eviction and physical-network failure diversity remain OPEN.
 - iOS/iPadOS/EFB, physical device and canonical product runtime remain OPEN.
 - Hardware-backed/StrongBox and canonical product runtime remain OPEN.
 
 ## Next work
-Return to Balance Loop. Do not repeat Safari register/update/restart variants. Prefer a materially different evidence class: Safari offline fetch/cold-start if it can add real failure evidence, physical/native runtime, exact-product authorized build/runtime, physical storage/connectivity, natural release/ADR evidence, or another stronger Stage-1 gap.
+Continue the Safari offline/cold-start block until its executable verdict/failure boundary is known. If red, preserve and isolate the first semantic failure before changing the fixture. If green, award only the bounded origin-down transfer and then return to Balance Loop rather than repeating equivalent cache variants.
