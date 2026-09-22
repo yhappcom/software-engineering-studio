@@ -28,7 +28,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 
 ### Quality
 - `Q001`–`Q005` — professional Foundation boundaries; Q004 mutation/search evidence.
-- `Q006` — process crash/restart + persistent-state oracle discrimination; mobile/backend/production OPEN.
+- `Q006` — process crash/restart + persistent-state oracle discrimination; CI exit-propagation regression now has natural false-green motivation, failed first discriminator/isolation repair, and hosted Ubuntu/Bash success at exact head `bd763b301752b3adebd36b963c06d064aec94ca8`, run `35792678785`, artifact `10722128536`, digest `sha256:6b8e03ea4f4bd01d10334ddee40065b7fbc6c1acaf4b85cb2719baabfc61f903`. Repository-wide semantic CI audit, non-Bash shell transfer and production release-gate transfer remain OPEN. Canonical: `research/quality/Q006_ci_pipeline_exit_status_oracle_integrity.md`.
 
 ### Systems
 - `S001`–`S003` — Foundation executable/professional evidence.
