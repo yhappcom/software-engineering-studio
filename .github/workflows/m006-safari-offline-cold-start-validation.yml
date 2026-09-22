@@ -32,7 +32,10 @@ jobs:
       - name: Execute Safari offline cold-start oracle
         working-directory: research/mobile/fixtures/m006_safari_offline_cold_start
         run: |
-          "$RUNNER_TEMP/m006-offline-venv/bin/python" validate.py | tee "$RUNNER_TEMP/oracle.json"
+          set -o pipefail
+          "$RUNNER_TEMP/m006-offline-venv/bin/python" validate.py 2>&1 | tee "$RUNNER_TEMP/oracle.json"
+          test -s "$RUNNER_TEMP/oracle.json"
+          grep -q 'SAFARI_OFFLINE_COLD_START_PASS' "$RUNNER_TEMP/oracle.json"
       - name: Preserve run-bound evidence
         if: always()
         uses: actions/upload-artifact@v4
