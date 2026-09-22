@@ -1,6 +1,6 @@
 # M003 — One-time permission foreground-service causal discriminator
 
-Status: **IN STUDY — executable discriminator specified; execution pending**  
+Status: **IN STUDY — first execution failed before semantic observation; harness root cause isolated and repaired target queued**  
 Evidence date: 2026-09-22
 
 ## Problem
@@ -77,6 +77,16 @@ Accepted semantic verdicts:
 
 A green CI job is not sufficient by itself; verdict + timeline + toolchain identity must be preserved as a run-bound artifact.
 
+## First executable attempt — failure isolation
+
+**FAILURE OBSERVATION:** exact head `250da62809584178ff7c8c6dd4782ee46e3b9069`, workflow run `35676189796`, job `106583105443`, Flutter 3.47.5 / Dart 3.13.4 target, completed failure. Fixture creation and the emulator-action step were reported successful, but the final semantic gate failed because no verdict file existed. Artifact `10673395915`, digest `sha256:029f4b2c53fbec521e9512014890947b20dbbf4c092d57a85014b7294e2da1ea`, contained only toolchain identity; verdict/timeline were absent.
+
+**ROOT CAUSE:** inspection of the exact committed oracle found a Python module-scope `return` in the `CONTRADICTION_REVOKED_WHILE_FGS_ACTIVE` branch. Python rejects this at parse/compile time (`return` outside function), so the semantic oracle could not execute and therefore could not create its verdict/timeline. The emulator wrapper's reported step success was not a trustworthy semantic execution oracle; the independent final gate correctly rejected the missing verdict.
+
+**FIX:** exact head `3d948ef0c3cf63500aa840eebf0591d0df54c1bd` replaces the invalid module-scope `return` with a classified contradiction write followed by an exception, preserving non-success semantics without invalid syntax. It also adds `python3 -m py_compile` immediately after oracle generation so this failure class is rejected before emulator startup.
+
+**VALIDATION:** regression execution of the repaired exact head is pending. No Android foreground-service semantic verdict is awarded from the failed run.
+
 ## FAILURE MODEL
 
 The fixture is designed to expose:
@@ -87,7 +97,8 @@ The fixture is designed to expose:
 - accidental ordinary-background execution mislabeled as FGS evidence;
 - authority revocation while the service is demonstrably active;
 - post-stop observation-window exhaustion;
-- conflation of package permission flags with service state or actual requestability.
+- conflation of package permission flags with service state or actual requestability;
+- oracle syntax/creation defects before platform observation.
 
 ## ALTERNATIVE / CONTROL
 
@@ -99,9 +110,11 @@ A stronger later replication would run ordinary-background and FGS variants in t
 
 This block has higher value than repeating the already-green ordinary-background fixture because it tests a documented causal branch with direct implications for camera/microphone/location feature design, lifecycle recovery, observability, and permission UX. It also transfers to future products that use user-visible long-running capture/navigation sessions.
 
+The first failed run adds a Quality/Systems lesson: wrapper/action success cannot substitute for the semantic oracle's own evidence. Generated validation programs should receive a cheap compile/static gate before expensive environment startup whenever the language permits it.
+
 ## OPEN / VALIDATION
 
-- Executable FGS discriminator run pending.
+- Repaired exact-head regression execution pending.
 - Physical Android/OEM and other API versions remain OPEN.
 - Actual camera resource acquisition is not yet part of the proposed first discriminator; permission authority/service lifecycle is the bounded target.
 - User revocation while FGS is active remains a separate failure path.
@@ -118,8 +131,8 @@ Foreground-service types, while-in-use restrictions, launch exemptions, target-S
 - **Architecture:** permission authority, activity visibility and service lifetime must remain separate state dimensions.
 - **Mobile:** owning track; prior M003 ordinary-background artifact is the direct control evidence.
 - **Data:** not materially relevant to this permission-lifecycle discriminator.
-- **Quality:** three/four-valued verdict classification and run-bound semantic artifacts required; no PASS from green CI alone.
-- **Systems:** FGS declaration/type/permission and exact toolchain/run provenance materially relevant.
+- **Quality:** first execution demonstrates that action-step success is not semantic evidence; compile/static validation plus run-bound verdict/timeline are required.
+- **Systems:** exact head/run/artifact provenance isolated the pre-semantic harness defect; FGS declaration/type/permission and exact toolchain/run provenance remain material.
 - **Design Studio:** recovery/continuation UX may depend on whether a user-visible foreground service intentionally extends access; no Design canonical file edited.
 - **Web Manager:** not materially relevant.
 - **Marketing Manager:** not materially relevant.
@@ -127,6 +140,6 @@ Foreground-service types, while-in-use restrictions, launch exemptions, target-S
 
 ## HANDOFFS
 
-- **Quality:** treat `CONTRADICTION_REVOKED_WHILE_FGS_ACTIVE` as failure observation requiring reproduction/isolation, not immediate Android root cause.
-- **Systems:** preserve service type, target SDK, manifest permissions, toolchain and run artifact identity with the verdict.
+- **Quality:** exact failed run demonstrates a false-positive wrapper/action status boundary; require semantic artifact presence and preflight generated oracle syntax before treating environment execution as evidence.
+- **Systems:** preserve failed run `35676189796` and artifact digest as provenance for the harness defect; repaired target is exact head `3d948ef0...`.
 - **Design Studio:** if later product work uses one-time camera/microphone/location plus FGS, interaction semantics should communicate ongoing user-visible access and recover after authority loss; this note does not redefine Design canonical behavior.
