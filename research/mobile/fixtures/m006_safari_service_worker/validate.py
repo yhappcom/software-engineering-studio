@@ -21,7 +21,7 @@ try:
     wait(d,"return document.title==='M006_SW_READY_V1'",'v1-controlled')
     ROOT.joinpath('version.txt').write_text('V2\n')
     d.execute_script('updateSW();')
-    wait(d,"return document.title==='M006_SW_CONTROLLER_CHANGED' || (navigator.serviceWorker.controller && navigator.serviceWorker.controller.scriptURL.includes('sw.js'))",'update-transition')
+    wait(d,"return document.title==='M006_SW_CONTROLLER_CHANGED'",'controller-changed-to-new-worker')
     d.refresh(); d.execute_script('registerSW();')
     wait(d,"return document.title==='M006_SW_READY_V2'",'v2-controlled')
     d.quit()
