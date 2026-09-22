@@ -126,9 +126,10 @@ jobs:
             record('M003_FGS_VERDICT='+v)
           def sh(*a): return subprocess.check_output(['adb',*a],text=True,stderr=subprocess.STDOUT).strip()
           def dump(name):
-            subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
-            subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
-            return ET.parse(f'/tmp/{name}.xml')
+            remote=f'/sdcard/{name}.xml'; local=os.path.join(os.environ['GITHUB_WORKSPACE'],f'm003-ui-{name}.xml')
+            subprocess.run(['adb','shell','uiautomator','dump',remote],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+            subprocess.run(['adb','pull',remote,local],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+            return ET.parse(local)
           def tap_node(n):
             m=re.match(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',n.attrib['bounds']); assert m,n.attrib
             x1,y1,x2,y2=map(int,m.groups()); subprocess.run(['adb','shell','input','tap',str((x1+x2)//2),str((y1+y2)//2)],check=True)
@@ -146,7 +147,13 @@ jobs:
           def resource_present(suffix,name):
             tree=dump(name)
             return any(n.attrib.get('resource-id','').endswith('/'+suffix) or n.attrib.get('resource-id','').endswith(':id/'+suffix) for n in tree.iter('node'))
-          def text_present(text,name): return any(n.attrib.get('text')==text for n in dump(name).iter('node'))
+          def semantics_present(value,name):
+            tree=dump(name)
+            for n in tree.iter('node'):
+              if n.attrib.get('text')==value or n.attrib.get('content-desc')==value:
+                record('M003_FGS_UI_MATCH name='+name+' text='+repr(n.attrib.get('text'))+' content_desc='+repr(n.attrib.get('content-desc'))+' bounds='+repr(n.attrib.get('bounds')))
+                return True
+            return False
           def granted(): return 'android.permission.CAMERA: granted=true' in sh('shell','dumpsys','package',PKG)
           def pid():
             p=subprocess.run(['adb','shell','pidof',PKG],text=True,capture_output=True); return p.stdout.strip()
@@ -176,8 +183,11 @@ jobs:
             assert granted(), 'one-time authority absent before app-owned stop'
             assert service_active(), 'foreground service absent before app-owned stop'
             mark('app_owned_stop'); tap_label('STOP CAMERA FGS','stop_fgs'); time.sleep(1)
-            assert text_present('SERVICE:STOP_ACCEPTED','stop_ack'), 'app-owned stop was not acknowledged'
-            assert not service_active(), 'foreground service still active after app-owned stop'
+            ack=semantics_present('SERVICE:STOP_ACCEPTED','stop_ack')
+            svc_after=service_active()
+            record(f'M003_FGS_APP_STOP_OBSERVATION ack={ack} service_active={svc_after}')
+            assert not svc_after, 'foreground service still active after app-owned stop'
+            assert ack, 'app-owned stop platform state changed but UI acknowledgement was not observed'
             record('M003_FGS_APP_STOP_ACK=true')
             mark('background_after_stop'); sh('shell','input','keyevent','KEYCODE_HOME'); time.sleep(1)
             mark('observe_post_stop'); start=time.monotonic(); expired=False; expired_at=None
@@ -233,6 +243,7 @@ jobs:
           path: |
             m003-fgs-verdict.txt
             m003-fgs-timeline.txt
+            m003-ui-*.xml
             flutter-version.json
             flutter-git-head.txt
             dart-version.txt
