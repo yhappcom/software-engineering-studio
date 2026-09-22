@@ -80,7 +80,7 @@ jobs:
                   "status" -> result.success(status())
                   "request" -> { pending=result; ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.CAMERA),77) }
                   "startFgs" -> { ContextCompat.startForegroundService(this,Intent(this,CameraForegroundService::class.java)); result.success("START_REQUESTED") }
-                  "stopFgs" -> { stopService(Intent(this,CameraForegroundService::class.java)); result.success("STOP_REQUESTED") }
+                  "stopFgs" -> { result.success(if(stopService(Intent(this,CameraForegroundService::class.java))) "STOP_ACCEPTED" else "STOP_NOT_RUNNING") }
                   else -> result.notImplemented()
                 }
               }
@@ -98,13 +98,13 @@ jobs:
           void main()=>runApp(const App());
           class App extends StatefulWidget { const App({super.key}); State<App> createState()=>_S(); }
           class _S extends State<App>{
-            static const c=MethodChannel('studio.m003/fgs'); String state='LOADING';
+            static const c=MethodChannel('studio.m003/fgs'); String state='LOADING'; String service='IDLE';
             void initState(){super.initState(); _read();}
             Future<void> _read() async { final s=await c.invokeMethod<String>('status')??'UNKNOWN'; if(mounted)setState(()=>state=s); }
             Future<void> _request() async { final s=await c.invokeMethod<String>('request')??'UNKNOWN'; if(mounted)setState(()=>state=s); }
-            Future<void> _start() async { await c.invokeMethod('startFgs'); }
-            Future<void> _stop() async { await c.invokeMethod('stopFgs'); }
-            Widget build(BuildContext context)=>MaterialApp(home:Scaffold(body:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[Text('CAMERA:$state'),ElevatedButton(onPressed:_request,child:const Text('REQUEST CAMERA')),ElevatedButton(onPressed:_start,child:const Text('START CAMERA FGS')),ElevatedButton(onPressed:_stop,child:const Text('STOP CAMERA FGS'))]))));
+            Future<void> _start() async { final s=await c.invokeMethod<String>('startFgs')??'UNKNOWN'; if(mounted)setState(()=>service=s); }
+            Future<void> _stop() async { final s=await c.invokeMethod<String>('stopFgs')??'UNKNOWN'; if(mounted)setState(()=>service=s); }
+            Widget build(BuildContext context)=>MaterialApp(home:Scaffold(body:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[Text('CAMERA:$state'),Text('SERVICE:$service'),ElevatedButton(onPressed:_request,child:const Text('REQUEST CAMERA')),ElevatedButton(onPressed:_start,child:const Text('START CAMERA FGS')),ElevatedButton(onPressed:_stop,child:const Text('STOP CAMERA FGS'))]))));
           }
           DART
           flutter build apk --debug
@@ -124,10 +124,10 @@ jobs:
           def write(v):
             with open(VERDICT,'w') as f:f.write(v+'\n')
             record('M003_FGS_VERDICT='+v)
-          def sh(*a): return subprocess.check_output(['adb',*a],text=True).strip()
+          def sh(*a): return subprocess.check_output(['adb',*a],text=True,stderr=subprocess.STDOUT).strip()
           def dump(name):
-            subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
-            subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL)
+            subprocess.run(['adb','shell','uiautomator','dump',f'/sdcard/{name}.xml'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+            subprocess.run(['adb','pull',f'/sdcard/{name}.xml',f'/tmp/{name}.xml'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
             return ET.parse(f'/tmp/{name}.xml')
           def tap_node(n):
             m=re.match(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',n.attrib['bounds']); assert m,n.attrib
@@ -146,6 +146,7 @@ jobs:
           def resource_present(suffix,name):
             tree=dump(name)
             return any(n.attrib.get('resource-id','').endswith('/'+suffix) or n.attrib.get('resource-id','').endswith(':id/'+suffix) for n in tree.iter('node'))
+          def text_present(text,name): return any(n.attrib.get('text')==text for n in dump(name).iter('node'))
           def granted(): return 'android.permission.CAMERA: granted=true' in sh('shell','dumpsys','package',PKG)
           def pid():
             p=subprocess.run(['adb','shell','pidof',PKG],text=True,capture_output=True); return p.stdout.strip()
@@ -171,8 +172,14 @@ jobs:
                 raise AssertionError('camera authority revoked while foreground service remained active')
               time.sleep(POLL)
             record(f'M003_FGS_HOLD_COMPLETE hold={HOLD}s granted={granted()} service_active={service_active()}')
-            mark('stop_fgs'); sh('shell','am','stopservice','-n',PKG+'/.CameraForegroundService'); time.sleep(1)
-            assert not service_active(), 'foreground service still active after explicit stop'
+            mark('relaunch_for_app_owned_stop'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); time.sleep(1)
+            assert granted(), 'one-time authority absent before app-owned stop'
+            assert service_active(), 'foreground service absent before app-owned stop'
+            mark('app_owned_stop'); tap_label('STOP CAMERA FGS','stop_fgs'); time.sleep(1)
+            assert text_present('SERVICE:STOP_ACCEPTED','stop_ack'), 'app-owned stop was not acknowledged'
+            assert not service_active(), 'foreground service still active after app-owned stop'
+            record('M003_FGS_APP_STOP_ACK=true')
+            mark('background_after_stop'); sh('shell','input','keyevent','KEYCODE_HOME'); time.sleep(1)
             mark('observe_post_stop'); start=time.monotonic(); expired=False; expired_at=None
             while time.monotonic()-start < POST:
               elapsed=time.monotonic()-start; g=granted(); p=pid(); svc=service_active()
@@ -187,9 +194,10 @@ jobs:
               mark('relaunch_after_expiry'); sh('shell','am','start','-W','-n',PKG+'/.MainActivity'); time.sleep(1)
               mark('request_after_expiry'); tap_label('REQUEST CAMERA','request_after_expiry'); time.sleep(1)
               mark('verify_dialog_requestable'); assert resource_present('permission_allow_one_time_button','dialog_after_expiry')
-              write('FGS_HELD_THEN_EXPIRED_AND_REQUESTABLE')
+              write('FGS_HELD_THEN_APP_STOPPED_EXPIRED_AND_REQUESTABLE')
             mark('complete')
-          except Exception:
+          except Exception as e:
+            record('M003_FGS_EXCEPTION='+repr(e))
             if not os.path.exists(VERDICT): write('HARNESS_FAILURE:'+phase)
             traceback.print_exc(); raise
           PY
@@ -238,7 +246,7 @@ jobs:
           verdict="$(cat m003-fgs-verdict.txt)"
           echo "M003_FGS_GATE_VERDICT=$verdict"
           case "$verdict" in
-            FGS_HELD_THEN_EXPIRED_AND_REQUESTABLE|INCONCLUSIVE_POST_STOP_WINDOW_EXHAUSTED) [[ '${{ steps.emulator_oracle.outcome }}' == 'success' ]] ;;
+            FGS_HELD_THEN_APP_STOPPED_EXPIRED_AND_REQUESTABLE|INCONCLUSIVE_POST_STOP_WINDOW_EXHAUSTED) [[ '${{ steps.emulator_oracle.outcome }}' == 'success' ]] ;;
             CONTRADICTION_REVOKED_WHILE_FGS_ACTIVE) echo 'Platform-contract contradiction requires isolation'; exit 1 ;;
             HARNESS_FAILURE:*) echo 'Harness failure requires isolation'; exit 1 ;;
             *) echo 'Unknown verdict'; exit 1 ;;
