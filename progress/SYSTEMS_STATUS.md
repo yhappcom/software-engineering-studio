@@ -26,37 +26,38 @@ Last sync: 2026-09-24
 **IN STUDY — two integrated executable Foundation blocks.** Linux rename/directory-sync failure evidence retained; hard-power-loss transfer OPEN.
 
 ### S007 — Authentication identity, session persistence, and account-required onboarding
-**IN STUDY — exact LogMate provider transfer + typed outcome/deletion boundaries + Firebase Auth Emulator validation ladder; executable product validation OPEN.** Canonical: `research/systems/S007_auth_identity_session_onboarding_foundations.md`.
+**IN STUDY — exact LogMate provider transfer + typed outcome/deletion boundaries + Auth Emulator ladder + durable onboarding-completion model; executable product validation OPEN.** Canonical: `research/systems/S007_auth_identity_session_onboarding_foundations.md`.
 
 Exact product retained: `yhappcom/logmate → main → e79f97cb7edd8823860daf14770a589f28a63ffc → declared 1.0.0+1 → evidence date 2026-09-24`; production identity unknown. Product canonical still encodes account-free first use and remains in CONTRADICTION with newer account-required owner direction.
 
-New validation synthesis: Firebase officially provides an Authentication emulator and emulator REST controls/account state. S007 now defines a three-rung validation ladder: (1) pure provider-neutral/product-state failure tests, (2) real Firebase Auth SDK against Auth Emulator with independent emulator account-state/UID oracles, and (3) real Google/Apple Android/iOS/PWA provider validation. Emulator evidence can validate email/UID/account-state integration without production credentials but cannot prove OAuth consent, provider-console configuration, native cancellation, browser redirect/popup, Apple revocation, or production security/persistence.
+New onboarding transfer: current LogMate already separates durable owner/access, initial-setup and Previous Total baseline metadata, and supports users with no baseline/import. S007 now makes the missing semantic boundary explicit: baseline presence, record count, Firebase authentication and widget route cannot serve as onboarding-completion authority. `No previous total` and optional-import skip/not-now are explicit durable decisions, not null/absence. Fresh-auth processing must be idempotent under duplicate callbacks/restart/redirect replay; Home requires a fresh read of matching owner + committed setup completion.
 
 ## Gate assessment
 
-Systems Stage 1 remains **NOT PASS**. S007 has source/model evidence, exact dependency/configuration transfer, typed adapter/deletion semantics and now a stronger executable-validation design, but no exact LogMate Auth Emulator run, adapter matrix, or real Firebase/native/PWA provider/revocation validation. Exact-product release provenance, physical/native execution and production evidence also remain incomplete.
+Systems Stage 1 remains **NOT PASS**. S007 has source/model evidence, exact dependency/configuration transfer, typed adapter/deletion semantics, emulator validation design and onboarding durability synthesis, but no exact LogMate Auth Emulator run, adapter matrix, onboarding restart/atomicity execution, or real Firebase/native/PWA provider/revocation validation. Exact-product release provenance, physical/native execution and production evidence also remain incomplete.
 
 ## HANDOFFS
 
-- **LogMate / Codex:** build provider-neutral state tests first, then Firebase Auth Emulator email/UID/owner integration with independent account-state oracle, then real Google/Apple platform E2E. Record emulator configuration; do not treat emulator account clearing as product deletion semantics.
-- **Quality:** execute fake-provider mapping plus emulator-backed UID/account-state integration; preserve false-success, duplicate callback, wrong-UID, restart and partial-delete controls.
-- **Data:** first-owner initialization must be atomic/idempotent; deletion spanning restart needs durable step evidence. Local ledger delete-vs-lock remains a product decision.
-- **Mobile:** later capture actual native Google/Apple cancellation/configuration/revocation behavior; Web/PWA popup/redirect separately.
-- **Design Studio / Web Manager:** recovery/collision/reauth/deletion copy and PWA redirect constraints remain downstream; no canonical files edited.
+- **LogMate / Codex:** model semantic setup milestones independently from UI pages. Preserve explicit `no previous total`; never infer completion from null baseline/zero records/Auth. Initialize owner idempotently, resume first unresolved milestone, and route Home only after fresh matching-owner + committed-completion read.
+- **Data:** verify whether Previous Total configuration and its resolved milestone share one canonical transaction/CAS boundary; otherwise define deterministic crash recovery. Initial-owner initialization remains exactly-once/idempotent.
+- **Quality:** add restart/interruption, duplicate-submit, wrong-UID and failed-write controls around each setup transition; then Auth Emulator UID/account-state integration.
+- **Mobile:** later capture actual native Google/Apple cancellation/configuration/revocation behavior and PWA redirect replay.
+- **Design Studio / Web Manager:** UI composition may change without changing persisted semantic milestones; PWA redirect constraints remain downstream. No canonical files edited.
 
 ## CHANGE WATCH / OPEN
 
 - LogMate product-canonical account-required update remains OPEN.
+- Exact durable representation/transaction for onboarding semantic milestones and explicit-negative decisions remains OPEN.
+- Whether optional initial import is a completion milestone or simply remains available post-setup requires product/UI confirmation; it must not be inferred from imported-record presence.
 - Firebase password policy, one-account-per-email/enumeration protection, provider enablement/OAuth/SHA/Apple capability/Service-ID/authorized-domain setup remain OPEN.
 - `google_sign_in` version/configuration remains OPEN until implementation; package absent at audited ref.
 - Exact FlutterFire/native exception emissions and executable adapter mapping remain OPEN; Web error reference is not native evidence.
 - Exact LogMate Firebase Auth Emulator integration is OPEN; emulator configuration including duplicate-email behavior must be recorded.
 - Provider cancellation, redirect interruption/reload, collision, unlink, restart and linking require executable evidence.
 - Account deletion authority/order, future backend/Sync deletion, Apple revocation mechanism, secure token/code handling and local ledger deletion-vs-lock policy remain OPEN.
-- Firebase documentation retains a known linking issue warning in some projects; reproduce final configuration before release.
 - Firebase Auth/session persistence, Auth Emulator, Apple deletion/revocation/linking policy, FlutterFire/provider SDK and browser behavior are CHANGE WATCH.
 - S004/S005 exact-product release provenance and physical/native release evidence remain OPEN.
 
 ## Next work
 
-Prefer exact LogMate provider-neutral tests and Firebase Auth Emulator integration when implementation/source execution authorization is available. Otherwise continue onboarding completion/resume durability and its atomic relationship to Previous Total/owner initialization. Do not award Auth/onboarding PASS from source inspection or emulator design alone.
+Prefer exact LogMate provider-neutral tests/Auth Emulator integration when implementation execution is available. Otherwise inspect the current R3 initial-setup/baseline repository primitives deeply enough to define the minimal schema/transaction delta for explicit `no previous total`, setup completion and restart-safe resume; do not redesign the whole repository or award onboarding PASS from source inspection.
