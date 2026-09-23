@@ -1,0 +1,19 @@
+name: S007 Auth Startup State Model
+
+on:
+  push:
+    paths:
+      - 'research/systems/fixtures/S007_auth_startup_state_model.py'
+      - '.github/workflows/s007-auth-startup-state-model.yml'
+  workflow_dispatch:
+
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Execute fail-closed startup model
+        run: python research/systems/fixtures/S007_auth_startup_state_model.py
