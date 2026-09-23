@@ -1,6 +1,6 @@
 # Q006 — Complete workflow verdict-risk inventory
 
-Status: **IN STUDY — COMPLETE LEXICAL INVENTORY VALIDATED; SEMANTIC AUDIT FOUND AND REPAIRED ONE GENUINE FALSE-GREEN PATH; HOSTED REGRESSION PENDING**
+Status: **IN STUDY — COMPLETE LEXICAL INVENTORY VALIDATED; SEMANTIC AUDIT FOUND AND REPAIRED ONE GENUINE FALSE-GREEN PATH; FAIL-CLOSED HOSTED REGRESSION VALIDATED**
 Evidence date: 2026-09-23
 Lead: Quality; support: Systems
 
@@ -29,7 +29,7 @@ Exact head `d573b47f05a1d5f65daea94d4133dcc221973d2a`, run `35837301494`, comple
 The manifest records **29 workflow files** and **131 selected risk hits**:
 - `pipeline_tee`: 75
 - `always`: 25
-- `continue-on-error`: 12
+- `continue_on_error`: 12
 - `set_plus_e`: 7
 - `or_true`: 5
 - `trap`: 4
@@ -52,7 +52,9 @@ The workflow deliberately marked four attestation checks `continue-on-error: tru
 
 **REPAIR:** commit `6216003dc4d42c1ea2156500bcc1df1d404c045d` changes the aggregate step to fail closed on all four required outcomes and enables `set -euo pipefail` there. The repair preserves diagnostic execution of all checks while making positive-query and exact-verification failures job-fatal at the aggregate verdict boundary.
 
-**VALIDATION:** hosted regression run `35843352058` is queued at exact repaired head `6216003dc4d42c1ea2156500bcc1df1d404c045d`. No regression PASS is awarded until its terminal result is inspected. Given the separately observed historical-attestation HTTP 404, a red result may be the correct fail-closed behavior rather than a regression defect; terminal evidence must distinguish these cases.
+**VALIDATION — hosted fail-closed regression:** exact repaired head `6216003dc4d42c1ea2156500bcc1df1d404c045d`, run `35843352058`, job `107123462773`, completed **failure**. All four diagnostic check steps were allowed to complete; the final `Record verification boundary and propagate verdict` step alone failed. Because `continue-on-error` can report a step conclusion of success while preserving the underlying step `outcome` used by expressions, the job-level red result demonstrates that at least one required positive outcome was no longer silently tolerated by the aggregate oracle. This is the intended fail-closed behavior.
+
+This red run is **not** evidence that the repair is defective. It is regression evidence that the repaired aggregate verdict no longer converts a required positive-check failure into a green job. The exact underlying positive failure remains bounded by the separately documented S005 historical-attestation availability contradiction; this run does not prove deletion/retention/indexing root cause.
 
 ## Semantic-review boundary
 Every hit that can affect a verdict must be classified against surrounding shell/workflow semantics. Required classes:
@@ -67,25 +69,24 @@ The audit must also sample verdict-bearing commands without these lexical constr
 ## FAILURE MODEL / LIMITS
 The fixture proves corpus enumeration for the selected patterns at the exact ref. It cannot prove inherited shell state, GitHub-expression correctness, third-party-action internal verdict propagation, semantic-oracle validity, or absence of false-green paths expressed without these tokens.
 
-The S005 repair establishes a static semantic defect and code correction; until hosted execution completes it does not establish the repaired workflow's runtime behavior.
+The S005 hosted regression proves fail-closed aggregate propagation under the observed failing positive condition. It does not establish why the historical attestation is unavailable or prove all other workflow paths semantically correct.
 
 ## RELATED DOMAIN CHECK
 - Foundations: process exit status and shell pipeline semantics are relevant; no new Foundations claim.
 - Architecture: CI evidence contracts are interfaces between validators and release/governance consumers.
 - Mobile: M006 supplied the natural false-green transfer and current navigation-aware oracle examples.
 - Data: no data-specific claim.
-- Quality: owner; complete inventory validated and semantic audit has now found one genuine false-green path.
+- Quality: owner; complete inventory validated and semantic audit has now found, repaired, and hosted-regressed one genuine false-green path.
 - Systems: S005 is the natural release-evidence transfer; positive and negative attestation controls must both participate in the final verdict.
 - Design Studio / Web Manager / Marketing Manager: considered; not materially relevant to this repository-internal CI corpus.
 - Product source: no product behavior audited; this block targets `yhappcom/software-engineering-studio` only.
 
 ## HANDOFFS
-- Systems: treat the repaired S005 aggregate oracle as the reusable pattern: diagnostic continuation is acceptable only when every required positive/negative outcome is explicitly folded into a fail-closed final verdict.
+- Systems: use the repaired S005 aggregate oracle as the reusable pattern: diagnostic continuation is acceptable only when every required positive/negative outcome is explicitly folded into a fail-closed final verdict.
 - Mobile: retain navigation-aware semantic-oracle review separately from shell/workflow verdict propagation.
 
 ## OPEN
-1. Inspect run `35843352058`; classify a red result against the known historical-attestation 404 rather than treating green as the only desired outcome.
-2. Continue semantic classification of remaining verdict-relevant hits.
-3. Sample verdict-bearing commands that do not match the selected lexical patterns.
-4. Repair any additional genuine false-green path and obtain exact-head regression evidence.
-5. Only then decide whether the repository-wide semantic CI audit boundary can close.
+1. Continue semantic classification of remaining verdict-relevant hits.
+2. Sample verdict-bearing commands that do not match the selected lexical patterns.
+3. Repair any additional genuine false-green path and obtain exact-head regression evidence.
+4. Only then decide whether the repository-wide semantic CI audit boundary can close.
