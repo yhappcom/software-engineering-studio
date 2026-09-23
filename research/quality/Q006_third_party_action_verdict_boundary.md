@@ -1,8 +1,8 @@
 # Q006 — Third-party action verdict boundary
 
-Date: 2026-09-23
+Date: 2026-09-24
 Lead: Quality
-Status: IN STUDY — executable negative control committed; hosted observation pending
+Status: IN STUDY — hosted wrapper-failure observation recorded; intentional-script causality still OPEN
 
 ## Problem
 
@@ -13,7 +13,9 @@ The repository-wide selected-token inventory does not detect a distinct CI accep
 Repository: `yhappcom/software-engineering-studio`
 Prior semantic target: `5bdda29210ce52b863f31088a062eaaddf000b6e`
 Executable-control introduction: `9ea9c97838d443c8fa81b04729e0447aee54c175`
-Evidence date: 2026-09-23
+Hosted run: `35867323951`
+Hosted job: `107202131771`
+Evidence date: 2026-09-24
 
 Representative consumer: `.github/workflows/m002-android-process-death-storage-validation.yml`, which delegates its fail-fast oracle to `reactivecircus/android-emulator-runner@v2`.
 
@@ -35,19 +37,24 @@ TARGET: `reactivecircus/android-emulator-runner@v2` on an API-35 x86_64 emulator
 
 INPUT: a delegated script that emits `Q006_INTENTIONAL_DELEGATED_FAILURE` then exits 37.
 
-ORACLE: the action step uses `continue-on-error: true` only to preserve the downstream observation. The next ordinary fatal shell step requires `${{ steps.delegated.outcome }}` to equal `failure`; it also records the expected post-continue conclusion (`success`) to distinguish GitHub step outcome from conclusion semantics.
+ORACLE: the action step uses `continue-on-error: true` only to preserve the downstream observation. The next ordinary fatal shell step requires `${{ steps.delegated.outcome }}` to equal `failure`; it also requires the expected post-continue conclusion (`success`) to distinguish GitHub step outcome from conclusion semantics.
 
 FAILURE MODEL: if the wrapper normalizes the delegated nonzero command to success, the downstream `outcome=failure` assertion fails. Emulator provisioning failure can also yield action outcome failure, so a green downstream assertion alone is not sufficient unless run logs show the intentional marker/script was actually reached.
 
-VALIDATION: immediately after introduction, the Actions query for head `9ea9c978...` returned no run yet. Therefore no runtime PASS is awarded in this block. A later run must inspect both the action log for the intentional marker and the downstream outcome assertion before closing the executable-control gap.
+## VALIDATION — hosted observation
+
+At exact head `9ea9c97838d443c8fa81b04729e0447aee54c175`, workflow run `35867323951`, job `107202131771`, completed `success`. GitHub's job record shows the delegated action step completed, then the independent `Require wrapper to expose delegated failure` step completed successfully. Because that downstream step requires both `steps.delegated.outcome == failure` and `steps.delegated.conclusion == success`, the hosted execution directly establishes that the action step exposed a failure outcome through the `continue-on-error` boundary rather than presenting an ordinary successful outcome.
+
+This is a **bounded VALIDATION** of GitHub outcome/conclusion propagation for a failing delegated action invocation. It is **not yet causal proof that the intended `exit 37` was the failure source**. The available API observation in this run did not expose the raw job log containing `Q006_INTENTIONAL_DELEGATED_FAILURE`; provisioning or another action-internal failure remains an alternative cause. Per the Studio validation standard, PASS for the narrower claim "delegated script nonzero propagates" is therefore withheld.
 
 ## ENGINEERING JUDGMENT
 
-The fixture improves oracle sensitivity but deliberately does not confuse infrastructure failure with delegated-script failure. The marker/reachability requirement is essential: merely observing action failure would be a false attribution risk.
+The run materially advances the boundary: workflow-level `continue-on-error` did not erase the action's failure outcome, and the downstream oracle correctly distinguished `outcome` from post-continue `conclusion`. But causal attribution remains weaker than the fixture intended. A future fixture should publish an independent reachability artifact/output before intentional failure, or otherwise make the marker retrievable through durable run evidence, so infrastructure failure cannot satisfy the same oracle.
 
 ## VALIDATION / OPEN
 
-- OPEN: hosted run reaching `Q006_INTENTIONAL_DELEGATED_FAILURE` and then satisfying `outcome=failure`.
+- VALIDATED, bounded: hosted action invocation can expose `outcome=failure` while `continue-on-error` yields `conclusion=success`; downstream workflow logic can fail closed on `outcome`.
+- OPEN: prove the hosted failure was specifically caused by the delegated `exit 37`, not provisioning/action-internal failure; require durable marker/reachability evidence.
 - OPEN: exact resolved action commit identity for the hosted run and historical M002 runs where verdict propagation is material.
 - OPEN: semantic review of other third-party actions and GitHub-expression/action-output acceptance paths.
 - No repository-wide semantic correctness PASS is awarded.
@@ -58,7 +65,7 @@ The fixture improves oracle sensitivity but deliberately does not confuse infras
 - Architecture: wrapper boundary is an interface contract between oracle and CI runner.
 - Mobile: M002 is the representative consumer; this control does not revalidate Android process-death behavior.
 - Data: persistent-file semantics are not revalidated.
-- Quality: owner; executable negative-control oracle added.
+- Quality: owner; hosted outcome/conclusion propagation observed, causal source still OPEN.
 - Systems: moving action identity/pinning remains a supply-chain/provenance dependency.
 - Design Studio / Web Manager / Marketing Manager: considered; not materially relevant to this bounded CI-verdict mechanism.
 - Product source/ref: not required; this block audits Studio CI only.
@@ -67,7 +74,7 @@ The fixture improves oracle sensitivity but deliberately does not confuse infras
 
 ### Quality → Systems
 - Finding: verdict-bearing third-party actions require both wrapper-failure propagation and immutable/resolved dependency identity for release-grade evidence.
-- Evidence: this note and executable control introduced at `9ea9c978...`.
-- Impact: moving `@v2` remains CHANGE WATCH even if the runtime negative control later passes.
+- Evidence: this note; control at `9ea9c978...`; hosted run `35867323951`, job `107202131771`.
+- Impact: moving `@v2` remains CHANGE WATCH even after bounded outcome propagation evidence.
 - Requested action: preserve resolved action identity and compare commit pinning when S004/S005 revisits supply-chain provenance.
 - Status: OPEN.
