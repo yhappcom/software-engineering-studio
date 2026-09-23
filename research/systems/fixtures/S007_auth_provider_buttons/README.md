@@ -2,6 +2,8 @@
 
 Purpose: copy-ready provider button resources for LogMate and future Flutter apps.
 
+Current materialized asset set: commit `70fd04dbc6a0ee222cac1f711ee9eb1effb60d18` — 14 Apple PNGs + 96 Google PNGs + `SOURCE_MANIFEST.txt` with SHA-256 hashes and provider source URLs.
+
 This kit keeps Apple/Google artwork provider-owned. Do not redraw logos.
 
 ## 1. Fetch official assets
