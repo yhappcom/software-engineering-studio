@@ -33,8 +33,13 @@ Fresh discriminator run 6 validated generation→publication/retrieval→generat
 ### S006 — Rollback, incident evidence, production change safety and publication durability
 **IN STUDY — two integrated executable Foundation blocks.** Linux rename/directory-sync failure evidence retained; hard-power-loss transfer OPEN.
 
+### S007 — Authentication identity, session persistence, and account-required onboarding
+**IN STUDY — authoritative Firebase/Apple source model + exact-ref LogMate transfer; executable validation OPEN.** Canonical: `research/systems/S007_auth_identity_session_onboarding_foundations.md`.
+
+Exact product inspection: `yhappcom/logmate → main → e79f97cb7edd8823860daf14770a589f28a63ffc → declared 1.0.0+1 → evidence date 2026-09-23`; production identity unknown. The inspected product still implements account-free `Start a new logbook`, durable local-entry state, `startLocalUse()`, local-only `Connect account`, and explicit unbound-ledger claim. New owner direction supersedes that intended product path: first use requires Apple/Google/email Firebase identity, restored sessions should bypass Welcome, offline-first local use remains after established ownership, the app is pre-launch with no released users, and password rules follow configured Firebase policy rather than a fixed 15-character product rule. **CONTRADICTION:** product canonical source has not yet been updated to the new decision. No runtime PASS is claimed.
+
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S005's generic offline-attestation boundary is professionally closed at the hosted fixture level, but exact-product/release provenance, Android/iOS signing/deployment, independent-host reproducibility and production evidence remain incomplete.
+Systems Stage 1 remains **NOT PASS**. S005's generic offline-attestation boundary is professionally closed at the hosted fixture level. S007 now adds a live-product authentication/session/onboarding study, but the account-required model is not yet canonical in LogMate source and has no executable Android/iOS/PWA validation. Exact-product/release provenance, provider operations, physical/native execution and production evidence remain incomplete.
 
 ## HANDOFFS
 - **Foundations:** direct Dart/Flutter evidence exists; it is not S005's blocker.
@@ -42,6 +47,8 @@ Systems Stage 1 remains **NOT PASS**. S005's generic offline-attestation boundar
 - **Mobile / product release:** next transfer must bind exact product ref/version, canonical build path, artifact digest, preserved bundle/root and verification policy; generic Studio attestation cannot substitute.
 - **Quality:** retain generation-time evidence preservation separately from verifier verdict and negative identity/content controls.
 - **LogMate / release engineering:** S004 source-acquisition dependency remains separate; no product files edited.
+- **LogMate / Codex:** before provider UI implementation, supersede account-free startup canonically, route restored session by setup state, preserve owner mismatch/sign-out/offline boundaries, and deliberately retire or repurpose `LocalEntryState/startLocalUse` with schema/test review.
+- **Architecture/Data/Quality/Mobile:** S007 requires state-ownership review, capability-v7 cleanup review, failure-first startup tests, and Android/iOS/PWA transfer respectively.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical files edited.
 
 ## CHANGE WATCH / OPEN
@@ -49,6 +56,9 @@ Systems Stage 1 remains **NOT PASS**. S005's generic offline-attestation boundar
 - Hosted exact-ref LogMate source acquisition remains blocked by execution-context authorization.
 - Baseline LogMate PWA source build/artifact identity, Android/iOS signing, staged deployment and production rollback remain OPEN.
 - GitHub CLI, `actions/attest`, attestation API, Sigstore roots and hosted-runner images remain CHANGE WATCH.
+- S007 LogMate product-canonical update remains OPEN; current exact ref still encodes account-free first use.
+- Firebase production password policy, Google/Apple provider enablement/OAuth/capability setup and cross-surface validation remain OPEN.
+- Firebase Auth/session persistence, Apple login policy and provider SDK behavior are CHANGE WATCH.
 
 ## Next work
-Return to Balance Loop. Do not repeat equivalent generic attestation variants. Prefer exact-product/release provenance when source/build authorization is available, independent-host verification, physical/native release evidence, or another track's stronger Stage-1 gap.
+Live LogMate onboarding now has higher immediate product leverage. Continue S007 as the coherent block: next close provider-neutral identity/collision semantics and the exact account-required startup contract, then hand Codex a testable implementation plan. Do not award Auth/onboarding PASS before executable restart/offline/mismatch/provider-cancel evidence across relevant surfaces.
