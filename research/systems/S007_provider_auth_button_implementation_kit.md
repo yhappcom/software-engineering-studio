@@ -1,0 +1,99 @@
+# S007 — Provider Auth Button Implementation Kit
+
+Status: **PROJECT DECISION + SOURCE/SYNTHESIS; REUSABLE KIT PREPARED; EXACT-PRODUCT RUNTIME VALIDATION OPEN**
+Owner: Systems / Security / Identity
+Evidence date: 2026-09-24
+
+## Scope
+Prepare a reusable, copy-ready authentication-button kit for LogMate and future Flutter products while preserving Apple and Google provider branding authority.
+
+Exact product evidence: `yhappcom/logmate → main → e79f97cb7edd8823860daf14770a589f28a63ffc → declared 1.0.0+1 → evidence date 2026-09-24`. Default branch is not assumed production. The audited ref still lacks `google_sign_in` and still contains the older account-free opening path.
+
+## PROJECT DECISION
+- Account is mandatory for LogMate first use.
+- V1 providers are Apple, Google, and Email.
+- Apple and Google use provider-approved/system/provider-rendered button treatment rather than a LogMate-redrawn logo/button.
+- Email uses LogMate-owned UI.
+- Apple, Google, and Email must have comparable prominence, width, tap target, and placement.
+- Provider branding remains provider-owned; LogMate styling is applied around the controls rather than by redrawing the provider marks.
+
+## SOURCE
+Apple HIG states that system-provided Sign in with Apple buttons guarantee Apple-approved appearance, proportions, localization, and accessibility. Apple also permits custom buttons under strict rules and provides official assets / secure button-image endpoints. `ASAuthorizationAppleIDButton` is the native iOS/macOS control.
+
+Google Sign in with Google branding guidance recommends Google Identity Services rendered buttons or pre-approved downloadable button assets. The button must be at least as prominent as other third-party sign-in options. Current Flutter `google_sign_in` guidance requires the SDK-rendered web button via `google_sign_in_web.renderButton()`; native platforms can use user-initiated UI with `authenticate()`.
+
+Firebase Flutter federated-auth guidance currently identifies the official `google_sign_in` plugin for native Google authentication and `AppleAuthProvider` for Apple. Provider button rendering and provider credential/session handling remain separate concerns.
+
+Primary sources rechecked 2026-09-24:
+- Apple HIG — Sign in with Apple
+- Apple `ASAuthorizationAppleIDButton`
+- Apple Sign in with Apple REST button endpoints / web button guidance
+- Google Sign in with Google Branding Guidelines
+- Google Identity Services web `renderButton`
+- Flutter `google_sign_in` 7.2.x guidance
+- Firebase Flutter federated identity guidance
+
+## Reusable implementation kit
+Canonical fixture:
+`research/systems/fixtures/S007_auth_provider_buttons/`
+
+The kit intentionally does **not** redraw either provider logo and does not vendor fonts. It contains:
+1. an asset acquisition script that pulls only provider-approved image resources from provider-owned endpoints;
+2. Flutter wrappers for provider-approved image buttons and the LogMate Email button;
+3. a native iOS `ASAuthorizationAppleIDButton` platform-view bridge;
+4. a Web Google renderer example using the official Flutter Google web renderer;
+5. dependency/configuration fragments and integration instructions.
+
+The asset acquisition script is the canonical way to refresh binary provider assets. This avoids treating stale copied artwork as Studio-owned branding truth.
+
+## Platform matrix
+| Surface | Apple | Google | Email |
+| --- | --- | --- | --- |
+| iOS/iPadOS | Prefer native `ASAuthorizationAppleIDButton`; official generated PNG is fallback/reference | Google pre-approved native image button + official `google_sign_in` authentication | LogMate Flutter button |
+| Android | Apple official generated button image + Firebase/Apple provider flow | Google pre-approved image button + official `google_sign_in` / current Google identity flow | LogMate Flutter button |
+| PWA/Web | Apple official web/REST-generated button presentation; provider auth via supported web flow | `google_sign_in_web.renderButton()` / GIS renderer | LogMate Flutter/web button |
+
+## Engineering constraints
+- Do not recolor, crop, stretch, recreate, or substitute either provider logo.
+- Do not ship the Google SVG variants without the required Google font handling; the kit fetches PNG resources by default.
+- Apple button type should use `continue` where one control covers both first-time account creation and returning sign-in; use `sign-in` only when the product language is explicitly sign-in-only.
+- Provider button tap must delegate into provider-neutral Auth commands; UI assets never become identity authority.
+- Loading/disabled state must not modify provider artwork in a way that violates branding. Prefer an external progress indicator or disable pointer input while preserving the image.
+- Provider-specific errors must map to typed Auth outcomes rather than leak raw SDK strings.
+- Button visibility/prominence must remain comparable across Apple/Google/Email.
+
+## VALIDATION
+No exact LogMate compile, native bridge registration, Firebase provider configuration, App Review, Play verification, real Google/Apple sign-in, or PWA browser execution is claimed by this note.
+
+Required transfer validation after LogMate integration:
+1. `flutter pub get` / static analysis on the exact LogMate ref;
+2. widget semantics and hit-target tests;
+3. iOS simulator/device system Apple button rendering;
+4. Android/iOS Google button + authentication;
+5. Web Google SDK-rendered button;
+6. Web Apple button + auth callback;
+7. light/dark provider-button prominence inspection;
+8. screen-reader labeling;
+9. provider cancellation / duplicate tap / network-outcome-unknown behavior.
+
+## RELATED DOMAIN CHECK
+- Foundations: no new prerequisite.
+- Architecture: provider button rendering remains a UI adapter; provider-neutral Auth command boundary retained.
+- Mobile: iOS native button bridge and native provider flows need exact-platform transfer.
+- Data: no ownership mutation may happen at button-render level.
+- Quality: exact-product widget/native/web tests required.
+- Systems: owns provider auth/security/integration contract.
+- Design Studio: provider branding is a hard external constraint; LogMate composition may style spacing/background but not redefine provider marks. No Design Studio files edited.
+- Web Manager: PWA provider rendering/authorized-origin configuration remains a downstream dependency. No Web Manager files edited.
+- Marketing Manager: not materially relevant.
+- Product: LogMate exact ref checked; no product files edited.
+
+## HANDOFFS
+- **LogMate / Codex:** copy/adapt the kit, run the official asset fetcher, add the official Google dependencies, register the Apple native platform view where selected, and connect presses to provider-neutral Auth commands. Do not redraw provider logos.
+- **Design Studio:** treat provider button artwork/brand rules as immutable external constraints; design only the surrounding composition and comparable prominence.
+- **Quality/Mobile:** validate native/Web rendering and provider flows on exact LogMate artifacts before release.
+
+## CHANGE WATCH / OPEN
+- Google branding assets, Flutter `google_sign_in`/web renderer APIs, Apple HIG/button endpoints, Flutter platform-view APIs, and store/provider verification requirements are CHANGE WATCH.
+- Exact LogMate dependency compatibility and provider configuration remain OPEN.
+- No product/runtime PASS is awarded from this reusable kit.
