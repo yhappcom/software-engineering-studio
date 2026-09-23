@@ -17,43 +17,41 @@ Build engineering capability to define correctness, design tests with valid orac
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q002_test_levels_evidence_boundaries.md`.
 
 ### Q003 — Determinism, nondeterminism, concurrency and flaky-test mechanics
-**IN STUDY — two integrated Foundation blocks complete.** Canonical: `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md`. Shared-memory schedule failure plus deterministic 24-order timeout/complete/cancel/retry matrix retained; naive retry violated at-most-one logical effect in 12/24 schedules versus 0/24 with stable operation identity + bounded deduplication.
+**IN STUDY — two integrated Foundation blocks complete.** Canonical: `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md`. Shared-memory schedule failure plus deterministic timeout/complete/cancel/retry evidence retained.
 
 ### Q004 — Property/model-based testing, invariant checking, mutation sensitivity and search strength
-**IN STUDY — TWO EXECUTABLE BLOCKS COMPLETE.** Canonical: `research/quality/Q004_property_model_based_testing_invariants.md`, `research/quality/Q004_mutation_sensitivity_search_strength.md`. Bounded generation/shrinking plus exhaustive-vs-generated and deliberate mutation sensitivity evidence retained. Broader runtime/platform transfer remains OPEN.
+**IN STUDY — TWO EXECUTABLE BLOCKS COMPLETE.** Canonical: `research/quality/Q004_property_model_based_testing_invariants.md`, `research/quality/Q004_mutation_sensitivity_search_strength.md`. Broader runtime/platform transfer remains OPEN.
 
 ### Q005 — Debugging, fault isolation and observability foundations
-**IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`. Symptom/correlation/root-cause separation, identical-symptom injected defects, independent invariant and bounded causal intervention retained.
+**IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
 
 ### Q006 — Fault injection, recovery verification and regression governance
-**IN STUDY — process-crash recovery transfer + CI verdict-propagation failure→fixture-isolation→repair→hosted-regression chain complete.**  
-Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`, `research/quality/Q006_real_crash_recovery_oracle_transfer.md`, `research/quality/Q006_ci_pipeline_exit_status_oracle_integrity.md`.
+**IN STUDY — process-crash recovery + CI verdict-propagation failure/isolation/repair/regression + complete selected-pattern workflow inventory + first repository semantic false-green repair.**  
+Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`, `research/quality/Q006_real_crash_recovery_oracle_transfer.md`, `research/quality/Q006_ci_pipeline_exit_status_oracle_integrity.md`, `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`.
 
-The retained Python/Linux/SQLite transfer uses actual child-process termination and fresh-process reopen to discriminate structural DB health from semantic recovery/replayability.
+The retained hosted Bash discriminator established that evidence preservation and verdict propagation are independent controls. Repaired exact head `bd763b301752b3adebd36b963c06d064aec94ca8`, run `35792678785`, observed control/treatment pipeline statuses 0/23 while both logs preserved the same producer failure payload.
 
-The M006 natural false-green exposed a separate regression-governance class: a verdict-bearing command piped through `tee` can preserve failure output while the enclosing pipeline reports success when producer exit status is not propagated. The first hosted Q006 discriminator then exposed its own isolation defect because `pipefail` contaminated the intended control. Repaired exact head `bd763b301752b3adebd36b963c06d064aec94ca8`, run `35792678785`, job `106964648579` completed success on Ubuntu 24.04.5 / GNU Bash 5.2.21. Observed control/treatment statuses were 0 and 23 respectively while both logs preserved `PRIMARY_ORACLE_FAIL`; artifact `10722128536`, digest `sha256:6b8e03ea4f4bd01d10334ddee40065b7fbc6c1acaf4b85cb2719baabfc61f903`.
+The checkout-local inventory replaced incomplete GitHub code search. Exact head `d573b47f05a1d5f65daea94d4133dcc221973d2a`, run `35837301494`, artifact `10739703444`, directly enumerated 29 workflow files and 131 selected lexical risk hits. **VALIDATION:** this is a complete selected-pattern inventory at that exact ref, not a semantic-correctness PASS.
 
-**VALIDATION:** evidence preservation and verdict propagation are independently testable properties. **VALIDATION:** experimental controls must explicitly isolate inherited shell state when that state is the independent variable.
-
-A repository code-search for `tee` returned incomplete results and even missed the known Q006 workflow; therefore no repository-wide absence claim was made. A complete semantic audit remains OPEN.
+Semantic review found a genuine false-green path in `s005-attestation-verification-boundary.yml`: positive attestation query/exact-verification checks used `continue-on-error`, but the aggregate oracle asserted only the two negative controls. Commit `6216003dc4d42c1ea2156500bcc1df1d404c045d` added fail-closed assertions for all four required outcomes. **VALIDATION:** run `35843352058`, job `107123462773`, exact repaired head, completed failure with the final aggregate-verdict step failing after diagnostic checks ran. This is intended fail-closed regression evidence: a required positive failure is no longer silently converted to a green job. It does not resolve the separate historical-attestation availability root cause.
 
 ## Gate assessment
-Quality Stage 1 remains **NOT PASS**. Q001-Q006 have professional Foundation boundaries and Q006 now includes a natural CI false-green, failed first discriminator, root-cause/isolation repair and successful hosted regression. Mobile/backend/storage-power/production release-gate transfer remains materially incomplete. Direct Dart JIT/AOT and Flutter runtime evidence exists in Foundations; older Quality notes saying the SDK/runtime is unavailable are stale and must not be used as the current blocker.
+Quality Stage 1 remains **NOT PASS**. Q001-Q006 have substantial Foundation evidence and Q006 now includes both synthetic and natural false-green mechanisms plus a repository-wide selected-pattern inventory and one semantic repair/regression. Repository-wide semantic classification, non-pattern verdict sampling, non-Bash/platform transfer, physical/mobile/backend/storage-power and production release-gate evidence remain incomplete.
 
 ## Dependencies / handoffs
-- **Foundations:** F001 direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; F003-F006 continue to supply state-space, concurrency, async and transport mechanisms.
+- **Foundations:** direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; older SDK-unavailable notes are stale.
 - **Architecture:** contracts/invariants and externally meaningful progress state supply semantic recovery oracles.
-- **Mobile:** M006 supplied the natural false-green case; future device/browser harnesses should preserve semantic exit status independently from log capture.
+- **Mobile:** M006 supplied the first natural false-green case; navigation/property lifetime remains separate from shell verdict propagation.
 - **Data:** recovery oracles must compare semantic state with durable progress/replayability.
-- **Systems:** CI/release gates must preserve verdict propagation and evidence artifacts as separate controls; shell-specific and production release-gate transfer remain required.
+- **Systems:** S005 supplied the second natural verdict-propagation defect. Diagnostic continuation is acceptable only when every required positive/negative outcome participates in a fail-closed aggregate verdict.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical evidence there changes this bounded Quality method.
 
 ## CHANGE WATCH / OPEN
-- Repository-wide semantic audit for equivalent verdict-bearing pipelines remains OPEN; current code-search result was explicitly incomplete and is not an absence oracle.
+- Semantic classification of the remaining selected-pattern hits remains OPEN; 131 lexical hits are not 131 defects.
+- Verdict-bearing commands outside the selected lexical patterns require sampling.
 - PowerShell/cmd/other CI-shell transfer remains OPEN.
 - Q004 broader framework/platform transfer remains OPEN.
 - Q006 actual Android/iOS process death, backend/cursor batches, combined network+process faults, filesystem/device/power faults and production release-gate evidence remain OPEN.
-- Stronger cross-platform/runtime transfer remains required for Quality Foundation closure.
 
 ## Next work
-Return to Balance Loop. Do not repeat synthetic Bash `pipefail` variants. Prefer a materially stronger evidence class: a trustworthy complete semantic CI audit, shell/platform transfer, physical/mobile failure boundary, exact-product/release-gate evidence, or another track's stronger Stage-1 gap.
+Continue the same Q006 professional boundary until repository semantic classification is credible. Prioritize verdict-bearing `continue-on-error`, `set +e`, `exit 0`, and `tee` paths; classify each as protected, diagnostic-only, expected-failure control, explicit status-capture/fail-closed, or genuine false-green. Repair and hosted-regress any additional genuine defect before considering semantic-audit closure.
