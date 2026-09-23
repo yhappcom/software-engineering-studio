@@ -35,6 +35,7 @@ Canonical reusable research is organized by specialist ownership: `research/foun
 - `S004` — exact product baseline/lock/build-path transfer; canonical source build/artifact identity remains dependent on source acquisition.
 - `S005` — bounded generic offline attestation verification closed; historical availability contradiction retained; Q006 now enforces positive and negative verification outcomes in the older verification-boundary workflow.
 - `S006` — rollback/change-safety + directory-sync publication failure evidence; hard-power-loss transfer OPEN.
+- `S007` — authentication identity/session/account-required onboarding foundations. Exact LogMate ref `e79f97c...` still encodes account-free startup; new owner direction supersedes that intended path but product canonical update and executable Android/iOS/PWA validation remain OPEN. Canonical: `research/systems/S007_auth_identity_session_onboarding_foundations.md`.
 
 ## Research note minimum contract
 A substantial note should contain, as applicable: problem/scope, authoritative sources, mechanism/model, implementation/worked example, executable validation/environment, failure/root cause, alternatives, RELATED DOMAIN CHECK, transfer limits, OPEN/VALIDATION/CHANGE WATCH, and HANDOFFS.
