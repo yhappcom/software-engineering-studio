@@ -1,70 +1,82 @@
 # S005 — Offline attestation verification attempt
 
-Status: **IN STUDY — OFFLINE VERIFICATION NOT ESTABLISHED; BUNDLE EXPORT 404 ISOLATED**  
+Status: **IN STUDY — FRESH-ATTESTATION OFFLINE DISCRIMINATOR COMMITTED; EXECUTION PENDING**  
 Evidence date: 2026-09-23
 
 ## Problem / scope
 Separate online attestation retrieval from verification and execute verification with a local attestation bundle and trusted-root material while outbound networking is unavailable.
 
 ## SOURCE
-Current GitHub documentation rechecked 2026-09-23 states that offline verification requires the artifact, downloaded attestation bundle, trusted-root material and verifier. The documented preparation is `gh attestation download <artifact> -R <owner/repo>` plus `gh attestation trusted-root > trusted_root.jsonl`; verification then uses `--bundle` and `--custom-trusted-root`. Repository attestation lookup accepts a `sha256:<digest>` subject and may return 404; public-repository lookup can be unauthenticated, while authenticated fine-grained access requires attestations read permission.
+Current GitHub documentation rechecked 2026-09-23 states that offline verification requires the artifact, downloaded attestation bundle, trusted-root material and verifier. The documented preparation is `gh attestation download <artifact> -R <owner/repo>` plus `gh attestation trusted-root > trusted_root.jsonl`; verification then uses `--bundle` and `--custom-trusted-root`.
+
+Current GitHub artifact-attestation guidance uses `actions/attest@v4` for new provenance generation with `id-token: write`, `contents: read`, and `attestations: write`. The action's current primary repository additionally states that every created attestation is stored on the runner filesystem and its path appended to `${RUNNER_TEMP}/created_attestation_paths.txt`. This creates an independent preservation surface at generation time, distinct from later repository-API retrieval.
+
+GitHub's attestation lifecycle documentation explicitly supports deletion and recommends downloading a copy before deletion; after deletion the attestation can no longer be found on GitHub. This establishes lifecycle mutability as a real service property, but does not prove that deletion caused the historical 404 below.
 
 Primary sources:
 - https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/verify-attestations-offline
-- https://docs.github.com/en/rest/repos/attestations
-- https://cli.github.com/manual/gh_attestation_download
+- https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations
+- https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/manage-attestations
+- https://github.com/actions/attest
 
-## TARGET
+## Historical target and contradiction
 - repository: `yhappcom/software-engineering-studio`
 - generation commit: `ab6dbf4307078fc82ddc056029f686dd61eae3a7`
 - subject SHA-256: `9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071`
 - prior successful hosted verification run/job: `35409747108` / `105806806534`
-- workflow: `.github/workflows/s005-offline-attestation-verification.yml`
 
-## VALIDATION / FAILURE / DEBUGGING
-Runs 1–4 progressively isolated the failure from subject reconstruction and combined export to canonical CLI bundle export. Run 5, exact head `53971088727987560f3dde2f3c31e9b999af4627`, run/job `35818471643` / `107045026937`, completed **failure** while preserving diagnostics.
+Run 5, exact head `53971088727987560f3dde2f3c31e9b999af4627`, run/job `35818471643` / `107045026937`, completed failure while preserving diagnostics. Run-bound artifact `10731184861`, digest `sha256:f64bb749ae4ac777b2aa8081652b0cd1a6f75b89e989b57c2fcf5ee5e535102e`, records GitHub CLI `2.100.0 (2026-09-03)`, authenticated `github-actions[bot]`, bundle producer exit `1`, and repository-attestation HTTP 404 for the exact historical digest.
 
-Run-bound artifact `10731184861`, digest `sha256:f64bb749ae4ac777b2aa8081652b0cd1a6f75b89e989b57c2fcf5ee5e535102e`, was directly inspected. It records:
-- GitHub CLI `2.100.0 (2026-09-03)`;
-- authenticated `github-actions[bot]` via `GH_TOKEN`;
-- reconstructed subject commit `ab6dbf4307078fc82ddc056029f686dd61eae3a7`;
-- bundle producer exit code `1`;
-- exact stderr: attestation fetch returned HTTP 404 for repository `yhappcom/software-engineering-studio` and subject digest `sha256:9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071`.
+**CONTRADICTION:** prior hosted online verification reportedly succeeded for this exact subject/repository, whereas current lookup returns 404. GitHub documents that attestations can be deleted, but there is no direct evidence that deletion occurred here. Retention/lifecycle change, historical identity error, service-side indexing/state change, or another availability mechanism remain unresolved; no deeper ROOT CAUSE is assigned.
 
-The fail-closed step then failed and trusted-root/offline verification steps were skipped. Thus the current failure is no longer an opaque CLI/token setup failure: the authenticated CLI reached the repository-attestation lookup and that lookup returned 404 for the exact subject digest.
+## New coherent validation block — fresh generation → immediate preservation → isolated verification
+Balance Loop comparison favored continuing S005 over new Foundations/Mobile/Data variants because the historical export failure now has a precise boundary, release provenance has cross-product leverage, and the next discriminator can remove the historical-retrievability dependency entirely.
+
+Exact workflow repair/discriminator commit: `e43d3625be67f7d7699e703a06e181c07db16473` (`.github/workflows/s005-offline-attestation-verification.yml`).
+
+The new workflow:
+1. creates a fresh deterministic subject;
+2. generates provenance with `actions/attest@v4` under explicit OIDC/attestation permissions;
+3. proves the runner-local created-attestation path list exists and hashes each local bundle before any later retrieval;
+4. immediately downloads the same fresh subject's repository bundle with `gh attestation download` and hashes it;
+5. exports and hashes current trusted roots;
+6. enters a new Linux network namespace and first proves `api.github.com` is unreachable;
+7. performs positive verification using only the local subject, bundle and trusted roots;
+8. in separately isolated namespaces requires wrong-repository identity and mutated-subject verification to fail;
+9. preserves semantic evidence with `if: always()`.
+
+This is intentionally a causal discriminator. If generation succeeds and immediate API download succeeds, the historical 404 is bounded to historical attestation availability rather than generic current CLI/auth/repository lookup. If runner-local bundle exists but immediate API download fails, local creation vs repository publication/retrieval becomes the next boundary. If offline positive verification fails after successful export, the verifier/root/network-isolation stage becomes independently diagnosable.
+
+At the time of this note, the exact-head Actions run had not yet appeared in the workflow-runs API. Therefore there is **no execution verdict yet** and no PASS is awarded.
 
 ## SYNTHESIS
-Online verification and later offline-input export are temporally distinct predicates. A previously verified subject does not prove that its bundle remains retrievable later. Offline verification therefore requires preservation/export of the bundle as part of the evidence lifecycle, not merely a historical online verification result.
-
-## CONTRADICTION
-Prior hosted online verification reportedly succeeded for this exact subject/repository, whereas the current repository-attestation lookup returns 404. This is a real temporal evidence contradiction, but the available execution does **not** distinguish among attestation deletion/retention/lifecycle change, historical identity error, service-side indexing/state change, or another repository-attestation availability mechanism. Do not assign a deeper root cause without direct evidence.
+Online verification, later evidence retrieval, and offline verification are distinct predicates. A previously verified subject does not prove indefinite future bundle retrievability. Generation-time preservation is stronger for offline-evidence continuity than relying only on future repository API availability.
 
 ## ENGINEERING JUDGMENT
-Treat attestation bundle availability as a release artifact-retention dependency. If offline verification is required, export and preserve the bundle and trusted roots at attestation/release time rather than depending on indefinite future API retrieval.
+For release paths requiring later offline provenance verification, preserve the attestation bundle and trusted roots as evidence artifacts at attestation/release time. Do not use a historical online verification result as a substitute for preserved signed material.
 
 ## RELATED DOMAIN CHECK
-- Foundations: current F001 direct Dart/Flutter evidence means it is not this block's blocker.
-- Architecture: release state must distinguish verification-at-time-T from later evidence retrievability.
-- Mobile: no app artifact/mobile signing transfer occurred.
-- Data: evidence retention/lifecycle is materially implicated as a systems concern; no storage PASS awarded.
-- Quality: Q006 evidence-preservation vs verdict-propagation transfer succeeded here; producer failure remained red while diagnostics survived.
-- Systems: S005 remains owner.
-- Design Studio / Web Manager / Marketing Manager: no canonical decision materially changes this supply-chain boundary.
-- Product repositories: no product audit or production claim in this block.
+- Foundations: direct Dart JIT/AOT and bounded Flutter runtime evidence already exists; not a blocker.
+- Architecture: release state must distinguish generated, published/retrievable, verified-online, evidence-preserved, and verified-offline states.
+- Mobile: no app artifact/mobile signing transfer occurs in this Studio fixture.
+- Data: evidence lifecycle/retention is relevant; this does not establish application-data durability.
+- Quality: Q006 preservation-vs-verdict separation is retained; positive and two negative semantic oracles are explicit.
+- Systems: S005 owns release provenance and verification.
+- Design Studio / Web Manager / Marketing Manager: considered; no current canonical decision changes this supply-chain mechanism.
+- Product repositories: no product audit or production claim; exact-product release transfer remains future work.
 
 ## HANDOFFS
 ### TO Quality / release engineering
-For provenance gates, preserve run-bound bundle/trusted-root evidence when generated. A later green/failed lookup is not a substitute for the original signed-material evidence.
+Treat generation, repository publication/retrievability, local evidence preservation and verification as separate release-gate predicates. Preserve failure evidence without masking producer/verifier verdicts.
 
 ### TO Mobile / product release
-Offline provenance transfer still requires exact product repository/ref/version, canonical artifact digest, preserved attestation bundle/root inputs, executed identity policy and delivered-artifact identity.
+A later product transfer must bind `repository → exact ref/tag/branch/commit → declared version → evidence date → canonical build path → artifact digest → attestation bundle/root → verification policy`; this generic fixture cannot substitute for delivered-product provenance.
 
 ## OPEN / VALIDATION / CHANGE WATCH
-- OPEN: explain the temporal contradiction between prior successful online verification and current 404 only with direct evidence; do not speculate.
-- VALIDATION: generate or identify a currently retrievable attested subject, export its bundle immediately, and preserve it run-bound.
-- VALIDATION: export trusted roots and perform positive verification inside demonstrable network isolation.
-- VALIDATION: wrong-repository and mutated-subject rejection in that same isolated context.
-- CHANGE WATCH: GitHub CLI, attestation API, Sigstore roots and hosted-runner images are version/service sensitive.
+- VALIDATION: observe terminal result for exact head `e43d3625be67f7d7699e703a06e181c07db16473` and inspect its run-bound semantic artifact before any PASS.
+- OPEN: historical 404 deeper cause remains unresolved; do not infer deletion from lifecycle documentation alone.
+- VALIDATION: after generic positive/negative offline verification succeeds, transfer to a real release/product artifact when authorized.
+- CHANGE WATCH: GitHub CLI, `actions/attest`, attestation API, Sigstore roots and hosted-runner images are version/service sensitive.
 
 ## Gate effect
-No Systems PASS. Run 5 closes the opaque-export diagnostic boundary: the exact current failure is repository-attestation lookup HTTP 404 for the historical subject. Offline verification remains OPEN.
+No Systems PASS. The new discriminator advances the evidence design but has not yet executed.
