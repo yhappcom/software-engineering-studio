@@ -1,21 +1,23 @@
 # S005 — Offline attestation verification attempt
 
-Status: **IN STUDY — OFFLINE VERIFICATION NOT YET ESTABLISHED; INPUT-EXPORT FAILURE ISOLATED**  
-Evidence date: 2026-09-19
+Status: **IN STUDY — OFFLINE VERIFICATION NOT YET ESTABLISHED; BUNDLE-EXPORT DIAGNOSTIC REGRESSION RUNNING**  
+Evidence date: 2026-09-23
 
 ## Problem / scope
-The preceding S005 block established hosted attestation retrieval/verification plus wrong-repository and mutated-subject rejection. The next evidence rung is to separate online retrieval from verification and execute verification with a local attestation bundle and trusted-root material while outbound networking is unavailable.
+Separate online attestation retrieval from verification and execute verification with a local attestation bundle and trusted-root material while outbound networking is unavailable. Prior runs isolated failure to bundle export but lacked command-level stderr, so no root cause was assigned.
 
 ## SOURCE
-GitHub's current offline-verification guidance states that offline verification requires four imported inputs: GitHub CLI, artifact, attestation bundle, and `trusted_root.jsonl`. It documents `gh attestation download`, `gh attestation trusted-root`, and `gh attestation verify ... --bundle ... --custom-trusted-root ...`. GitHub also warns that trusted-root material must be refreshed as key material rotates/revocation knowledge changes.
+Current GitHub documentation and GitHub CLI manual were rechecked 2026-09-23. Offline verification requires the artifact, downloaded attestation bundle, trusted-root material and verifier. The documented online preparation is `gh attestation download <artifact> -R <owner/repo>` followed by `gh attestation trusted-root > trusted_root.jsonl`; offline verification uses `gh attestation verify ... --bundle ... --custom-trusted-root ...`. `gh attestation download` remains public preview and therefore CHANGE WATCH. GitHub CLI automation documentation states that Actions should expose `${{ github.token }}` through `GH_TOKEN`.
 
-Primary sources checked 2026-09-19:
+Primary sources:
 - https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/verify-attestations-offline
+- https://cli.github.com/manual/gh_attestation_download
 - https://cli.github.com/manual/gh_attestation_trusted-root
 - https://cli.github.com/manual/gh_attestation_verify
+- https://cli.github.com/manual/gh_auth_login
 
-## DEPENDENCY / F001 check
-The local execution environment was checked first. No trustworthy `dart` or `flutter` executable was available, so F001 direct Dart JIT/AOT and Flutter runtime validation remains OPEN. The environment also did not expose a local `gh` executable, so the higher S005 rung was attempted on GitHub-hosted Actions rather than simulated locally.
+## F001 / Balance Loop prerequisite check
+Canonical Foundations status now supersedes the stale 2026-09-19 environment note: direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist. F001 is therefore not the blocker for this S005 block. Balance Loop selected S005 because the unresolved provenance verifier boundary has release/supply-chain leverage, an existing real contradiction, and cross-track Quality/Systems reuse value without repeating the professionally closed Safari lifecycle block.
 
 ## TARGET
 Exact prior attested subject:
@@ -23,83 +25,59 @@ Exact prior attested subject:
 - generation commit: `ab6dbf4307078fc82ddc056029f686dd61eae3a7`
 - subject SHA-256: `9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071`
 - prior successful hosted verification run/job: `35409747108` / `105806806534`
-
-New workflow: `.github/workflows/s005-offline-attestation-verification.yml`.
+- workflow: `.github/workflows/s005-offline-attestation-verification.yml`
 
 ## VALIDATION / FAILURE / DEBUGGING
 ### Run 1 — oracle fixture defect
-- commit: `b6fbbae2191b8d7b415d893f089515e66cce30f8`
-- run/job: `35412950674` / `105816006131`
-- result: failure in `Reconstruct exact attested subject`; all later steps skipped.
+Commit `b6fbbae2191b8d7b415d893f089515e66cce30f8`, run/job `35412950674` / `105816006131`: exact subject reconstruction failed. Root cause was a fixture byte mismatch, not attestation behavior.
 
-Root cause was established by comparing the workflow to the previously successful verification fixture: the new workflow reconstructed different bytes while asserting the old digest. This was a test-fixture defect, not attestation failure. The subject reconstruction was corrected to the exact prior bytes.
+### Run 2 — combined input-export failure
+Commit `c1fd34167619f4dbe4f695c1b1b49f5cf0741e7e`, run/job `35412968384` / `105816055855`: exact subject reconstruction passed; combined bundle/root export failed; later steps skipped.
 
-### Run 2 — online input-export step failed
-- commit: `c1fd34167619f4dbe4f695c1b1b49f5cf0741e7e`
-- run/job: `35412968384` / `105816055855`
-- exact subject reconstruction: success
-- combined bundle/trusted-root export step: failure
-- offline verification steps: skipped
+### Run 3 — REST-style bundle export failure
+Commit `dffe6476cd7d63297bdfe5ba560ee1fefc8e9d16`, run/job `35412983659` / `105816098288`: failure isolated to the bundle export implementation; command stderr unavailable.
 
-Because the combined step contained multiple commands and the available evidence channel did not expose the command log, this run did not isolate which command failed.
+### Run 4 — canonical CLI bundle export failure
+Commit `66dd238e6bf0041c18fbd4e8aea3027c48a48d59`, run/job `35413003999` / `105816156294`: exact subject reconstruction succeeded and `Export attestation bundle while online` failed; trusted-root and offline verification were skipped. Exact workflow inspection confirms `contents: read`, `attestations: read`, and `GH_TOKEN: ${{ github.token }}` were already present, so the current GitHub CLI automation guidance does not justify a missing-token root-cause claim.
 
-### Run 3 — REST-style bundle export isolated and failed
-- commit: `dffe6476cd7d63297bdfe5ba560ee1fefc8e9d16`
-- run/job: `35412983659` / `105816098288`
-- exact subject reconstruction: success
-- `Export attestation bundle by exact digest`: failure
-- trusted-root and offline verification steps: skipped
+### Run 5 — diagnostic preservation repair
+Commit `53971088727987560f3dde2f3c31e9b999af4627` modifies only the validation harness. Bundle export now records GitHub CLI version/auth status, stdout, stderr and producer exit code, uploads those diagnostics with `if: always()`, and then fails closed if export failed. This prevents the prior evidence channel from discarding the exact failure payload while preserving the same canonical `gh attestation download` operation.
 
-This narrowed the failure boundary to bundle export in that implementation, but the current evidence channel still did not expose the command error payload. No permission/service/CLI/network cause is assigned.
-
-### Run 4 — canonical `gh attestation download` export also failed
-- commit: `66dd238e6bf0041c18fbd4e8aea3027c48a48d59`
-- run/job: `35413003999` / `105816156294`
-- exact subject reconstruction: success
-- canonical `gh attestation download` bundle-export step: failure
-- trusted-root and offline verification steps: skipped
-
-The failure therefore survived a materially different bundle-export implementation, but without command-level stderr it is not sufficient to prove a root cause. It also does not contradict the prior hosted online `gh attestation verify` success, because online verification and explicit offline-bundle export are distinct operations.
+Run `35818471643` is currently in progress. **No verdict is assigned until terminal run state and run-bound diagnostic artifact are inspected.**
 
 ## SYNTHESIS
-The intended evidence chain is:
-
-`online attestation generation → online bundle/root export → transport of fixed verification inputs → network-isolated cryptographic/identity verification → negative policy cases`.
-
-This run did **not** establish the final offline-verification predicate. It did establish two useful boundaries:
-1. exact subject reconstruction is a prerequisite oracle and can itself invalidate the experiment;
-2. successful hosted online verification does not establish that the bundle/root export path needed for offline verification is operational in the same CI context.
+Online verification and offline-input export are distinct executable predicates. A release gate that claims offline provenance verification must prove both acquisition of fixed verification inputs and verification without network access. Failure diagnostics are part of the evidence contract when root-cause classification depends on external CLI/service behavior.
 
 ## CONTRADICTION
-Prior hosted online verification succeeded for the exact subject/repository, while the new explicit bundle-export attempts failed. These observations are not logically inconsistent, but they expose a tooling/service-path difference that requires command-level evidence before assigning cause.
+Prior hosted online verification succeeded for the exact subject/repository, while explicit bundle-export attempts failed. These observations remain non-logically-inconsistent but operationally contradictory enough to require command-level evidence. Do not infer service outage, token scope defect, subject absence, CLI defect or attestation expiration before run 5 diagnostics establish one of them.
 
 ## ENGINEERING JUDGMENT
-Do not make offline verification a release requirement until the pipeline can deterministically export and preserve the bundle and trusted-root inputs and independently verify them. A policy that names offline verification but cannot produce its verification inputs is not an executable release gate.
+Do not make offline verification a release requirement until the pipeline deterministically exports and preserves bundle/root inputs and independently verifies them. Diagnostic preservation must itself fail closed: evidence capture may not convert a producer failure into a green release verdict.
 
 ## RELATED DOMAIN CHECK
-- Foundations: F001 direct Dart/Flutter execution attempted first; still unavailable.
-- Architecture: evidence-critical release decisions must distinguish online verification from offline-input availability.
-- Mobile: no app artifact or mobile signing transfer occurred.
-- Data: no persistence/backup decision changed.
-- Quality: run 1 demonstrates a defective test fixture; runs 2-4 preserve failure classification without fabricated root cause.
-- Systems: S001/S004/S005 directly relevant; evidence rung did not advance to offline PASS.
-- Design Studio / Web Manager / Marketing Manager: considered; not materially relevant to this bounded supply-chain verification mechanism; no canonical files edited.
-- Product repositories: not audited in this block; no MintTap/LogMate production claim.
+- Foundations: current F001 evidence checked; direct Dart/Flutter is no longer the blocker.
+- Architecture: release decisions must distinguish online verification, input acquisition and offline verification states.
+- Mobile: no app artifact/mobile signing transfer occurred.
+- Data: not materially changed.
+- Quality: Q006 verdict/evidence separation directly informs the run-5 fail-closed diagnostic design.
+- Systems: S001/S004/S005 directly relevant.
+- Design Studio / Web Manager / Marketing Manager: considered; no canonical decision there changes this bounded supply-chain mechanism.
+- Product repositories: no product audit in this block; no MintTap/LogMate production claim.
 
 ## HANDOFFS
 ### TO Quality
-Treat test-fixture identity as part of the oracle contract. Preserve the run-1 subject mismatch as a regression example: a verifier experiment can fail before exercising the verifier.
+Run 5 is a natural transfer of Q006: diagnostic preservation and producer verdict propagation are separate controls. Inspect both artifact content and terminal outcome before accepting any S005 result.
 
 ### TO release engineering / Mobile
-Do not claim offline provenance verification from hosted online verification. Product transfer still requires exact product ref/version, canonical artifact digest, exportable attestation bundle/trusted roots, executed identity policy, and delivered-artifact identity.
+Do not claim offline provenance verification from hosted online verification. Product transfer still requires exact product ref/version, canonical artifact digest, exportable bundle/trusted roots, executed identity policy and delivered-artifact identity.
 
 ## OPEN / VALIDATION / CHANGE WATCH
-- OPEN / DEBUG: obtain command-level stderr/log evidence for bundle-export failures before assigning root cause.
+- OPEN / DEBUG: inspect run `35818471643` terminal result and diagnostic artifact; assign root cause only if payload supports it.
 - VALIDATION: successful `gh attestation download` or equivalent exact bundle export for the known subject.
 - VALIDATION: successful trusted-root export.
 - VALIDATION: positive verification inside a demonstrably network-isolated environment using only artifact + bundle + trusted root + verifier.
 - VALIDATION: wrong-repository and mutated-subject rejection in that same isolated context.
-- CHANGE WATCH: GitHub CLI, Actions, attestation API, Sigstore roots and hosted-runner images are version/service sensitive.
+- CHANGE WATCH: `gh attestation download` is public preview; GitHub CLI, Actions, attestation API, Sigstore roots and hosted-runner images are version/service sensitive.
 
 ## Gate effect
-No PASS awarded. S005 gained a real failed higher-rung attempt and a root-caused fixture defect, but offline independent verification remains OPEN.
+No PASS awarded. The professional boundary advanced from opaque export failure to a fail-closed, artifact-preserving diagnostic execution; root cause and offline verification remain OPEN.
