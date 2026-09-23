@@ -6,7 +6,7 @@ Evidence date: 2026-09-24
 
 ## Problem and product identity
 
-LogMate is moving from account-optional local-first entry to account-required first use while preserving offline-first daily operation after ownership is established. Firebase identity/session, local-ledger ownership/access, onboarding completion, provider reachability, and Sync eligibility remain separate state dimensions.
+LogMate is moving from account-optional local-first entry to account-required first use while preserving offline-first daily operation after ownership is established. Firebase identity/session, local-ledger ownership/access, onboarding completion, provider reachability, Sync eligibility, and account-deletion completion remain separate state dimensions.
 
 Exact product evidence: `yhappcom/logmate → main → e79f97cb7edd8823860daf14770a589f28a63ffc → declared 1.0.0+1 → evidence date 2026-09-24`. Default branch is not assumed production. This ref still exposes account-free entry and therefore CONTRADICTS the newer owner direction.
 
@@ -23,7 +23,10 @@ Primary sources retained/checked 2026-09-24:
 - https://firebase.google.com/docs/auth/flutter/account-linking
 - https://firebase.google.com/docs/auth/flutter/errors
 - https://firebase.google.com/docs/auth/flutter/federated-auth
-- https://firebase.google.com/docs/auth/web/apple
+- https://firebase.google.com/docs/auth/flutter/manage-users
+- https://firebase.google.com/docs/auth/android/apple
+- https://developer.apple.com/support/offering-account-deletion-in-your-app
+- https://developer.apple.com/documentation/accountorganizationaldatasharing/revoke-tokens
 
 ## PROJECT DECISION
 
@@ -31,42 +34,13 @@ Owner direction, 2026-09-23: remove normal `Start a new logbook`; first use requ
 
 ## SYNTHESIS — provider-neutral command and outcome algebra
 
-The shared abstraction is a product state transition, not a shared provider transport. Keep commands distinct:
+The shared abstraction is a product state transition, not a shared provider transport. Keep commands distinct: `authenticate(provider)`, `reauthenticate(provider)`, `link(provider)`, and `unlink(provider)`.
 
-- `authenticate(provider)`
-- `reauthenticate(provider)`
-- `link(provider)`
-- `unlink(provider)`
+Minimum typed outcomes: `authenticated(uid)`, `cancelled`, `credentialCollision`, `providerAlreadyLinked`, `providerUnavailableOrMisconfigured`, `networkOrOutcomeUnknown`, `rateLimited`, `requiresRecentLogin`, `accountDisabled`, `invalidCredential`, and fail-closed `failure`. Raw provider/Firebase codes are diagnostic metadata rather than product-state authority.
 
-A minimum typed outcome vocabulary should distinguish:
+Firebase Flutter guidance establishes `FirebaseAuthException.code` as the programmatic discriminator rather than message parsing. Web additionally exposes browser lifecycle errors such as popup blocked/closed and network failure; those Web codes are not claimed as native Flutter observations.
 
-| Product outcome | Representative lower-level evidence | Durable mutation rule |
-| --- | --- | --- |
-| `authenticated(uid)` | Firebase `UserCredential` established | owner/onboarding transition may begin only after UID is known |
-| `cancelled` | provider/user closes or cancels UI; Web popup closed | no owner/onboarding mutation |
-| `credentialCollision` | `account-exists-with-different-credential`, `credential-already-in-use` | no merge/rebind; recovery flow only |
-| `providerAlreadyLinked` | provider already attached to current user | idempotent/no owner mutation; UI may report already connected |
-| `providerUnavailableOrMisconfigured` | `operation-not-allowed`, unsupported environment, missing provider configuration | no durable mutation; operational remediation |
-| `networkOrOutcomeUnknown` | network failure, redirect/process interruption before authoritative result | no optimistic completion; recover from Firebase state on restart/return |
-| `rateLimited` | `too-many-requests`, quota/rate limiting | no durable mutation; retry/backoff UX |
-| `requiresRecentLogin` | sensitive operation lacks recent proof | preserve state; invoke explicit reauthentication |
-| `accountDisabled` | disabled Firebase user | deny cloud-sensitive operation; do not reinterpret as ordinary cancel |
-| `invalidCredential` | expired/invalid/malformed credential where distinguishable | no durable mutation |
-| `failure` | unclassified lower-level exception | fail closed; preserve diagnostic cause internally |
-
-### SOURCE — Firebase error surface
-
-Firebase Flutter error guidance establishes `FirebaseAuthException.code` as the stable programmatic discriminator rather than message parsing. It explicitly documents `too-many-requests` and `operation-not-allowed`, and the account-exists-with-different-credential recovery shape. Current Firebase JS Auth reference additionally exposes browser lifecycle codes such as `popup-blocked`, `popup-closed-by-user`, `network-request-failed`, `provider-already-linked`, `no-such-provider`, and `operation-not-supported-in-this-environment`. These are evidence for Web adapter classification, not proof that every code is emitted identically by FlutterFire on every platform.
-
-**ENGINEERING JUDGMENT:** product enums must be intentionally coarser than SDK exception taxonomies. They should encode whether mutation/retry/recovery is safe, while retaining raw provider/Firebase code as diagnostic metadata. Do not create one enum member for every current SDK code; that couples product state to volatile SDK internals.
-
-### Important ambiguity boundary
-
-`networkOrOutcomeUnknown` must not be treated as `cancelled` or `signedOut`. A provider/backend operation may have succeeded remotely while the client lost the response. Recovery should re-observe authoritative Firebase Auth state before retrying owner initialization, linking, unlinking, or deletion. This is especially important for Web redirect/reload and process interruption.
-
-### Collision recovery
-
-Firebase documentation describes account-exists-with-different-credential as: authenticate with the existing provider first, then link the pending credential. For LogMate this is safe only if the authenticated Firebase UID is the expected LogMate owner. Equal email is discovery/recovery context, never ledger ownership authority.
+`networkOrOutcomeUnknown` must not become `cancelled` or `signedOut`: redirect/process/network interruption can lose the response after a remote transition. Re-observe Firebase state before retrying durable owner/link/unlink/delete transitions.
 
 ## Startup/ownership matrix retained
 
@@ -81,30 +55,58 @@ Firebase documentation describes account-exists-with-different-credential as: au
 | explicit sign-out + bound ledger | Welcome; DB retained and locked |
 | established matching owner + transient transport failure | local access retained where durable contract permits; Sync degraded |
 
-Fresh-owner initialization and provider callback/redirect recovery must be idempotent. Explicit sign-out remains distinct from passive network/provider failure.
+## Account deletion / revocation transaction boundary
 
-## VALIDATION design — adapter tests before provider UI
+### SOURCE
 
-Source reading is insufficient for PASS. The next executable boundary can nevertheless validate product semantics without automating Google/Apple UI for every failure.
+Firebase Flutter `User.delete()` requires recent authentication; stale credentials fail with `requires-recent-login`, after which the user should explicitly reauthenticate rather than sign out/in as an implementation shortcut. Apple requires App Store apps that support account creation to allow deletion initiation inside the app, and apps using Sign in with Apple should revoke Apple authorization tokens. Apple's revoke endpoint is idempotent at the protocol result level: HTTP 200 also covers a token that was already invalidated.
 
-Build provider adapters behind injectable ports/fakes and execute table-driven tests asserting:
+Exact LogMate operations evidence already says provider token revocation/account deletion is NOT IMPLEMENTED / NOT VERIFIED and blocks release on executable deletion/revocation evidence. It also says authorization code/token material needed by the approved revocation design must be preserved. This is a valid product operational requirement, but the exact secure storage/backend mechanism is not yet decided.
 
-1. success returns exact UID before any owner mutation is permitted;
-2. cancel/popup-close maps to `cancelled` and mutation count remains zero;
-3. collision codes map to `credentialCollision`, preserve pending recovery metadata where safe, and never invoke owner rebind/merge;
-4. operation-not-allowed/configuration errors map to `providerUnavailableOrMisconfigured`;
-5. network failure maps to `networkOrOutcomeUnknown`, not sign-out/cancel;
-6. too-many-requests maps to `rateLimited`;
-7. recent-login-required maps to `requiresRecentLogin` for unlink/delete/sensitive operations;
-8. provider-already-linked is distinguishable from another-user credential collision;
-9. unknown SDK code fails closed while retaining code for diagnostics;
-10. duplicate success callbacks or redirect recovery invoke idempotent first-owner initialization once;
-11. reauthentication success must assert returned/current UID equals the ledger owner before sensitive mutation;
-12. Web popup-blocked/closed and redirect-return-without-result do not complete onboarding.
+### SYNTHESIS
 
-Then add Firebase Emulator/runtime tests for email/session/startup where supported, and real provider/platform tests for Google/Apple lifecycle/configuration. Emulator adapter tests cannot prove provider console, OAuth, browser popup, Apple capability, or physical-device behavior.
+Account deletion is a distributed multi-system operation, not a single `FirebaseUser.delete()` UI call. Potential authorities include:
 
-**OPEN:** exact current FlutterFire exception emission must be captured during implementation; do not fabricate codes from Web docs as native Flutter evidence.
+1. LogMate server-side user/sync data when Sync exists;
+2. Apple provider authorization when linked;
+3. Firebase Authentication user identity;
+4. local owner-bound ledger/device data.
+
+These transitions can partially succeed. Therefore a client must not show `Account deleted` merely because one call succeeded, and must not destroy the only local recovery evidence before remote completion is known.
+
+### ENGINEERING JUDGMENT — ordering and state model
+
+Do not encode deletion as one optimistic boolean. Model at least `idle → reauthenticationRequired/authorized → deletionInProgress → completed | retryableIncomplete | outcomeUnknown | terminalFailure` with per-authority completion evidence retained until the operation reaches its defined terminal state.
+
+The safest exact ordering depends on future Sync/backend authority and Apple-token handling, so no universal sequence is declared PASS here. Two alternatives have materially different failure modes:
+
+- **Firebase-first:** removes the principal Firebase identity early, but later Apple/server cleanup may lose convenient authenticated authorization/context.
+- **remote/provider cleanup first:** preserves Firebase identity for authenticated cleanup/retry, but a later Firebase deletion failure leaves an account whose provider/server side may already be partially revoked/deleted.
+
+Therefore Codex should first introduce an orchestration boundary and explicit partial-state journal rather than hard-code an irreversible ordering before backend/Sync semantics are known.
+
+Local ledger deletion is also a separate product choice from account deletion. If product policy says account deletion deletes local logbook data, perform it only at the explicitly defined terminal point and after any required export/warning. If policy instead retains an inaccessible local archive, preserve owner binding and lock it; never silently rebind it to a future UID.
+
+### Apple-specific consequence
+
+Apple revocation is not equivalent to Firebase user deletion. When Apple is linked, deletion orchestration needs an Apple revocation step using valid provider authorization material or an approved server-side mechanism. The current LogMate document says to preserve authorization code/token material, but long-lived sensitive token storage itself creates a security boundary. Prefer a design that minimizes client-side long-lived provider secrets/tokens; exact mechanism remains OPEN until implementation architecture is selected.
+
+### Failure-first validation contract
+
+Before release, executable tests should cover at least:
+
+1. stale session → `requiresRecentLogin` → no deletion mutation before successful same-owner reauthentication;
+2. reauthentication returns a different UID → fail closed, no deletion;
+3. Apple revocation succeeds, Firebase deletion fails → durable `retryableIncomplete`, never false success;
+4. Firebase deletion succeeds but final response is lost → `outcomeUnknown`; recover by re-observing auth/backend state rather than blindly recreating/rebinding;
+5. network failure before any remote acceptance → retry without duplicating completed steps;
+6. retry after an already-completed Apple revocation treats idempotent provider result correctly;
+7. duplicate Delete taps/callbacks produce one logical deletion workflow;
+8. local ledger remains protected throughout partial remote failure;
+9. terminal completion cannot be emitted until every authority required by product policy is complete or explicitly reconciled;
+10. crash/restart during each boundary resumes from durable step evidence rather than restarting irreversible steps blindly.
+
+Fake/provider-port tests can validate orchestration and false-success prevention. They cannot prove real Apple token revocation, Firebase console configuration, provider credentials, backend deletion, or physical-device behavior.
 
 ## Account linking/unlinking consequence
 
@@ -113,25 +115,25 @@ Linking is credential-to-current-UID, not account merge. Assert UID before == UI
 ## RELATED DOMAIN CHECK
 
 - Foundations: Dart/Flutter runtime evidence exists; not the current blocker.
-- Architecture: Auth identity, ledger owner, onboarding, and Sync remain separate state ownership.
-- Mobile: native Google/Apple transport and physical/provider lifecycle require separate validation.
-- Data: first-owner initialization must be atomic/idempotent; account-free capability cleanup needs deliberate schema review.
-- Quality: typed mapping needs executable mutation/no-mutation oracles and unknown-code negative control.
-- Systems: owns identity/session/provider security semantics.
-- Design Studio: recovery/collision/reauth copy and consent presentation downstream.
+- Architecture: Auth identity, ledger owner, onboarding, Sync and deletion workflow state remain separate ownership dimensions.
+- Mobile: native Google/Apple transport, revocation and physical/provider lifecycle require separate validation.
+- Data: first-owner initialization and deletion journals must be atomic/idempotent; local destruction policy requires explicit product decision.
+- Quality: typed mapping and deletion orchestration need failure injection, restart, duplicate-callback and false-success oracles.
+- Systems: owns identity/session/provider security and revocation semantics.
+- Design Studio: recovery/collision/reauth/deletion confirmation and partial-failure copy downstream.
 - Web Manager: popup/redirect/authorized-domain deployment behavior downstream.
 - Marketing Manager: no material dependency in this block.
-- Product: exact LogMate ref inspected previously; no product files edited.
+- Product: exact LogMate ref inspected; no product files edited.
 
 ## HANDOFFS
 
 ### LogMate / Codex
 
-Evolve the existing `AuthEngine` instead of branching on raw Firebase/provider messages in Welcome. Add a provider-neutral typed result plus diagnostic metadata, then implement native Google, Apple, Web adapters behind it. Treat `networkOrOutcomeUnknown` as recoverable ambiguity: re-observe Firebase state before durable retry. Add table-driven adapter tests before UI polish. Do not auto-merge equal-email accounts or mutate ledger ownership on collision.
+Evolve existing `AuthEngine` behind provider-neutral typed results. For deletion, add an explicit orchestrator/state record before implementing irreversible calls. Require recent same-owner reauthentication, distinguish Apple revocation from Firebase deletion, preserve retry/unknown outcomes, and never report success from one sub-step. Do not choose local-ledger destruction semantics implicitly.
 
 ### Quality / Data / Mobile
 
-Quality: build fake-provider exception matrix and mutation-count oracle. Data: expose idempotent first-owner initializer whose precondition is an established UID. Mobile: capture real native provider cancellation/configuration behavior later; Web/PWA separately capture popup/redirect interruption/reload.
+Quality: fake-provider failure matrix plus deletion partial-success/crash/retry controls. Data: idempotent first-owner initializer and durable deletion-step journal if deletion spans restart. Mobile: real native provider/revocation behavior later; Web/PWA popup/redirect separately.
 
 ## OPEN / VALIDATION / CHANGE WATCH
 
@@ -140,6 +142,6 @@ Quality: build fake-provider exception matrix and mutation-count oracle. Data: e
 - OPEN: exact `google_sign_in` version/configuration during implementation.
 - OPEN: executable typed-adapter tests and exact FlutterFire native exception observations.
 - OPEN: provider linking under final project configuration; Firebase docs retain a known linking issue warning in some projects.
-- OPEN: deployed PWA popup/redirect recovery and account deletion/revocation transaction semantics.
-- VALIDATION: no Auth/onboarding/provider runtime PASS claimed.
-- CHANGE WATCH: Firebase Auth/FlutterFire, `google_sign_in`, Apple linking/consent policy, browser popup/redirect/persistence behavior, provider console configuration.
+- OPEN: deletion authority/order, backend/Sync deletion semantics, Apple revocation implementation, secure token/code handling, and local-ledger deletion-vs-lock policy.
+- VALIDATION: no Auth/onboarding/provider/deletion runtime PASS claimed.
+- CHANGE WATCH: Firebase Auth/FlutterFire, `google_sign_in`, Apple account-deletion/revocation/linking policy, browser popup/redirect/persistence behavior, provider console configuration.
