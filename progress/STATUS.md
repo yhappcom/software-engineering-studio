@@ -8,7 +8,7 @@ Governance sync: 2026-09-23
 | --- | --- |
 | Foundations | Stage 1 IN STUDY — F001 direct Dart JIT/AOT + Flutter host→Chrome + bounded macOS Safari runtime transfer; F006 bounded root-cause/fix/regression chain CLOSED |
 | Architecture | Stage 1 IN STUDY — A001-A003 substantial; A005 natural LogMate evolution transfer; A006 governance + product decision-state transfer |
-| Mobile | Stage 1 IN STUDY — M001 Android Emulator; M002 process/file + HOME lifecycle; M003 permission/FGS + bounded Keystore replication; M006 Chromium PWA + macOS Safari runtime + bounded same-session origin-down offline; Safari SW lifecycle transfer REOPENED and under oracle failure isolation |
+| Mobile | Stage 1 IN STUDY — M001 Android Emulator; M002 process/file + HOME lifecycle; M003 permission/FGS + bounded Keystore replication; M006 Chromium PWA + macOS Safari runtime + bounded same-session origin-down offline; Safari SW lifecycle transfer REOPENED and under restart-oracle failure isolation |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q006 process-crash recovery + CI verdict-propagation failure/isolation/repair/hosted regression |
 | Systems | Stage 1 IN STUDY — S004 exact product baseline/lock/build-path transfer; hosted source acquisition remains credential-context dependency |
@@ -16,23 +16,25 @@ Governance sync: 2026-09-23
 No specialist has passed Foundation.
 
 ## Meaningful new evidence
-### M006 / Q006 — false-green correction exposed a second oracle defect
+### M006 / Q006 — lifecycle-valid oracle correction now reaches restart boundary
 Historical Safari service-worker lifecycle run `35741047017` remains INVALID because its semantic artifact was zero bytes and its producer exit status could be masked by `tee`.
 
-Fail-closed repair head `6daa9781cc884aab601744a5decf7a7459d06906` converted that path into a trustworthy failure: run `35802543585`, job `106995919837`, terminal failure. Artifact `10726377605`, digest `sha256:67483e7b00559f54792f606f5f906ed55b82b8703c2ce63cc6c22326ca63cdcd`, records successful WebDriver enablement, an empty stdout oracle, and initial page/service-worker requests.
+Fail-closed run `35802543585` exposed an initial-document lifecycle-invalid title oracle. Repair head `4f7e376572a6fe8c6eddea40e4d95841c4ce2033`, run `35806396805`, then produced structured run-bound evidence. Artifact `10727414954`, digest `sha256:4fd3600dd74ed8eb80e5bebc1215d9c00fbf89f3ada7427a06a743a94d40d126`, directly shows initial controller acquisition, independent V1 confirmation, explicit V2 update/controllerchange and V2 control.
 
-Exact fixture inspection isolates the next defect at the harness boundary. Initial `registerSW()` reloads an uncontrolled document, terminating that JavaScript invocation; the old validator nevertheless waited for a V1 title only that destroyed invocation could later emit. Commit `4f7e376572a6fe8c6eddea40e4d95841c4ce2033` now polls browser-owned `navigator.serviceWorker.controller` across the possible reload, re-invokes the V1 semantic query in the controlled document, retains V2/controllerchange/restart checks, and emits structured failure observations. Regression run `35806396805` is in progress. No Safari SW lifecycle PASS exists yet.
+The run failed only after recreating Safari WebDriver. Its restart branch repeated the same harness defect: it invoked `registerSW()` and waited directly for an application-owned V2 title even though the invocation can be destroyed by a reload while the recreated document discovers the persisted registration. Repeated `M006_SW_BOOT` therefore does not prove persistence loss.
+
+Commit `54bbd5283920aa3d82057cc2da8a14b0db4bacbf` now polls browser-owned controller state across the restart navigation, then re-invokes the semantic V2 query in the controlled document. Regression run `35810765603` is in progress. No combined Safari SW lifecycle PASS exists yet.
 
 ### Q006 — retained CI verdict propagation evidence
-Repaired Q006 exact head `bd763b301752b3adebd36b963c06d064aec94ca8`, run `35792678785`, remains bounded hosted evidence that log preservation and verdict propagation are independent controls. M006 now shows why fail-closed propagation matters: it exposed a distinct lifecycle-invalid oracle that the earlier false green concealed.
+Repaired Q006 exact head `bd763b301752b3adebd36b963c06d064aec94ca8`, run `35792678785`, remains bounded hosted evidence that log preservation and verdict propagation are independent controls. M006 additionally demonstrates that lifecycle validity must be checked independently at each navigation boundary, not only once per test.
 
 ## Current Balance Loop
-Continue M006 through the lifecycle-aligned regression and inspect its run-bound semantic artifact before any verdict. If red, use the structured first-failure observation for causal isolation; if green, restore only the bounded claim actually exercised. After closure, re-rank toward stronger evidence classes rather than equivalent Safari/harness variants.
+Continue M006 through the restart-aligned regression and inspect its run-bound semantic artifact before any combined lifecycle verdict. If red, use the first structured failure observation for causal isolation; if green, restore only the bounded claim actually exercised. After closure, re-rank toward stronger evidence classes rather than equivalent Safari/harness variants.
 
 F001 direct Dart/Flutter is not the historical blocker stated in older prompts: direct Dart JIT/AOT, Flutter framework/test binding, host→Chrome and bounded macOS Safari runtime evidence exist. Native Android/iOS/iPadOS, product and release transfer remain OPEN.
 
 ## CHANGE WATCH / OPEN
-- M006 Safari SW lifecycle repaired regression `35806396805` pending; prior run `35741047017` remains invalid evidence.
+- M006 Safari SW restart-aligned regression `35810765603` pending; prior run `35741047017` remains invalid evidence.
 - Q006 repository-wide semantic audit remains OPEN; complete inventory does not itself prove semantic correctness.
 - M003 transfers remain bounded to exact API-35 emulator fixtures; physical Android/OEM/other API REPLICATION remains OPEN.
 - Ordinary Safari relaunch/profile persistence, installed PWA and iOS/iPadOS/EFB remain OPEN.
@@ -42,4 +44,4 @@ F001 direct Dart/Flutter is not the historical blocker stated in older prompts: 
 - Product/default branch is never assumed production without evidence.
 
 ## Evidence rule
-No PASS from reading or workflow-green alone. Preserve exact claim/oracle/environment boundaries, subprocess verdict propagation, lifecycle-valid semantic oracles and run-bound semantic evidence; never infer unexecuted evidence.
+No PASS from reading or workflow-green alone. Preserve exact claim/oracle/environment boundaries, subprocess verdict propagation, lifecycle-valid semantic oracles at every navigation boundary, and run-bound semantic evidence; never infer unexecuted evidence.
