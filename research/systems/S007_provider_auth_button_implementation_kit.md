@@ -63,7 +63,9 @@ The asset acquisition script is the canonical way to refresh binary provider ass
 - Button visibility/prominence must remain comparable across Apple/Google/Email.
 
 ## VALIDATION
-No exact LogMate compile, native bridge registration, Firebase provider configuration, App Review, Play verification, real Google/Apple sign-in, or PWA browser execution is claimed by this note.
+**Bounded asset-acquisition validation:** workflow-triggered refresh commit `70fd04dbc6a0ee222cac1f711ee9eb1effb60d18` successfully materialized 111 tracked files: one SHA-256/source manifest plus 110 provider-approved PNG assets (14 Apple, 96 Google). Apple assets were generated from Apple-owned secure button endpoints; Google assets came from Google's current pre-approved Sign in with Google ZIP. The local fetch script also passed `bash -n` syntax validation before the hosted refresh.
+
+This validates only acquisition/provenance of the stored button resources. No exact LogMate compile, native bridge registration, Firebase provider configuration, App Review, Play verification, real Google/Apple sign-in, or PWA browser execution is claimed by this note.
 
 Required transfer validation after LogMate integration:
 1. `flutter pub get` / static analysis on the exact LogMate ref;
