@@ -1,0 +1,31 @@
+name: Q006 workflow verdict-risk inventory
+
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+      - 'research/quality/fixtures/Q006_workflow_verdict_risk_inventory.py'
+  workflow_dispatch:
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inventory all workflow verdict-risk constructs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 research/quality/fixtures/Q006_workflow_verdict_risk_inventory.py | tee q006-workflow-verdict-risk-inventory.log
+          test -s q006-workflow-verdict-risk-inventory.json
+          grep -q '^Q006_WORKFLOW_VERDICT_RISK_INVENTORY_PASS$' q006-workflow-verdict-risk-inventory.log
+      - name: Preserve complete inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: q006-workflow-verdict-risk-inventory
+          path: |
+            q006-workflow-verdict-risk-inventory.json
+            q006-workflow-verdict-risk-inventory.log
+          if-no-files-found: error
