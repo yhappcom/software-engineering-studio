@@ -1,6 +1,6 @@
 # Q006 — Complete workflow verdict-risk inventory
 
-Status: **IN STUDY — COMPLETE LEXICAL INVENTORY VALIDATED; SEMANTIC AUDIT FOUND AND REPAIRED ONE GENUINE FALSE-GREEN PATH; FAIL-CLOSED HOSTED REGRESSION VALIDATED**
+Status: **IN STUDY — COMPLETE LEXICAL INVENTORY VALIDATED; SEMANTIC AUDIT HAS ONE REPAIRED NATURAL FALSE-GREEN CLASS AND ADDITIONAL SAFE CLASSIFICATIONS**
 Evidence date: 2026-09-23
 Lead: Quality; support: Systems
 
@@ -52,9 +52,25 @@ The workflow deliberately marked four attestation checks `continue-on-error: tru
 
 **REPAIR:** commit `6216003dc4d42c1ea2156500bcc1df1d404c045d` changes the aggregate step to fail closed on all four required outcomes and enables `set -euo pipefail` there. The repair preserves diagnostic execution of all checks while making positive-query and exact-verification failures job-fatal at the aggregate verdict boundary.
 
-**VALIDATION — hosted fail-closed regression:** exact repaired head `6216003dc4d42c1ea2156500bcc1df1d404c045d`, run `35843352058`, job `107123462773`, completed **failure**. All four diagnostic check steps were allowed to complete; the final `Record verification boundary and propagate verdict` step alone failed. Because `continue-on-error` can report a step conclusion of success while preserving the underlying step `outcome` used by expressions, the job-level red result demonstrates that at least one required positive outcome was no longer silently tolerated by the aggregate oracle. This is the intended fail-closed behavior.
+**VALIDATION — hosted fail-closed regression:** exact repaired head `6216003dc4d42c1ea2156500bcc1df1d404c045d`, run `35843352058`, job `107123462773`, completed **failure**. All four diagnostic check steps were allowed to complete; the final `Record verification boundary and propagate verdict` step alone failed. The job-level red result demonstrates that a required positive failure is no longer silently tolerated by the aggregate oracle. This is the intended fail-closed behavior, not evidence that the repair is defective.
 
-This red run is **not** evidence that the repair is defective. It is regression evidence that the repaired aggregate verdict no longer converts a required positive-check failure into a green job. The exact underlying positive failure remains bounded by the separately documented S005 historical-attestation availability contradiction; this run does not prove deletion/retention/indexing root cause.
+## Additional semantic classifications — exact main `2e67e8b08aaafdebc825d250ad28b5e60d1c61e2`
+The next audit pass inspected further high-risk constructs against surrounding workflow semantics rather than counting tokens.
+
+### `s005-attestation-authorization-policy.yml` — deliberate diagnostic suppression, not a job-verdict claim
+The baseline repository verification is an ordinary fatal step. Three subsequent signer/source-ref/source-digest predicate-isolation steps use `continue-on-error: true`, but their names and structure make them observational discriminator probes rather than acceptance predicates. Three explicit wrong-policy controls are ordinary fatal shell steps and invert the verifier correctly (`if gh ...; then exit 1; fi`).
+
+**ENGINEERING JUDGMENT:** classify the three predicate-isolation `continue-on-error` hits as **deliberate diagnostic suppression outside the final verdict path**. They must not be cited as PASS evidence for those individual predicates. No repair is justified unless the workflow's declared claim is strengthened to require those isolated predicates to succeed.
+
+### `s005-offline-attestation-verification.yml` — explicit status capture + fail-closed propagation
+The positive network-isolated verifier deliberately runs under `set +e`, stores stdout/stderr and `rc`, then exits with that exact `rc`; the step is `continue-on-error` only so evidence and negative controls can be preserved. A final `if: steps.offline_positive.outcome != 'success'` step exits 98. The two negative controls capture their verifier status and require nonzero with `test "$rc" -ne 0`.
+
+**VALIDATION by code-path semantics, not execution re-award:** classify these selected-pattern hits as **intentional status capture followed by fail-closed propagation**. The existing hosted run `35826855911` remains the bounded execution evidence for the generic offline-attestation claim; this audit does not manufacture new execution evidence.
+
+### `m006-flutter-safari-runtime-validation.yml` — protected pipelines and intentional setup status capture
+Toolchain/log `tee` pipelines execute under `set -euxo pipefail`. SafariDriver/venv/pip setup intentionally omits `-e`, captures each producer status, and explicitly exits nonzero for every failed required setup phase. The semantic Safari oracle itself executes under `set -euxo pipefail`; its Python process raises nonzero on oracle timeout while `tee` preserves output.
+
+**TRANSFER VALIDATION:** classify these paths as **protected pipeline/log capture** plus **intentional status capture followed by fail-closed propagation**. This is consistent with the already retained exact Safari runtime evidence; no new Mobile PASS is awarded here.
 
 ## Semantic-review boundary
 Every hit that can affect a verdict must be classified against surrounding shell/workflow semantics. Required classes:
@@ -71,22 +87,24 @@ The fixture proves corpus enumeration for the selected patterns at the exact ref
 
 The S005 hosted regression proves fail-closed aggregate propagation under the observed failing positive condition. It does not establish why the historical attestation is unavailable or prove all other workflow paths semantically correct.
 
+Static semantic classification can show that a construct is wired into a fail-closed path, but it does not replace execution evidence where a runtime claim requires it.
+
 ## RELATED DOMAIN CHECK
 - Foundations: process exit status and shell pipeline semantics are relevant; no new Foundations claim.
 - Architecture: CI evidence contracts are interfaces between validators and release/governance consumers.
-- Mobile: M006 supplied the natural false-green transfer and current navigation-aware oracle examples.
+- Mobile: M006 supplied natural false-green transfer and protected-pipeline/status-capture examples.
 - Data: no data-specific claim.
-- Quality: owner; complete inventory validated and semantic audit has now found, repaired, and hosted-regressed one genuine false-green path.
-- Systems: S005 is the natural release-evidence transfer; positive and negative attestation controls must both participate in the final verdict.
+- Quality: owner; complete inventory validated; semantic audit has a repaired hosted-regressed natural false-green and additional safe classifications.
+- Systems: S005 supplies both the false-green transfer and valid diagnostic/status-capture contrasts.
 - Design Studio / Web Manager / Marketing Manager: considered; not materially relevant to this repository-internal CI corpus.
 - Product source: no product behavior audited; this block targets `yhappcom/software-engineering-studio` only.
 
 ## HANDOFFS
-- Systems: use the repaired S005 aggregate oracle as the reusable pattern: diagnostic continuation is acceptable only when every required positive/negative outcome is explicitly folded into a fail-closed final verdict.
-- Mobile: retain navigation-aware semantic-oracle review separately from shell/workflow verdict propagation.
+- Systems: diagnostic continuation is acceptable only when every result required by the declared claim is folded into a fail-closed verdict; observational discriminator probes must not be promoted to PASS evidence.
+- Mobile: retain navigation-aware semantic-oracle review separately from shell/workflow verdict propagation; current Safari runtime workflow demonstrates protected `tee` and explicit setup-status capture.
 
 ## OPEN
-1. Continue semantic classification of remaining verdict-relevant hits.
+1. Continue semantic classification of remaining verdict-relevant hits, especially other `continue-on-error`, `set +e`, and `exit 0` paths.
 2. Sample verdict-bearing commands that do not match the selected lexical patterns.
 3. Repair any additional genuine false-green path and obtain exact-head regression evidence.
 4. Only then decide whether the repository-wide semantic CI audit boundary can close.
