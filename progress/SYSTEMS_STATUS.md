@@ -3,7 +3,7 @@
 Track: Systems, Security, Performance & Delivery  
 Prefix: `S###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
-Last sync: 2026-09-20
+Last sync: 2026-09-23
 
 ## Current evidence
 
@@ -19,41 +19,37 @@ Last sync: 2026-09-20
 ### S004 — Dependency, supply-chain and build-system fundamentals
 **IN STUDY — product-owned Flutter baseline + lock transfer validated; product PWA build path recovered; hosted source acquisition isolated as a credential-context dependency.** Canonical: `research/systems/S004_dependency_supply_chain_build_system_foundations.md`, `research/systems/S004_logmate_lockfile_toolchain_transfer.md`, `research/systems/S004_logmate_lock_enforcement_execution.md`.
 
-Product identity: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`; production identity unknown, main not assumed production.
-
-**SOURCE:** exact-ref `.metadata` records Flutter revision `3b62efc2a3da49882f43c372e0bc53daef7295a6`, official Flutter 3.38.7. Exact-ref `Makefile` defines `build-pwa` as `flutter build web --no-web-resources-cdn --no-wasm-dry-run` followed by `dart run tool/precache_flutter_web.dart`. The post-build tool mutates the generated service worker for full-resource precache and query-safe offline navigation. Raw `flutter build web` is therefore not artifact-equivalent to the product-owned PWA path.
-
-**VALIDATION retained:** run `35449021735`, job `105912825103` validates exact Flutter 3.38.7 committed-lock acceptance plus deliberate content-hash rejection; 3.38.10 replicates and 3.47.0 reproduces resolver incompatibility.
-
-**FAILURE ISOLATION:** baseline build attempt 1 (`35452259148`) stopped in combined source-fetch/assertion. Split attempt 2, head `3f599b88a40224071512f29ade35591e61807acf`, run `35452482342`, job `105921932831`, stopped specifically at `Clone LogMate repository`; exact-ref checkout and every build/artifact stage were skipped. This is source-acquisition infrastructure evidence, not a LogMate build failure.
-
-**TRANSFER VALIDATION:** the current connected GitHub evidence identity can read exact-ref `Makefile`, `pubspec.yaml` and `.metadata`, while the Studio hosted runner could not acquire the same repository. Authorization is therefore credential/execution-context scoped. Interactive source visibility must not be treated as CI checkout authorization. Exact-ref static identity is revalidated; hosted source acquisition and baseline PWA build remain OPEN.
+Product identity retained: `yhappcom/logmate → main → b551ce434ad72b1895033e0f3617c73b026d40ea → declared 1.0.0+1 → evidence date 2026-09-20`; production identity unknown, main not assumed production. Product-owned PWA build remains `make build-pwa`; hosted source acquisition remains OPEN because authorization differs by execution context.
 
 ### S005 — CI/CD, signing, versioning, reproducibility and release evidence
-**IN STUDY.** Real hosted generation + one successful online retrieval/verification + contradictory later verifier failures retained. Offline verification OPEN; do not spend further Actions minutes on flag permutations without stronger diagnostics or an independent verifier path.
+**IN STUDY — HISTORICAL BUNDLE 404 ISOLATED; FRESH GENERATION→PRESERVATION→OFFLINE-VERIFY DISCRIMINATOR COMMITTED, EXECUTION PENDING.** Canonical: `research/systems/S005_offline_attestation_verification_attempt.md`.
+
+Historical exact subject from generation commit `ab6dbf4307078fc82ddc056029f686dd61eae3a7` had prior hosted online verification but current authenticated repository lookup returned HTTP 404 in exact head `53971088727987560f3dde2f3c31e9b999af4627`, run `35818471643`, artifact `10731184861`. This is a temporal **CONTRADICTION**; deletion/retention/indexing/history cause remains OPEN.
+
+Current primary GitHub guidance confirms `actions/attest@v4` for new provenance and documents offline verification from a downloaded bundle plus trusted roots. The action additionally exposes generation-time local attestation paths through `${RUNNER_TEMP}/created_attestation_paths.txt`; lifecycle docs confirm attestations can be deleted and recommend downloading before deletion. These facts justify preserving signed material at generation time but do not prove deletion caused the historical 404.
+
+Exact discriminator commit `e43d3625be67f7d7699e703a06e181c07db16473` now generates a fresh deterministic subject, attests it, preserves/hashes the runner-local bundle path, immediately downloads/hashes the repository bundle, exports/hashes roots, proves network isolation before positive offline verification, requires wrong-repository and mutated-subject rejection, and preserves semantic evidence with `if: always()`. No run had appeared yet at status-write time, so no execution PASS is claimed.
 
 ### S006 — Rollback, incident evidence, production change safety and publication durability
 **IN STUDY — two integrated executable Foundation blocks.** Linux rename/directory-sync failure evidence retained; hard-power-loss transfer OPEN.
 
 ## Gate assessment
-Systems Stage 1 remains **NOT PASS**. S004 binds an exact product ref to the product-owned project baseline and PWA build/post-build path, and now distinguishes evidence-channel read authorization from runner source-acquisition authorization. Dependency lock semantics are executable; baseline source build/artifact identity are not validated. Operational release toolchain, signing/attestation, independent-host reproducibility, deployment and production evidence remain absent.
+Systems Stage 1 remains **NOT PASS**. S005 has progressed from opaque export failure to a historical-retrievability contradiction plus an executable fresh-attestation discriminator. Generic offline verification, exact-product release provenance, signing/deployment, independent-host reproducibility and production evidence remain incomplete.
 
 ## HANDOFFS
-- **Foundations:** hosted Dart/Flutter execution is available at bounded Studio scope; do not infer product/runtime provenance from it.
-- **Architecture:** post-build transformation belongs to artifact provenance when externally observable offline behavior depends on it.
-- **Mobile:** for exact LogMate ref `b551ce4...`, use `make build-pwa` as product-owned PWA build path; raw framework build is not equivalent. Browser/EFB runtime remains OPEN.
-- **Quality:** preserve both failed source-build attempts as pre-build acquisition failures; skipped stages cannot support product-build verdicts.
-- **LogMate / release engineering:** exact product ref above; no product files edited. The current connector can inspect source but its credentials do not transfer to GitHub Actions. Runner-appropriate authorization or an equivalent exact-ref execution environment is required.
+- **Foundations:** direct Dart/Flutter evidence exists; it is not S005's blocker.
+- **Architecture:** provenance lifecycle has distinct generated, published/retrievable, preserved and verified states.
+- **Mobile / product release:** future transfer must bind exact product ref/version, canonical build path, artifact digest, preserved bundle/root and verification policy; generic Studio attestation cannot substitute.
+- **Quality:** retain generation-time evidence preservation separately from verifier verdict; positive and negative oracles must remain fail-closed.
+- **LogMate / release engineering:** S004 source-acquisition dependency remains separate; no product files edited.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical files edited.
 
 ## CHANGE WATCH / OPEN
-- Hosted exact-ref source acquisition remains blocked by execution-context authorization; the prior `split diagnostic pending` item is closed as a status-record inconsistency, not as a successful build.
-- Product-owned project baseline is exact Flutter 3.38.7, but canonical operational/release Flutter SDK/engine and external CI/operator pin remain unknown.
-- Baseline LogMate PWA source build and artifact digest remain OPEN; release signing/attestation, independent-host reproducibility and production deployment remain further rungs.
-- Product post-build service-worker transform depends on Flutter-generated format and fails closed when expected patterns change.
-- Dart/pub/Flutter build behavior remains version-sensitive.
-- S005 verifier stability/root cause, stronger authorization policy and offline verification remain OPEN.
-- Android/iOS signing, staged deployment and production rollback remain OPEN.
+- S005 exact-head discriminator `e43d3625...` requires terminal execution plus run-bound artifact inspection before verdict.
+- Historical S005 404 deeper cause OPEN; lifecycle documentation alone is not deletion evidence.
+- Hosted exact-ref LogMate source acquisition remains blocked by execution-context authorization.
+- Baseline LogMate PWA source build/artifact identity, Android/iOS signing, staged deployment and production rollback remain OPEN.
+- GitHub CLI, `actions/attest`, attestation API, Sigstore roots and hosted-runner images remain CHANGE WATCH.
 
 ## Next work
-Do not retry unauthenticated cross-repository clone permutations. Resume the baseline build only when the runner has an authorized source-acquisition path or an equivalent trustworthy environment already contains the exact LogMate ref. Until then, Balance Loop should advance to a materially independent evidence class such as native/Safari runtime, physical storage/connectivity, natural ADR/release evidence, or another stronger Stage-1 transfer.
+Continue S005 until the fresh-attestation discriminator reaches a terminal, artifact-inspected verdict. If it closes generic offline verification, return to Balance Loop and prefer exact-product/release or materially stronger physical/native evidence rather than another synthetic attestation variant.
