@@ -2,69 +2,72 @@
 
 Date: 2026-09-23
 Lead: Quality
-Status: IN STUDY — bounded semantic classification, no new runtime PASS
+Status: IN STUDY — executable negative control committed; hosted observation pending
 
 ## Problem
 
-The repository-wide selected-token inventory does not detect a distinct CI acceptance boundary: a workflow can delegate a verdict-bearing command to a JavaScript/container action. In that case the workflow YAML may contain no `continue-on-error`, `set +e`, `|| true`, `tee`, `trap`, or `exit 0`; correctness depends on whether the action propagates the delegated command's failure to the GitHub step verdict.
+The repository-wide selected-token inventory does not detect a distinct CI acceptance boundary: a workflow can delegate a verdict-bearing command to a JavaScript/container action. In that case correctness depends on whether the action propagates the delegated command's failure to the GitHub step verdict.
 
 ## Exact Studio target
 
 Repository: `yhappcom/software-engineering-studio`
-Ref inspected: `5bdda29210ce52b863f31088a062eaaddf000b6e`
+Prior semantic target: `5bdda29210ce52b863f31088a062eaaddf000b6e`
+Executable-control introduction: `9ea9c97838d443c8fa81b04729e0447aee54c175`
 Evidence date: 2026-09-23
 
-Representative workflow: `.github/workflows/m002-android-process-death-storage-validation.yml`.
-
-The final emulator step delegates `bash "$RUNNER_TEMP/m002_oracle.sh"` to `reactivecircus/android-emulator-runner@v2`. The oracle itself is fail-fast (`set -euo pipefail`) and checks write observation, process disappearance after force-stop, changed PID after restart, recovered persistent value, and emits a final PASS marker only after those assertions.
+Representative consumer: `.github/workflows/m002-android-process-death-storage-validation.yml`, which delegates its fail-fast oracle to `reactivecircus/android-emulator-runner@v2`.
 
 ## SOURCE — action implementation boundary
 
-The action source at the referenced `v2` ref executes each parsed user script through `@actions/exec` using `sh -c`. Its custom-script block catches execution errors and calls `core.setFailed(...)`; its outer error path also calls `core.setFailed(...)`. Therefore, at the inspected upstream source ref, a delegated nonzero script is intended to mark the action failed rather than normalize the command to success.
-
-This is stronger than assuming a third-party action propagates exit status merely because historical workflow runs were red/green. It is still not immutable provenance: the Studio workflow references the moving major tag `@v2`, not a full commit SHA.
+Inspection of the upstream `v2` action source showed user scripts executed through `@actions/exec`; execution errors are caught and passed to `core.setFailed`. This supports a fail-closed wrapper model, but the moving major tag is not immutable provenance and source reading is not runtime validation.
 
 ## SYNTHESIS
 
-Verdict propagation has at least three layers:
+Verdict propagation has at least three layers: producer/oracle exit semantics; action-wrapper semantics; workflow/job acceptance semantics. A lexical audit of workflow shell cannot prove the action-wrapper layer.
 
-1. producer/oracle command exit semantics;
-2. action wrapper semantics (`exec`/catch/`setFailed` or equivalent);
-3. workflow/job acceptance semantics (`continue-on-error`, expressions, downstream aggregate predicates).
+## Executable negative control
 
-A lexical audit of workflow shell cannot prove layer 2. Third-party actions that execute verdict-bearing scripts are therefore a separate semantic-audit class.
+Commit `9ea9c97838d443c8fa81b04729e0447aee54c175` adds `.github/workflows/q006-third-party-action-nonzero-propagation.yml`.
+
+CLAIM: when the action successfully reaches the delegated script and that script intentionally exits 37, the action step exposes `outcome=failure` rather than normalizing the script to success.
+
+TARGET: `reactivecircus/android-emulator-runner@v2` on an API-35 x86_64 emulator under `ubuntu-latest`.
+
+INPUT: a delegated script that emits `Q006_INTENTIONAL_DELEGATED_FAILURE` then exits 37.
+
+ORACLE: the action step uses `continue-on-error: true` only to preserve the downstream observation. The next ordinary fatal shell step requires `${{ steps.delegated.outcome }}` to equal `failure`; it also records the expected post-continue conclusion (`success`) to distinguish GitHub step outcome from conclusion semantics.
+
+FAILURE MODEL: if the wrapper normalizes the delegated nonzero command to success, the downstream `outcome=failure` assertion fails. Emulator provisioning failure can also yield action outcome failure, so a green downstream assertion alone is not sufficient unless run logs show the intentional marker/script was actually reached.
+
+VALIDATION: immediately after introduction, the Actions query for head `9ea9c978...` returned no run yet. Therefore no runtime PASS is awarded in this block. A later run must inspect both the action log for the intentional marker and the downstream outcome assertion before closing the executable-control gap.
 
 ## ENGINEERING JUDGMENT
 
-For the inspected M002 wrapper boundary, the current upstream `v2` implementation is consistent with fail-closed propagation of the delegated oracle's nonzero exit. This classification is not a new M002 runtime PASS and does not prove every historical `@v2` resolution had identical semantics.
-
-The mutable major tag creates a Systems/supply-chain dependency: future `v2` movement could alter wrapper behavior without changing Studio workflow source. Pinning to a reviewed commit is a stronger provenance control, but changing repository-wide dependency policy is outside this Quality block.
+The fixture improves oracle sensitivity but deliberately does not confuse infrastructure failure with delegated-script failure. The marker/reachability requirement is essential: merely observing action failure would be a false attribution risk.
 
 ## VALIDATION / OPEN
 
-- OPEN: executable negative-control fixture that deliberately returns nonzero through the exact third-party action and confirms the GitHub step/job fails at the current resolved action revision.
-- OPEN: exact resolved commit identity for each historical `@v2` run where verdict propagation is material.
-- OPEN: semantic review of other third-party actions that participate in acceptance, including artifact preservation and attestation actions.
+- OPEN: hosted run reaching `Q006_INTENTIONAL_DELEGATED_FAILURE` and then satisfying `outcome=failure`.
+- OPEN: exact resolved action commit identity for the hosted run and historical M002 runs where verdict propagation is material.
+- OPEN: semantic review of other third-party actions and GitHub-expression/action-output acceptance paths.
 - No repository-wide semantic correctness PASS is awarded.
 
 ## RELATED DOMAIN CHECK
 
 - Foundations: command/process exit semantics are prerequisite; no new Foundations claim.
 - Architecture: wrapper boundary is an interface contract between oracle and CI runner.
-- Mobile: M002 is the representative consumer; no new Android behavior inferred.
-- Data: M002 persistent-file semantics are not revalidated here.
-- Quality: owns oracle/verdict propagation classification.
-- Systems: action identity/pinning and supply-chain provenance materially affect stability of the verdict contract.
-- Design Studio: not materially relevant.
-- Web Manager: not materially relevant.
-- Marketing Manager: not materially relevant.
-- Product source/ref: not required; this block audits Studio CI, not a product implementation.
+- Mobile: M002 is the representative consumer; this control does not revalidate Android process-death behavior.
+- Data: persistent-file semantics are not revalidated.
+- Quality: owner; executable negative-control oracle added.
+- Systems: moving action identity/pinning remains a supply-chain/provenance dependency.
+- Design Studio / Web Manager / Marketing Manager: considered; not materially relevant to this bounded CI-verdict mechanism.
+- Product source/ref: not required; this block audits Studio CI only.
 
 ## HANDOFFS
 
 ### Quality → Systems
-- Finding: verdict-bearing third-party actions form a semantic layer not covered by shell-token inventory; M002 currently depends on `reactivecircus/android-emulator-runner@v2` wrapper behavior.
-- Evidence: this note; Studio ref `5bdda29210ce52b863f31088a062eaaddf000b6e`; upstream action source inspected 2026-09-23.
-- Impact: mutable major-tag identity is a CHANGE WATCH / supply-chain provenance issue.
-- Requested action: when S004/S005 revisits action provenance, compare moving major tags against commit-pinned alternatives and preserve resolved action identity for release-grade evidence.
+- Finding: verdict-bearing third-party actions require both wrapper-failure propagation and immutable/resolved dependency identity for release-grade evidence.
+- Evidence: this note and executable control introduced at `9ea9c978...`.
+- Impact: moving `@v2` remains CHANGE WATCH even if the runtime negative control later passes.
+- Requested action: preserve resolved action identity and compare commit pinning when S004/S005 revisits supply-chain provenance.
 - Status: OPEN.
