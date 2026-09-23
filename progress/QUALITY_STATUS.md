@@ -17,47 +17,40 @@ Build engineering capability to define correctness, design tests with valid orac
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q002_test_levels_evidence_boundaries.md`.
 
 ### Q003 — Determinism, nondeterminism, concurrency and flaky-test mechanics
-**IN STUDY — two integrated Foundation blocks complete.** Canonical: `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md`. Shared-memory schedule failure plus deterministic timeout/complete/cancel/retry evidence retained.
+**IN STUDY — two integrated Foundation blocks complete.** Canonical: `research/quality/Q003_determinism_nondeterminism_concurrency_flaky_tests.md`.
 
 ### Q004 — Property/model-based testing, invariant checking, mutation sensitivity and search strength
-**IN STUDY — TWO EXECUTABLE BLOCKS COMPLETE.** Canonical: `research/quality/Q004_property_model_based_testing_invariants.md`, `research/quality/Q004_mutation_sensitivity_search_strength.md`. Broader runtime/platform transfer remains OPEN.
+**IN STUDY — TWO EXECUTABLE BLOCKS COMPLETE.** Canonical: `research/quality/Q004_property_model_based_testing_invariants.md`, `research/quality/Q004_mutation_sensitivity_search_strength.md`.
 
 ### Q005 — Debugging, fault isolation and observability foundations
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
 
 ### Q006 — Fault injection, recovery verification and regression governance
-**IN STUDY — process-crash recovery + CI verdict-propagation failure/isolation/repair/regression + complete selected-pattern workflow inventory + natural false-green repair + continuing semantic classification.**  
-Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`, `research/quality/Q006_real_crash_recovery_oracle_transfer.md`, `research/quality/Q006_ci_pipeline_exit_status_oracle_integrity.md`, `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `research/quality/Q006_semantic_verdict_path_classification_2.md`, `research/quality/Q006_third_party_action_verdict_boundary.md`.
+**IN STUDY — repository semantic CI audit; third-party-action executable negative control now committed, hosted observation pending.**  
+Canonical includes `research/quality/Q006_complete_workflow_verdict_risk_inventory.md` and `research/quality/Q006_third_party_action_verdict_boundary.md`.
 
-The retained hosted Bash discriminator established that evidence preservation and verdict propagation are independent controls. Repaired exact head `bd763b301752b3adebd36b963c06d064aec94ca8`, run `35792678785`, observed control/treatment pipeline statuses 0/23 while both logs preserved the same producer failure payload.
+Retained evidence includes the hosted Bash verdict discriminator, the exact-head 29-workflow/131-hit selected-pattern inventory, and the repaired S005 natural false-green aggregate-verdict defect. These remain bounded evidence, not repository-wide correctness PASS.
 
-The checkout-local inventory replaced incomplete GitHub code search. Exact head `d573b47f05a1d5f65daea94d4133dcc221973d2a`, run `35837301494`, artifact `10739703444`, directly enumerated 29 workflow files and 131 selected lexical risk hits. **VALIDATION:** this is a complete selected-pattern inventory at that exact ref, not a semantic-correctness PASS.
+Third-party action propagation is a distinct non-pattern class. M002 delegates a verdict-bearing oracle to `reactivecircus/android-emulator-runner@v2`; source inspection supports fail-closed propagation but the moving tag remains a provenance dependency.
 
-Semantic review found a genuine false-green path in `s005-attestation-verification-boundary.yml`: positive attestation query/exact-verification checks used `continue-on-error`, but the aggregate oracle asserted only the two negative controls. Commit `6216003dc4d42c1ea2156500bcc1df1d404c045d` added fail-closed assertions for all four required outcomes. **VALIDATION:** run `35843352058`, job `107123462773`, exact repaired head, completed failure with the final aggregate-verdict step failing after diagnostic checks ran. This is intended fail-closed regression evidence: a required positive failure is no longer silently converted to a green job. It does not resolve the separate historical-attestation availability root cause.
-
-A further exact-ref semantic pass at `a87f71d5a4cb1632c21426aa6a6bf4b84093c5b9` classified additional high-risk paths without inventing defects: M003 Keystore's trap/`exit 0` preserves the original oracle status in outputs and is followed by an unconditional fail-closed consumer; M003 first-launch `tee` paths are protected by `pipefail` while `|| true` is confined to diagnostics immediately before explicit failure; M003 one-time expiry uses `continue-on-error` for evidence preservation but separately rejects harness failure and non-success emulator outcome; and M006 Chromium service-worker validation supplies a non-pattern sample whose semantic validators are direct fatal commands. **ENGINEERING JUDGMENT:** these are valid evidence-preservation/status-handoff patterns at the inspected wrapper boundary, not new runtime PASSes. `INCONCLUSIVE_WINDOW_EXHAUSTED` must never be promoted to evidence that expiry occurred.
-
-Third-party action propagation is now an explicit non-pattern audit class. At Studio ref `5bdda29210ce52b863f31088a062eaaddf000b6e`, M002 delegates its fail-fast process-death/storage oracle to `reactivecircus/android-emulator-runner@v2`. Inspection of the upstream `v2` action source shows user scripts executed through `@actions/exec`; execution errors are caught and passed to `core.setFailed`, consistent with fail-closed wrapper propagation. **ENGINEERING JUDGMENT:** the inspected wrapper contract is sound, but this is not a new Android/runtime PASS. The moving `@v2` tag leaves exact resolved action identity and future behavior as CHANGE WATCH; an intentional nonzero negative-control run through the exact action remains OPEN.
+**NEW VALIDATION WORK:** commit `9ea9c97838d443c8fa81b04729e0447aee54c175` adds `q006-third-party-action-nonzero-propagation.yml`. It intentionally delegates `exit 37` through the same action and then requires the GitHub step `outcome` to be `failure`. The control also requires later log inspection for `Q006_INTENTIONAL_DELEGATED_FAILURE`, because emulator provisioning failure would otherwise be an alternative cause of the same action outcome. Immediately after introduction no Actions run was yet returned for the head, so runtime PASS is explicitly withheld.
 
 ## Gate assessment
-Quality Stage 1 remains **NOT PASS**. Q001-Q006 have substantial Foundation evidence and Q006 now includes synthetic and natural false-green mechanisms, a repository-wide selected-pattern inventory, a semantic repair/regression, additional safe-path classifications, initial non-pattern verdict samples, and explicit third-party-action wrapper analysis. Repository-wide semantic classification, broader non-pattern sampling, executable negative control for third-party action propagation, GitHub-expression/action-output review, non-Bash/platform transfer, physical/mobile/backend/storage-power and production release-gate evidence remain incomplete.
+Quality Stage 1 remains **NOT PASS**. The Q006 semantic-audit boundary has advanced from source-only third-party wrapper analysis to an executable negative-control design, but hosted observation, exact resolved action identity, remaining semantic classification, broader non-pattern/GitHub-expression review, non-Bash transfer and production release-gate evidence remain incomplete.
 
 ## Dependencies / handoffs
-- **Foundations:** direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; older SDK-unavailable notes are stale.
+- **Foundations:** direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; historical SDK blocker is stale.
 - **Architecture:** contracts/invariants and externally meaningful progress state supply semantic recovery oracles.
-- **Mobile:** M006 supplied the first natural false-green case; M003 demonstrates that normalized fixture exit is acceptable only when original status is preserved and consumed fail-closed. Navigation/property lifetime remains separate from shell verdict propagation.
+- **Mobile:** M002 supplies the representative delegated action boundary; the new control does not revalidate Android process-death behavior.
 - **Data:** recovery oracles must compare semantic state with durable progress/replayability.
-- **Systems:** S005 supplied the second natural verdict-propagation defect. Third-party action identity/pinning is now also a material supply-chain dependency when the action carries a verdict-bearing script; diagnostic continuation is acceptable only when every required positive/negative outcome participates in a fail-closed aggregate verdict.
-- **Design Studio / Web Manager / Marketing Manager:** considered; no canonical evidence there changes this bounded Quality method.
+- **Systems:** action identity/pinning remains material supply-chain provenance; a runtime control cannot make moving `@v2` immutable.
+- **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded CI-verdict mechanism.
 
 ## CHANGE WATCH / OPEN
-- Semantic classification of the remaining selected-pattern hits remains OPEN; 131 lexical hits are not 131 defects.
-- Broader verdict-bearing commands outside the selected lexical patterns require sampling.
-- GitHub-expression conditions and third-party action output/outcome propagation require semantic review where they participate in acceptance.
-- `reactivecircus/android-emulator-runner@v2` is a moving major tag; exact resolved action identity and an executable delegated-nonzero negative control remain OPEN.
-- PowerShell/cmd/other CI-shell transfer remains OPEN.
-- Q004 broader framework/platform transfer remains OPEN.
-- Q006 actual Android/iOS process death, backend/cursor batches, combined network+process faults, filesystem/device/power faults and production release-gate evidence remain OPEN.
+- Hosted execution of `q006-third-party-action-nonzero-propagation.yml` must reach the intentional marker and expose action `outcome=failure` before PASS.
+- Exact resolved `reactivecircus/android-emulator-runner@v2` commit identity remains OPEN.
+- Remaining selected-pattern semantic classification and broader verdict-bearing non-pattern/GitHub-expression/action-output paths remain OPEN.
+- PowerShell/cmd/other CI-shell transfer, physical/mobile/backend/storage-power and production release-gate evidence remain OPEN.
 
 ## Next work
-Continue the same Q006 professional boundary until repository semantic classification is credible. Prioritize GitHub-expression/action-output acceptance paths and other verdict-bearing third-party actions, then remaining selected-pattern paths. Add an executable delegated-nonzero negative control where it materially strengthens wrapper evidence. Repair and hosted-regress any additional genuine defect before considering semantic-audit closure.
+First inspect the hosted negative-control run when available; distinguish delegated-script failure from provisioning failure. If valid, record exact head/run/job/action identity and close only that wrapper-propagation gap. Then continue GitHub-expression/action-output and remaining semantic verdict-path review.
