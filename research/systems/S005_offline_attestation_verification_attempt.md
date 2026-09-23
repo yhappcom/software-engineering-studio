@@ -1,26 +1,20 @@
 # S005 — Offline attestation verification attempt
 
-Status: **IN STUDY — OFFLINE VERIFICATION NOT YET ESTABLISHED; BUNDLE-EXPORT DIAGNOSTIC REGRESSION RUNNING**  
+Status: **IN STUDY — OFFLINE VERIFICATION NOT ESTABLISHED; BUNDLE EXPORT 404 ISOLATED**  
 Evidence date: 2026-09-23
 
 ## Problem / scope
-Separate online attestation retrieval from verification and execute verification with a local attestation bundle and trusted-root material while outbound networking is unavailable. Prior runs isolated failure to bundle export but lacked command-level stderr, so no root cause was assigned.
+Separate online attestation retrieval from verification and execute verification with a local attestation bundle and trusted-root material while outbound networking is unavailable.
 
 ## SOURCE
-Current GitHub documentation and GitHub CLI manual were rechecked 2026-09-23. Offline verification requires the artifact, downloaded attestation bundle, trusted-root material and verifier. The documented online preparation is `gh attestation download <artifact> -R <owner/repo>` followed by `gh attestation trusted-root > trusted_root.jsonl`; offline verification uses `gh attestation verify ... --bundle ... --custom-trusted-root ...`. `gh attestation download` remains public preview and therefore CHANGE WATCH. GitHub CLI automation documentation states that Actions should expose `${{ github.token }}` through `GH_TOKEN`.
+Current GitHub documentation rechecked 2026-09-23 states that offline verification requires the artifact, downloaded attestation bundle, trusted-root material and verifier. The documented preparation is `gh attestation download <artifact> -R <owner/repo>` plus `gh attestation trusted-root > trusted_root.jsonl`; verification then uses `--bundle` and `--custom-trusted-root`. Repository attestation lookup accepts a `sha256:<digest>` subject and may return 404; public-repository lookup can be unauthenticated, while authenticated fine-grained access requires attestations read permission.
 
 Primary sources:
 - https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/verify-attestations-offline
+- https://docs.github.com/en/rest/repos/attestations
 - https://cli.github.com/manual/gh_attestation_download
-- https://cli.github.com/manual/gh_attestation_trusted-root
-- https://cli.github.com/manual/gh_attestation_verify
-- https://cli.github.com/manual/gh_auth_login
-
-## F001 / Balance Loop prerequisite check
-Canonical Foundations status now supersedes the stale 2026-09-19 environment note: direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist. F001 is therefore not the blocker for this S005 block. Balance Loop selected S005 because the unresolved provenance verifier boundary has release/supply-chain leverage, an existing real contradiction, and cross-track Quality/Systems reuse value without repeating the professionally closed Safari lifecycle block.
 
 ## TARGET
-Exact prior attested subject:
 - repository: `yhappcom/software-engineering-studio`
 - generation commit: `ab6dbf4307078fc82ddc056029f686dd61eae3a7`
 - subject SHA-256: `9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071`
@@ -28,56 +22,49 @@ Exact prior attested subject:
 - workflow: `.github/workflows/s005-offline-attestation-verification.yml`
 
 ## VALIDATION / FAILURE / DEBUGGING
-### Run 1 — oracle fixture defect
-Commit `b6fbbae2191b8d7b415d893f089515e66cce30f8`, run/job `35412950674` / `105816006131`: exact subject reconstruction failed. Root cause was a fixture byte mismatch, not attestation behavior.
+Runs 1–4 progressively isolated the failure from subject reconstruction and combined export to canonical CLI bundle export. Run 5, exact head `53971088727987560f3dde2f3c31e9b999af4627`, run/job `35818471643` / `107045026937`, completed **failure** while preserving diagnostics.
 
-### Run 2 — combined input-export failure
-Commit `c1fd34167619f4dbe4f695c1b1b49f5cf0741e7e`, run/job `35412968384` / `105816055855`: exact subject reconstruction passed; combined bundle/root export failed; later steps skipped.
+Run-bound artifact `10731184861`, digest `sha256:f64bb749ae4ac777b2aa8081652b0cd1a6f75b89e989b57c2fcf5ee5e535102e`, was directly inspected. It records:
+- GitHub CLI `2.100.0 (2026-09-03)`;
+- authenticated `github-actions[bot]` via `GH_TOKEN`;
+- reconstructed subject commit `ab6dbf4307078fc82ddc056029f686dd61eae3a7`;
+- bundle producer exit code `1`;
+- exact stderr: attestation fetch returned HTTP 404 for repository `yhappcom/software-engineering-studio` and subject digest `sha256:9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071`.
 
-### Run 3 — REST-style bundle export failure
-Commit `dffe6476cd7d63297bdfe5ba560ee1fefc8e9d16`, run/job `35412983659` / `105816098288`: failure isolated to the bundle export implementation; command stderr unavailable.
-
-### Run 4 — canonical CLI bundle export failure
-Commit `66dd238e6bf0041c18fbd4e8aea3027c48a48d59`, run/job `35413003999` / `105816156294`: exact subject reconstruction succeeded and `Export attestation bundle while online` failed; trusted-root and offline verification were skipped. Exact workflow inspection confirms `contents: read`, `attestations: read`, and `GH_TOKEN: ${{ github.token }}` were already present, so the current GitHub CLI automation guidance does not justify a missing-token root-cause claim.
-
-### Run 5 — diagnostic preservation repair
-Commit `53971088727987560f3dde2f3c31e9b999af4627` modifies only the validation harness. Bundle export now records GitHub CLI version/auth status, stdout, stderr and producer exit code, uploads those diagnostics with `if: always()`, and then fails closed if export failed. This prevents the prior evidence channel from discarding the exact failure payload while preserving the same canonical `gh attestation download` operation.
-
-Run `35818471643` is currently in progress. **No verdict is assigned until terminal run state and run-bound diagnostic artifact are inspected.**
+The fail-closed step then failed and trusted-root/offline verification steps were skipped. Thus the current failure is no longer an opaque CLI/token setup failure: the authenticated CLI reached the repository-attestation lookup and that lookup returned 404 for the exact subject digest.
 
 ## SYNTHESIS
-Online verification and offline-input export are distinct executable predicates. A release gate that claims offline provenance verification must prove both acquisition of fixed verification inputs and verification without network access. Failure diagnostics are part of the evidence contract when root-cause classification depends on external CLI/service behavior.
+Online verification and later offline-input export are temporally distinct predicates. A previously verified subject does not prove that its bundle remains retrievable later. Offline verification therefore requires preservation/export of the bundle as part of the evidence lifecycle, not merely a historical online verification result.
 
 ## CONTRADICTION
-Prior hosted online verification succeeded for the exact subject/repository, while explicit bundle-export attempts failed. These observations remain non-logically-inconsistent but operationally contradictory enough to require command-level evidence. Do not infer service outage, token scope defect, subject absence, CLI defect or attestation expiration before run 5 diagnostics establish one of them.
+Prior hosted online verification reportedly succeeded for this exact subject/repository, whereas the current repository-attestation lookup returns 404. This is a real temporal evidence contradiction, but the available execution does **not** distinguish among attestation deletion/retention/lifecycle change, historical identity error, service-side indexing/state change, or another repository-attestation availability mechanism. Do not assign a deeper root cause without direct evidence.
 
 ## ENGINEERING JUDGMENT
-Do not make offline verification a release requirement until the pipeline deterministically exports and preserves bundle/root inputs and independently verifies them. Diagnostic preservation must itself fail closed: evidence capture may not convert a producer failure into a green release verdict.
+Treat attestation bundle availability as a release artifact-retention dependency. If offline verification is required, export and preserve the bundle and trusted roots at attestation/release time rather than depending on indefinite future API retrieval.
 
 ## RELATED DOMAIN CHECK
-- Foundations: current F001 evidence checked; direct Dart/Flutter is no longer the blocker.
-- Architecture: release decisions must distinguish online verification, input acquisition and offline verification states.
+- Foundations: current F001 direct Dart/Flutter evidence means it is not this block's blocker.
+- Architecture: release state must distinguish verification-at-time-T from later evidence retrievability.
 - Mobile: no app artifact/mobile signing transfer occurred.
-- Data: not materially changed.
-- Quality: Q006 verdict/evidence separation directly informs the run-5 fail-closed diagnostic design.
-- Systems: S001/S004/S005 directly relevant.
-- Design Studio / Web Manager / Marketing Manager: considered; no canonical decision there changes this bounded supply-chain mechanism.
-- Product repositories: no product audit in this block; no MintTap/LogMate production claim.
+- Data: evidence retention/lifecycle is materially implicated as a systems concern; no storage PASS awarded.
+- Quality: Q006 evidence-preservation vs verdict-propagation transfer succeeded here; producer failure remained red while diagnostics survived.
+- Systems: S005 remains owner.
+- Design Studio / Web Manager / Marketing Manager: no canonical decision materially changes this supply-chain boundary.
+- Product repositories: no product audit or production claim in this block.
 
 ## HANDOFFS
-### TO Quality
-Run 5 is a natural transfer of Q006: diagnostic preservation and producer verdict propagation are separate controls. Inspect both artifact content and terminal outcome before accepting any S005 result.
+### TO Quality / release engineering
+For provenance gates, preserve run-bound bundle/trusted-root evidence when generated. A later green/failed lookup is not a substitute for the original signed-material evidence.
 
-### TO release engineering / Mobile
-Do not claim offline provenance verification from hosted online verification. Product transfer still requires exact product ref/version, canonical artifact digest, exportable bundle/trusted roots, executed identity policy and delivered-artifact identity.
+### TO Mobile / product release
+Offline provenance transfer still requires exact product repository/ref/version, canonical artifact digest, preserved attestation bundle/root inputs, executed identity policy and delivered-artifact identity.
 
 ## OPEN / VALIDATION / CHANGE WATCH
-- OPEN / DEBUG: inspect run `35818471643` terminal result and diagnostic artifact; assign root cause only if payload supports it.
-- VALIDATION: successful `gh attestation download` or equivalent exact bundle export for the known subject.
-- VALIDATION: successful trusted-root export.
-- VALIDATION: positive verification inside a demonstrably network-isolated environment using only artifact + bundle + trusted root + verifier.
+- OPEN: explain the temporal contradiction between prior successful online verification and current 404 only with direct evidence; do not speculate.
+- VALIDATION: generate or identify a currently retrievable attested subject, export its bundle immediately, and preserve it run-bound.
+- VALIDATION: export trusted roots and perform positive verification inside demonstrable network isolation.
 - VALIDATION: wrong-repository and mutated-subject rejection in that same isolated context.
-- CHANGE WATCH: `gh attestation download` is public preview; GitHub CLI, Actions, attestation API, Sigstore roots and hosted-runner images are version/service sensitive.
+- CHANGE WATCH: GitHub CLI, attestation API, Sigstore roots and hosted-runner images are version/service sensitive.
 
 ## Gate effect
-No PASS awarded. The professional boundary advanced from opaque export failure to a fail-closed, artifact-preserving diagnostic execution; root cause and offline verification remain OPEN.
+No Systems PASS. Run 5 closes the opaque-export diagnostic boundary: the exact current failure is repository-attestation lookup HTTP 404 for the historical subject. Offline verification remains OPEN.
