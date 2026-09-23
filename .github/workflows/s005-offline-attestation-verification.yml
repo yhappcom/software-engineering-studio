@@ -23,7 +23,6 @@ jobs:
           sha256sum subject.txt | tee subject.sha256
 
       - name: Generate fresh build provenance attestation
-        id: attest
         uses: actions/attest@v4
         with:
           subject-path: subject.txt
@@ -40,7 +39,6 @@ jobs:
           done < created_attestation_paths.txt > created_attestation_bundle.sha256
 
       - name: Download fresh attestation bundle immediately
-        id: bundle
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -64,24 +62,29 @@ jobs:
           sha256sum trusted_root.jsonl > trusted_root.sha256
 
       - name: Verify exact subject in isolated network namespace
+        id: offline_positive
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
           sudo unshare -n -- bash -c '
-            set -euo pipefail
+            set -o pipefail
             if curl --connect-timeout 2 -fsS https://api.github.com >/dev/null 2>&1; then
               echo "network isolation oracle failed: outbound network still reachable" >&2
               exit 90
             fi
+            echo "NETWORK_ISOLATION_CONFIRMED"
             gh attestation verify subject.txt \
               -R yhappcom/software-engineering-studio \
               --bundle bundle.jsonl \
-              --custom-trusted-root trusted_root.jsonl \
-              | tee offline-positive.txt
-          '
-          test -s offline-positive.txt
+              --custom-trusted-root trusted_root.jsonl
+          ' > offline-positive.txt 2> offline-positive.stderr.txt
+          rc=$?
+          printf '%s\n' "$rc" > offline-positive.rc
+          exit "$rc"
 
       - name: Reject wrong repository identity offline
+        if: steps.offline_positive.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
@@ -97,6 +100,7 @@ jobs:
           test "$rc" -ne 0
 
       - name: Reject mutated subject offline
+        if: steps.offline_positive.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
@@ -130,9 +134,18 @@ jobs:
             trusted_root.jsonl
             trusted_root.sha256
             offline-positive.txt
+            offline-positive.stderr.txt
+            offline-positive.rc
             wrong-repo.txt
             wrong-repo.rc
             mutated.txt
             mutated.txt.verify
             mutated.rc
           if-no-files-found: warn
+
+      - name: Fail closed on positive offline verification
+        if: steps.offline_positive.outcome != 'success'
+        shell: bash
+        run: |
+          cat offline-positive.stderr.txt >&2 || true
+          exit 98
