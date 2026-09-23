@@ -21,10 +21,9 @@ d=webdriver.Safari()
 try:
     d.get('http://127.0.0.1:8769/')
     d.execute_script('registerSW();')
-    # First registration can reload an initially uncontrolled document.  The
-    # original JS invocation does not survive that navigation, so use the
-    # browser-owned controller state as the lifecycle oracle, then invoke the
-    # application probe again in the controlled document to query V1.
+    # Registration can reload an uncontrolled document. Use browser-owned
+    # controller state across that navigation, then query the worker version
+    # from a fresh invocation in the controlled document.
     wait(d,"return Boolean(navigator.serviceWorker.controller)",'v1-controller-after-initial-registration')
     d.execute_script('registerSW();')
     wait(d,"return document.title==='M006_SW_READY_V1'",'v1-version-confirmed')
@@ -35,7 +34,13 @@ try:
     wait(d,"return document.title==='M006_SW_READY_V2'",'v2-controlled')
     d.quit()
     d=webdriver.Safari(); d.get('http://127.0.0.1:8769/'); d.execute_script('registerSW();')
-    wait(d,"return document.title==='M006_SW_READY_V2'",'restart-registration-persistence')
+    # A fresh WebDriver session can likewise begin with an uncontrolled
+    # document and reload after discovering the persisted registration. The
+    # pre-navigation invocation cannot set the V2 title afterward, so first
+    # prove restored control from browser-owned state, then re-query V2.
+    wait(d,"return Boolean(navigator.serviceWorker.controller)",'restart-controller-persistence')
+    d.execute_script('registerSW();')
+    wait(d,"return document.title==='M006_SW_READY_V2'",'restart-v2-version-confirmed')
     emit('SAFARI_SW_REGISTER_UPDATE_RESTART_PASS')
 except Exception as e:
     emit('SAFARI_SW_REGISTER_UPDATE_RESTART_FAIL',exception=repr(e),traceback=traceback.format_exc())
