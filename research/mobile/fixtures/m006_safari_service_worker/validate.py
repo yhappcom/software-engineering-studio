@@ -1,6 +1,6 @@
 from selenium import webdriver
 from pathlib import Path
-import json,time
+import json,time,traceback
 ROOT=Path(__file__).parent
 obs=[]
 def wait(driver,pred,label,seconds=30):
@@ -14,11 +14,20 @@ def wait(driver,pred,label,seconds=30):
         time.sleep(.5)
     raise AssertionError(f'timeout: {label}')
 
+def emit(verdict, **extra):
+    print(json.dumps({'verdict':verdict,'observations':obs,**extra},indent=2), flush=True)
+
 d=webdriver.Safari()
 try:
     d.get('http://127.0.0.1:8769/')
     d.execute_script('registerSW();')
-    wait(d,"return document.title==='M006_SW_READY_V1'",'v1-controlled')
+    # First registration can reload an initially uncontrolled document.  The
+    # original JS invocation does not survive that navigation, so use the
+    # browser-owned controller state as the lifecycle oracle, then invoke the
+    # application probe again in the controlled document to query V1.
+    wait(d,"return Boolean(navigator.serviceWorker.controller)",'v1-controller-after-initial-registration')
+    d.execute_script('registerSW();')
+    wait(d,"return document.title==='M006_SW_READY_V1'",'v1-version-confirmed')
     ROOT.joinpath('version.txt').write_text('V2\n')
     d.execute_script('updateSW();')
     wait(d,"return document.title==='M006_SW_CONTROLLER_CHANGED'",'controller-changed-to-new-worker')
@@ -27,7 +36,10 @@ try:
     d.quit()
     d=webdriver.Safari(); d.get('http://127.0.0.1:8769/'); d.execute_script('registerSW();')
     wait(d,"return document.title==='M006_SW_READY_V2'",'restart-registration-persistence')
-    print(json.dumps({'verdict':'SAFARI_SW_REGISTER_UPDATE_RESTART_PASS','observations':obs},indent=2))
+    emit('SAFARI_SW_REGISTER_UPDATE_RESTART_PASS')
+except Exception as e:
+    emit('SAFARI_SW_REGISTER_UPDATE_RESTART_FAIL',exception=repr(e),traceback=traceback.format_exc())
+    raise
 finally:
     try:d.quit()
     except:pass
