@@ -25,6 +25,8 @@ Primary sources retained/checked 2026-09-24:
 - https://firebase.google.com/docs/auth/flutter/federated-auth
 - https://firebase.google.com/docs/auth/flutter/manage-users
 - https://firebase.google.com/docs/auth/android/apple
+- https://firebase.google.com/docs/emulator-suite/connect_auth
+- https://firebase.google.com/docs/reference/rest/auth
 - https://developer.apple.com/support/offering-account-deletion-in-your-app
 - https://developer.apple.com/documentation/accountorganizationaldatasharing/revoke-tokens
 
@@ -65,48 +67,59 @@ Exact LogMate operations evidence already says provider token revocation/account
 
 ### SYNTHESIS
 
-Account deletion is a distributed multi-system operation, not a single `FirebaseUser.delete()` UI call. Potential authorities include:
-
-1. LogMate server-side user/sync data when Sync exists;
-2. Apple provider authorization when linked;
-3. Firebase Authentication user identity;
-4. local owner-bound ledger/device data.
-
-These transitions can partially succeed. Therefore a client must not show `Account deleted` merely because one call succeeded, and must not destroy the only local recovery evidence before remote completion is known.
+Account deletion is a distributed multi-system operation, not a single `FirebaseUser.delete()` UI call. Potential authorities include future LogMate server-side user/sync data, Apple provider authorization when linked, Firebase Authentication identity, and local owner-bound ledger/device data. These transitions can partially succeed. A client must not show `Account deleted` merely because one call succeeded, and must not destroy the only local recovery evidence before remote completion is known.
 
 ### ENGINEERING JUDGMENT — ordering and state model
 
 Do not encode deletion as one optimistic boolean. Model at least `idle → reauthenticationRequired/authorized → deletionInProgress → completed | retryableIncomplete | outcomeUnknown | terminalFailure` with per-authority completion evidence retained until the operation reaches its defined terminal state.
 
-The safest exact ordering depends on future Sync/backend authority and Apple-token handling, so no universal sequence is declared PASS here. Two alternatives have materially different failure modes:
+The safest exact ordering depends on future Sync/backend authority and Apple-token handling, so no universal sequence is declared PASS here. Firebase-first removes the principal Firebase identity early but may remove convenient authorization/context for later cleanup. Remote/provider cleanup first preserves Firebase identity for retry but can leave a live Firebase account after provider/server cleanup. Introduce an orchestration boundary and explicit partial-state journal before irreversible calls.
 
-- **Firebase-first:** removes the principal Firebase identity early, but later Apple/server cleanup may lose convenient authenticated authorization/context.
-- **remote/provider cleanup first:** preserves Firebase identity for authenticated cleanup/retry, but a later Firebase deletion failure leaves an account whose provider/server side may already be partially revoked/deleted.
-
-Therefore Codex should first introduce an orchestration boundary and explicit partial-state journal rather than hard-code an irreversible ordering before backend/Sync semantics are known.
-
-Local ledger deletion is also a separate product choice from account deletion. If product policy says account deletion deletes local logbook data, perform it only at the explicitly defined terminal point and after any required export/warning. If policy instead retains an inaccessible local archive, preserve owner binding and lock it; never silently rebind it to a future UID.
-
-### Apple-specific consequence
-
-Apple revocation is not equivalent to Firebase user deletion. When Apple is linked, deletion orchestration needs an Apple revocation step using valid provider authorization material or an approved server-side mechanism. The current LogMate document says to preserve authorization code/token material, but long-lived sensitive token storage itself creates a security boundary. Prefer a design that minimizes client-side long-lived provider secrets/tokens; exact mechanism remains OPEN until implementation architecture is selected.
+Local ledger deletion is separate from account deletion. If product policy later chooses local destruction, perform it only at the explicitly defined terminal point and after any required export/warning. If policy retains an inaccessible archive, preserve owner binding and lock it; never silently rebind it to a future UID.
 
 ### Failure-first validation contract
 
-Before release, executable tests should cover at least:
-
-1. stale session → `requiresRecentLogin` → no deletion mutation before successful same-owner reauthentication;
-2. reauthentication returns a different UID → fail closed, no deletion;
-3. Apple revocation succeeds, Firebase deletion fails → durable `retryableIncomplete`, never false success;
-4. Firebase deletion succeeds but final response is lost → `outcomeUnknown`; recover by re-observing auth/backend state rather than blindly recreating/rebinding;
-5. network failure before any remote acceptance → retry without duplicating completed steps;
-6. retry after an already-completed Apple revocation treats idempotent provider result correctly;
-7. duplicate Delete taps/callbacks produce one logical deletion workflow;
-8. local ledger remains protected throughout partial remote failure;
-9. terminal completion cannot be emitted until every authority required by product policy is complete or explicitly reconciled;
-10. crash/restart during each boundary resumes from durable step evidence rather than restarting irreversible steps blindly.
+Before release, executable tests should cover stale-session recent-login failure, wrong-UID reauthentication, partial Apple/Firebase success, response loss, retry, duplicate Delete, crash/restart, local-ledger protection, and a completion oracle that requires every authority selected by product policy.
 
 Fake/provider-port tests can validate orchestration and false-success prevention. They cannot prove real Apple token revocation, Firebase console configuration, provider credentials, backend deletion, or physical-device behavior.
+
+## NEW — Firebase Auth Emulator validation ladder
+
+### SOURCE
+
+Firebase officially supports a Local Emulator Suite Authentication emulator for prototyping/testing. The Auth emulator exposes REST endpoints to clear project accounts, inspect/patch emulator configuration, and retrieve out-of-band codes. Firebase's REST Auth API also documents deterministic email/password sign-up/sign-in responses including the returned Firebase `localId`/UID. Emulator transport is HTTP/local and explicitly not production security evidence.
+
+### SYNTHESIS
+
+This creates a stronger intermediate evidence rung between pure fake-adapter tests and real Google/Apple provider/device validation. It can validate real Firebase Auth client/backend semantics for email/password and account state without touching production credentials. It cannot validate Google/Apple OAuth consent, native SDK cancellation, Apple nonce/capability, Google SHA/OAuth configuration, browser popup/redirect lifecycle, provider revocation, or production persistence/security.
+
+Use three separate layers rather than treating one test class as Auth PASS:
+
+1. **Pure product-state tests:** fake provider/auth ports; exhaustively validate typed outcome mapping, no durable mutation on failure, startup routing, duplicate callback and owner-initializer idempotency.
+2. **Firebase Auth Emulator integration:** real Firebase Auth SDK against emulator; validate email create/sign-in/sign-out/reauth/delete where supported, UID stability, initialized auth observation, same-UID owner gate, restart/reconstruction behavior that the harness can genuinely reproduce, and backend account existence/deletion via independent emulator REST oracle.
+3. **Real provider/platform validation:** actual Google/Apple on Android/iOS/PWA plus project console configuration, cancellation, collision/link/unlink, redirect/popup, Apple revocation and physical/browser lifecycle.
+
+### VALIDATION DESIGN
+
+For emulator integration, do not let the app under test be its own oracle. Pair SDK observations with the emulator REST state where possible. Representative evidence contract:
+
+`CLAIM`: a successful first Firebase authentication establishes one UID and repeated startup/auth observation does not create a second identity or second owner initialization.
+
+`SPEC/PROPERTY`: Firebase UID is identity authority; owner initializer is idempotent per UID.
+
+`TARGET`: exact FlutterFire/Firebase Auth adapter + owner initialization boundary.
+
+`ORACLE`: SDK result UID plus independent emulator account state and durable local owner state/count.
+
+`FAILURE MODEL`: duplicate callback, sign-out/re-sign-in, wrong UID, stale local owner, process/test reconstruction, deletion/recreation ambiguity.
+
+`EVIDENCE LIMIT`: emulator PASS is not Google/Apple/provider-console/native/PWA/production PASS.
+
+The emulator's account-clear endpoint is useful for deterministic fixture reset, but clearing accounts must never be confused with product account deletion semantics. Emulator configuration can expose `allowDuplicateEmails`; therefore the test harness must record its exact configuration rather than assume production one-account-per-email behavior.
+
+### ENGINEERING JUDGMENT — Codex test order
+
+Codex should make the provider-neutral/product-state suite pass first, then add Auth Emulator integration for email/UID/owner/session semantics, and only then spend effort on provider-specific E2E. This isolates product-state defects from OAuth/platform defects and provides a reproducible failure-first base before console/device work.
 
 ## Account linking/unlinking consequence
 
@@ -114,11 +127,11 @@ Linking is credential-to-current-UID, not account merge. Assert UID before == UI
 
 ## RELATED DOMAIN CHECK
 
-- Foundations: Dart/Flutter runtime evidence exists; not the current blocker.
+- Foundations: direct Dart/Flutter JIT/AOT and bounded Chrome/Safari runtime evidence already exists; the historical F001 blocker is stale.
 - Architecture: Auth identity, ledger owner, onboarding, Sync and deletion workflow state remain separate ownership dimensions.
 - Mobile: native Google/Apple transport, revocation and physical/provider lifecycle require separate validation.
-- Data: first-owner initialization and deletion journals must be atomic/idempotent; local destruction policy requires explicit product decision.
-- Quality: typed mapping and deletion orchestration need failure injection, restart, duplicate-callback and false-success oracles.
+- Data: first-owner initialization and deletion journals must be atomic/idempotent; emulator account reset is not a persistence oracle for local ledger durability.
+- Quality: typed mapping, emulator integration and deletion orchestration need failure injection, independent state oracles, restart and duplicate-callback controls.
 - Systems: owns identity/session/provider security and revocation semantics.
 - Design Studio: recovery/collision/reauth/deletion confirmation and partial-failure copy downstream.
 - Web Manager: popup/redirect/authorized-domain deployment behavior downstream.
@@ -129,19 +142,19 @@ Linking is credential-to-current-UID, not account merge. Assert UID before == UI
 
 ### LogMate / Codex
 
-Evolve existing `AuthEngine` behind provider-neutral typed results. For deletion, add an explicit orchestrator/state record before implementing irreversible calls. Require recent same-owner reauthentication, distinguish Apple revocation from Firebase deletion, preserve retry/unknown outcomes, and never report success from one sub-step. Do not choose local-ledger destruction semantics implicitly.
+Evolve existing `AuthEngine` behind provider-neutral typed results. Build the validation ladder explicitly: pure state tests → Firebase Auth Emulator email/UID/owner integration → real Google/Apple Android/iOS/PWA validation. Record emulator configuration and use independent emulator REST/account-state oracles where possible. For deletion, add an explicit orchestrator/state record before irreversible calls. Do not choose local-ledger destruction semantics implicitly.
 
 ### Quality / Data / Mobile
 
-Quality: fake-provider failure matrix plus deletion partial-success/crash/retry controls. Data: idempotent first-owner initializer and durable deletion-step journal if deletion spans restart. Mobile: real native provider/revocation behavior later; Web/PWA popup/redirect separately.
+Quality: fake-provider failure matrix plus emulator-backed UID/account-state integration and deletion partial-success/crash/retry controls. Data: idempotent first-owner initializer and durable deletion-step journal if deletion spans restart. Mobile: real native provider/revocation behavior later; Web/PWA popup/redirect separately.
 
 ## OPEN / VALIDATION / CHANGE WATCH
 
 - OPEN: product-canonical account-required update.
 - OPEN: Firebase password policy, one-account-per-email/enumeration-protection, provider enablement/OAuth/SHA/Apple capability/Service-ID/authorized domains.
 - OPEN: exact `google_sign_in` version/configuration during implementation.
-- OPEN: executable typed-adapter tests and exact FlutterFire native exception observations.
-- OPEN: provider linking under final project configuration; Firebase docs retain a known linking issue warning in some projects.
+- OPEN: executable typed-adapter tests and Firebase Auth Emulator integration on exact LogMate code.
+- OPEN: exact FlutterFire native exception observations and real provider linking/cancellation/collision behavior.
 - OPEN: deletion authority/order, backend/Sync deletion semantics, Apple revocation implementation, secure token/code handling, and local-ledger deletion-vs-lock policy.
-- VALIDATION: no Auth/onboarding/provider/deletion runtime PASS claimed.
-- CHANGE WATCH: Firebase Auth/FlutterFire, `google_sign_in`, Apple account-deletion/revocation/linking policy, browser popup/redirect/persistence behavior, provider console configuration.
+- VALIDATION: no Auth/onboarding/provider/deletion runtime PASS claimed; emulator evidence, when produced, must remain bounded to emulator-supported semantics.
+- CHANGE WATCH: Firebase Auth/FlutterFire/Auth Emulator, `google_sign_in`, Apple account-deletion/revocation/linking policy, browser popup/redirect/persistence behavior, provider console configuration.
