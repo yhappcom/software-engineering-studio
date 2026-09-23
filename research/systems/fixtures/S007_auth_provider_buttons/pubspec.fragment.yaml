@@ -1,0 +1,18 @@
+# Merge only after verifying against the exact product Flutter/Dart toolchain.
+# Evidence point: 2026-09-24. Versions are CHANGE WATCH.
+
+dependencies:
+  firebase_auth: ^6.7.0
+  firebase_core: ^4.15.0
+  google_sign_in: ^7.2.0
+
+  # Add directly only if the product imports web-only renderButton APIs.
+  google_sign_in_web: ^1.1.3
+
+flutter:
+  assets:
+    # Prefer narrowing these paths after the product chooses exact provider
+    # variants. The Studio fetcher intentionally preserves the complete
+    # provider-approved PNG set for selection.
+    - assets/auth/google/
+    - assets/auth/apple/
