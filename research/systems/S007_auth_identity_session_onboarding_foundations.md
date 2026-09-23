@@ -1,6 +1,6 @@
 # S007 — Authentication Session, Account-Required Startup, and Onboarding Foundations
 
-Status: **IN STUDY — SOURCE/SYNTHESIS + EXACT-PRODUCT TRANSFER + GENERIC EXECUTABLE MODEL PENDING HOSTED VERDICT; PRODUCT VALIDATION OPEN**
+Status: **IN STUDY — SOURCE/SYNTHESIS + EXACT-PRODUCT TRANSFER + GENERIC EXECUTABLE STARTUP MODEL VALIDATED; EXACT-PRODUCT VALIDATION OPEN**
 Owner: Systems / Security / Identity
 Evidence date: 2026-09-24
 
@@ -41,21 +41,14 @@ Firebase recommends email-enumeration protection; newer projects enable it by de
 
 Startup therefore needs a provider-independent initialization state distinct from a nullable session snapshot: `uninitialized/initializing → initializedSignedOut | initializedAuthenticated(uid) | initializationFailure`. Login/reset presentation must be enumeration-safe, and provider collision recovery must not use email or `fetchSignInMethodsForEmail()` as owner authority.
 
-## NEW VALIDATION — generic executable fail-closed startup model
-### CLAIM
-The startup algebra can be implemented so unresolved/failed initialization never routes to Welcome/Home, duplicate authenticated observations initialize an owner at most once, a mismatching authenticated UID cannot rebind an existing owner, explicit sign-out retains the binding while locking routing, and matching completed ownership restores Home.
+## VALIDATION — generic executable fail-closed startup model
+Canonical hosted validation record: `research/systems/S007_startup_model_hosted_validation_2026-09-24.md`.
 
-### TARGET / FIXTURE
-`research/systems/fixtures/S007_auth_startup_state_model.py`, introduced at commit `a809e05d33ccbcfe16785627b23ad544b1401cde`; hosted workflow `.github/workflows/s007-auth-startup-state-model.yml`, head `1bc58ec210408a18cb4fd719be85b5b21e727d2e`.
+Fixture `research/systems/fixtures/S007_auth_startup_state_model.py` and workflow `.github/workflows/s007-auth-startup-state-model.yml` executed at exact workflow head `1bc58ec210408a18cb4fd719be85b5b21e727d2e`. GitHub Actions run `35909442993`, job `107345269055`, on GitHub-hosted Ubuntu 24.04.5 / CPython 3.13.15 completed successfully. The job log records all eight intended fail-closed startup tests as `ok` and `Ran 8 tests ... OK`.
 
-### ORACLE / FAILURE MODEL
-Eight independent `unittest` assertions cover unresolved startup, initialization failure, duplicate callback, wrong UID, matching complete/incomplete owner, explicit sign-out, and reauthentication after sign-out. The fixture deliberately stores owner initialization count so duplicate-callback idempotency is observable rather than inferred from route output.
+The validated bounded claims are: unresolved/failed initialization never routes to Welcome/Home; duplicate authenticated observations initialize an owner at most once; a mismatching UID cannot rebind an owner; explicit sign-out retains owner binding while locking routing; matching complete/incomplete owners route Home/onboarding respectively; reauthentication after explicit sign-out can restore Home.
 
-### OBSERVATION / VERDICT
-GitHub Actions run `35909442993` was **queued** when checked on 2026-09-24; therefore no executable PASS is claimed yet. The fixture/workflow existence is validation work, not validation evidence.
-
-### EVIDENCE LIMIT
-Even a later green run proves only this generic deterministic state model. It cannot establish LogMate implementation behavior, Firebase persistence, Auth Emulator semantics, provider SDK behavior, PWA redirect lifecycle, storage atomicity, or Android/iOS runtime behavior. Exact-product and provider validation remain mandatory.
+**EVIDENCE LIMIT:** this is a Python Studio semantic model, not LogMate runtime evidence. It does not execute LogMate Dart/Flutter, Firebase session persistence, Sembast transactions, Firebase Auth Emulator, Google/Apple SDKs, Android/iOS lifecycle, or PWA redirect behavior. No product/provider PASS follows from this result.
 
 ## Account deletion / revocation transaction boundary
 Firebase user deletion requires recent authentication. Apple-linked deletion is a multi-authority operation because provider revocation and Firebase identity deletion can partially succeed. Model deletion as an explicit retryable workflow, retain per-authority evidence until terminal completion, and do not conflate account deletion with local-ledger destruction. Exact ordering remains OPEN pending future Sync/backend and token-handling authority.
@@ -73,23 +66,23 @@ Fresh-auth processing must be safe under duplicate provider callbacks, redirect 
 - Architecture: initialization, identity, ledger owner, onboarding milestones, baseline, Sync and deletion remain separate state/ownership dimensions.
 - Mobile: native Google/Apple and PWA redirect replay require separate validation.
 - Data: owner initialization and setup milestones require atomic/idempotent semantics.
-- Quality: generic startup model adds an executable oracle design; hosted verdict and exact-product failure injection remain required.
-- Systems: owns identity/session/provider security and this fixture.
+- Quality: generic startup model now has hosted executable evidence; exact-product failure injection remains required.
+- Systems: owns identity/session/provider security and this validation boundary.
 - Design Studio: auth/recovery copy downstream; persisted state must not be widget-route identity. No canonical files edited.
 - Web Manager: popup/redirect/authorized-domain behavior downstream. No canonical files edited.
 - Marketing Manager: not materially relevant.
 - Product: exact LogMate ref retained; no product files edited.
 
 ## HANDOFFS
-- **LogMate / Codex:** implement the same fail-closed startup invariants in product tests: no Welcome before Auth initialization; exactly-once owner initialization under duplicate observations; wrong UID no mutation; explicit sign-out retains owner but locks access; matching completed owner restores Home.
-- **Quality:** inspect hosted run `35909442993`; a green generic model is only the first rung. Then require exact LogMate tests and Auth Emulator independent UID/account-state oracles.
+- **LogMate / Codex:** reproduce the eight validated model invariants in actual Dart/Flutter tests: no Welcome before initialized Auth; exactly-once owner initialization under duplicate observations; wrong UID no mutation; explicit sign-out retains owner but locks access; matching completed owner restores Home; incomplete owner resumes onboarding.
+- **Quality:** preserve run `35909442993`, job `107345269055`, and exact head as bounded generic evidence; next require exact LogMate tests and Auth Emulator independent UID/account-state oracles.
 - **Data/Architecture:** preserve explicit owner/setup/baseline state and enforce Previous Total resolution before durable setup completion.
 
 ## OPEN / VALIDATION / CHANGE WATCH
-- OPEN: hosted verdict for run `35909442993` and exact LogMate implementation execution.
-- OPEN: product-canonical account-required update; exact semantic-onboarding persistence representation; optional-import completion policy.
+- OPEN: exact LogMate implementation execution and product-canonical account-required update.
+- OPEN: exact semantic-onboarding persistence representation and optional-import completion policy.
 - OPEN: actual Firebase password policy/enumeration/provider configuration and `google_sign_in` implementation version/configuration.
 - OPEN: exact FlutterFire exception observations, Auth Emulator integration, real linking/cancellation/collision/revocation and PWA redirect behavior.
 - OPEN: deletion authority/order, backend/Sync deletion, secure token/code handling and local-ledger deletion-vs-lock policy.
-- VALIDATION: no LogMate/Auth/provider runtime PASS claimed.
+- VALIDATION: generic startup model hosted verdict CLOSED; no LogMate/Auth/provider runtime PASS claimed.
 - CHANGE WATCH: Firebase Auth/FlutterFire/Auth Emulator, password/enumeration settings, Google/Apple SDK/policy, browser popup/redirect/persistence and provider console configuration.
