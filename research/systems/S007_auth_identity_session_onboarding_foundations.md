@@ -27,6 +27,8 @@ Primary sources retained/checked 2026-09-24:
 - https://firebase.google.com/docs/auth/android/apple
 - https://firebase.google.com/docs/emulator-suite/connect_auth
 - https://firebase.google.com/docs/reference/rest/auth
+- https://firebase.google.com/docs/auth/users
+- https://firebase.google.com/docs/auth/limits
 - https://developer.apple.com/support/offering-account-deletion-in-your-app
 - https://developer.apple.com/documentation/accountorganizationaldatasharing/revoke-tokens
 
@@ -57,129 +59,79 @@ Firebase Flutter guidance establishes `FirebaseAuthException.code` as the progra
 | explicit sign-out + bound ledger | Welcome; DB retained and locked |
 | established matching owner + transient transport failure | local access retained where durable contract permits; Sync degraded |
 
-## Account deletion / revocation transaction boundary
+## NEW — startup initialization authority and enumeration-protection transfer
 
 ### SOURCE
 
-Firebase Flutter `User.delete()` requires recent authentication; stale credentials fail with `requires-recent-login`, after which the user should explicitly reauthenticate rather than sign out/in as an implementation shortcut. Apple requires App Store apps that support account creation to allow deletion initiation inside the app, and apps using Sign in with Apple should revoke Apple authorization tokens. Apple's revoke endpoint is idempotent at the protocol result level: HTTP 200 also covers a token that was already invalidated.
+Firebase recommends email-enumeration protection and states that projects created on or after 2023-09-15 have it enabled by default. With protection enabled, authentication APIs deliberately reduce account-existence-specific error information; for example `fetchSignInMethodsForEmail()` no longer reveals whether an account exists, and password-reset requests do not expose a missing account. Firebase also documents password policy as project configuration, including 6–30 character minimum configuration and Require/Notify enforcement modes.
 
-Exact LogMate operations evidence already says provider token revocation/account deletion is NOT IMPLEMENTED / NOT VERIFIED and blocks release on executable deletion/revocation evidence. It also says authorization code/token material needed by the approved revocation design must be preserved. This is a valid product operational requirement, but the exact secure storage/backend mechanism is not yet decided.
+### EXACT PRODUCT TRANSFER / CONTRADICTION
+
+At the audited LogMate ref, `FirebaseAuthEngine._auth` initializes Firebase lazily only when an auth action or `readCurrentSession()` requests `_auth`. The comment explicitly says this delay exists so the first frame remains available offline. This was coherent with account-optional startup, but it is no longer sufficient as the routing authority for account-required startup. The new startup contract needs an explicit initialization phase that waits for the initialized Firebase Auth state before deciding Welcome versus restored-session routing. Lazy initialization may still be useful internally, but `null currentUser` observed before the startup boundary is established must never be interpreted as signed out.
+
+The same exact source currently maps `email-already-in-use` to a product-visible `emailAlreadyInUse` outcome and `user-not-found` / `wrong-password` to `invalidCredential`; `signIn()` further renders most non-rate-limit failures as `Incorrect password.`. This error model assumes more account-existence/credential specificity than enumeration-protected Firebase is guaranteed to provide. Product behavior must remain correct when those specific codes collapse to `invalid-credential` or otherwise become less informative. Do not disable enumeration protection merely to preserve identifier-first UX or provider-discovery behavior.
 
 ### SYNTHESIS
 
-Account deletion is a distributed multi-system operation, not a single `FirebaseUser.delete()` UI call. Potential authorities include future LogMate server-side user/sync data, Apple provider authorization when linked, Firebase Authentication identity, and local owner-bound ledger/device data. These transitions can partially succeed. A client must not show `Account deleted` merely because one call succeeded, and must not destroy the only local recovery evidence before remote completion is known.
+Startup needs a provider-independent `AuthInitializationState` (or equivalent stream/port) distinct from `AuthSessionSnapshot?`: `uninitialized/initializing → initializedSignedOut | initializedAuthenticated(uid) | initializationFailure`. Welcome/Home routing begins only after the initialized state is authoritative. A recoverable initialization/network failure is not an explicit sign-out and must not unlock/rebind owner data.
 
-### ENGINEERING JUDGMENT — ordering and state model
+Email UX should be enumeration-safe by construction. Login failure copy may say that the credentials could not be verified without asserting whether the email exists. Password reset should use an acceptance-style response that does not disclose account existence; the current `PasswordResetRequestOutcome.accepted` model already points in this direction. Account creation may still receive `email-already-in-use` depending on project/configuration/API behavior, but onboarding correctness must not depend on receiving that specific code.
 
-Do not encode deletion as one optimistic boolean. Model at least `idle → reauthenticationRequired/authorized → deletionInProgress → completed | retryableIncomplete | outcomeUnknown | terminalFailure` with per-authority completion evidence retained until the operation reaches its defined terminal state.
+Provider collision recovery must likewise not depend on `fetchSignInMethodsForEmail()` as an account-discovery oracle. The authenticated UID and explicit credential/link operations remain identity authority; email is presentation/contact data, not owner authority.
 
-The safest exact ordering depends on future Sync/backend authority and Apple-token handling, so no universal sequence is declared PASS here. Firebase-first removes the principal Firebase identity early but may remove convenient authorization/context for later cleanup. Remote/provider cleanup first preserves Firebase identity for retry but can leave a live Firebase account after provider/server cleanup. Introduce an orchestration boundary and explicit partial-state journal before irreversible calls.
+### Failure-first Codex contract
 
-Local ledger deletion is separate from account deletion. If product policy later chooses local destruction, perform it only at the explicitly defined terminal point and after any required export/warning. If policy retains an inaccessible archive, preserve owner binding and lock it; never silently rebind it to a future UID.
+Add tests for: startup must not emit Welcome before Auth initialization completes; initialized restored UID routes through owner/setup state; initialization failure does not manufacture explicit sign-out; `invalid-credential` and less-specific enumeration-protected errors produce non-enumerating login copy; password reset missing/existing-account paths are presentation-equivalent where Firebase protection requires it; collision recovery never calls account-discovery APIs as owner authority; password validation does not hard-code 15 characters and has a defined behavior when Firebase policy configuration cannot be read/verified locally.
 
-### Failure-first validation contract
+No runtime PASS is claimed. Exact Firebase project settings for enumeration protection, password policy mode/requirements, one-account-per-email behavior and provider enablement remain operational evidence dependencies.
 
-Before release, executable tests should cover stale-session recent-login failure, wrong-UID reauthentication, partial Apple/Firebase success, response loss, retry, duplicate Delete, crash/restart, local-ledger protection, and a completion oracle that requires every authority selected by product policy.
+## Account deletion / revocation transaction boundary
 
-Fake/provider-port tests can validate orchestration and false-success prevention. They cannot prove real Apple token revocation, Firebase console configuration, provider credentials, backend deletion, or physical-device behavior.
+Firebase user deletion requires recent authentication. Apple-linked deletion is a multi-authority operation because provider revocation and Firebase identity deletion can partially succeed. Model deletion as an explicit retryable workflow, retain per-authority evidence until terminal completion, and do not conflate account deletion with local-ledger destruction. Exact ordering remains OPEN pending future Sync/backend and token-handling authority.
 
 ## Firebase Auth Emulator validation ladder
 
-Firebase officially supports a Local Emulator Suite Authentication emulator. This creates a stronger intermediate evidence rung between pure fake-adapter tests and real Google/Apple provider/device validation. Use three separate layers: pure product-state tests; Firebase Auth Emulator integration with independent account-state/UID oracles; then real Google/Apple Android/iOS/PWA validation. Emulator account clearing is fixture reset, not product deletion evidence.
+Use three evidence layers: pure product-state tests; Firebase Auth Emulator integration with independent account-state/UID oracles; then real Google/Apple Android/iOS/PWA validation. Emulator account clearing is fixture reset, not product deletion evidence.
 
-## NEW — durable onboarding completion and Previous Total boundary
+## Durable onboarding completion and Previous Total boundary
 
-### EXACT PRODUCT TRANSFER
+Baseline presence, record count, Firebase authentication and widget route are not onboarding-completion authority. Persist explicit semantic decisions. At minimum distinguish owner ready, Previous Total pending/resolved (`configured` or `explicitlyNone`), optional import decision if product requires it, and committed setup completion. Explicit negative decisions are data and must survive restart.
 
-At the audited LogMate ref, `MASTER.md` already separates durable owner-access/local-entry/initial-setup/baseline metadata from Flight/Simulator record values. It also defines `PreviousTotalBaselineConfiguration` as an optional single durable value, explicitly distinguishes missing baseline from a sparse present baseline, and states that initial logbook setup normally offers Previous Total first, optional source/history import next, then manual entry. Users with no baseline and users with nothing to import remain supported. These are useful persistence primitives, but the current startup/auth spec still routes through account-free local entry and explicit unbound-ledger claim, which is superseded by the newer account-required owner direction.
+Fresh-auth processing must be safe under duplicate provider callbacks, redirect replay and restart: observe authenticated UID; transactionally initialize-or-read owner binding; fail closed on owner mismatch; read durable setup milestones; resume first unresolved milestone; make each command idempotent/CAS guarded; commit setup completion only after prerequisites; route Home only after a fresh read of matching owner plus committed completion.
 
-### SYNTHESIS — do not use baseline presence as onboarding completion
+Exact repository inspection shows `completeInitialLogbookSetup()` currently writes `completed` without checking a Previous Total resolution prerequisite, while baseline configuration has its own atomic baseline/generation/checkpoint transaction. This is not an old-contract defect; it is the minimal persistence-contract delta exposed by the new product policy. Prefer an explicit durable Previous Total decision plus repository-level prerequisite enforcement over inferring resolution from nullable baseline or relying on UI sequencing. Exact schema/codec/migration implementation remains product work.
 
-`PreviousTotalBaselineConfiguration != null` cannot be the onboarding-complete predicate. A legitimate user may explicitly have no previous total; conversely a baseline may exist while another required onboarding decision is incomplete. Likewise record count, import history, or Firebase authentication cannot infer completion. Completion needs its own durable state.
-
-Separate at least these facts:
-
-- Firebase identity established for UID;
-- local ledger owner initialized for that UID;
-- Previous Total step resolved as either `configured(value)` or `explicitlyNone`;
-- optional import step resolved as `completed/imported` or `skipped/notNow` according to product UX;
-- onboarding completion committed.
-
-An explicit negative decision is data. `No previous total` and `No import now` must survive restart rather than being represented by absence that is indistinguishable from an unfinished step.
-
-### ENGINEERING JUDGMENT — monotonic durable state machine
-
-Prefer a small monotonic setup state rather than a transient page index. A representative semantic progression is:
-
-`ownerReady → previousTotalPending → previousTotalResolved → importDecisionPending → setupComplete`.
-
-The exact UI may combine or reorder optional screens later, so persistence should store semantic milestones/decisions, not widget route names. If import is intentionally allowed after onboarding, `skip/notNow` should complete the initial decision without marking import permanently unavailable.
-
-`setupComplete` must be written only after all mandatory semantic prerequisites are durably committed. Home routing reads the committed state; it must not infer success because the final screen was displayed or because an async save was started.
-
-### Atomicity and idempotency boundary
-
-Fresh-auth processing should be safe under duplicate provider callbacks, PWA redirect replay, app restart, and repeated startup observation:
-
-1. observe authenticated Firebase UID;
-2. transactionally initialize-or-read owner binding for that UID;
-3. if owner mismatch, fail closed with no onboarding mutation;
-4. read durable onboarding milestones;
-5. resume the first unresolved semantic step;
-6. each step command is idempotent or CAS/version guarded;
-7. commit `setupComplete` only after prerequisite writes succeed;
-8. route Home only after a fresh read observes matching owner + committed completion.
-
-Previous Total value and the decision that the step is resolved should be committed atomically where practical. Otherwise a crash can create ambiguous states such as baseline written but step still pending, or step marked complete before the baseline is durable. If existing repository primitives cannot make them one transaction, define a deterministic recovery rule and test both interruption orders.
-
-### Failure-first validation contract
-
-Codex/product tests should include at least:
-
-- crash/reconstruction after owner initialization but before Previous Total decision → resume Previous Total;
-- `explicitlyNone` survives restart and does not loop back to Previous Total;
-- configured baseline + resolved milestone survive restart consistently;
-- failure writing baseline never advances the milestone;
-- failure writing completion never routes Home;
-- duplicate submit does not duplicate baseline/configuration generations or owner initialization;
-- import skip survives restart but later import remains available if product policy permits;
-- wrong UID cannot read/advance setup state;
-- restored matching UID + incomplete setup resumes the first unresolved semantic step;
-- restored matching UID + committed setup completion routes Home directly;
-- transient network/Auth refresh failure after established owner does not erase local setup completion.
-
-These are source/model requirements, not runtime evidence. Exact repository transaction support and executable tests remain OPEN.
-
-### HANDOFFS — onboarding durability
-
-- **LogMate / Codex:** preserve existing durable initial-setup/baseline primitives where they fit, but remove account-free inference. Add explicit semantic resolution for `no previous total` and optional-import decision; do not use null baseline, zero records, or page index as completion authority.
-- **Data:** verify whether baseline write + milestone can share the canonical local transaction/CAS boundary; if not, specify crash recovery ordering.
-- **Architecture:** keep Auth, owner binding, setup milestones, baseline data, and import availability separate concepts.
-- **Design Studio:** UI may change screen composition without changing semantic persisted milestones; provide explicit No previous total / Skip import actions.
-- **Quality:** build restart/interruption and duplicate-submit tests around every durable transition.
+Failure-first tests must include crash/reopen after owner initialization, explicit-none persistence, baseline fault rollback, duplicate submit, completion-write failure, wrong UID, restored incomplete/complete setup, and transient Auth/network failure after established ownership.
 
 ## RELATED DOMAIN CHECK
 
 - Foundations: direct Dart/Flutter JIT/AOT and bounded Chrome/Safari runtime evidence already exists; no blocker for this source/model block.
-- Architecture: Auth identity, ledger owner, onboarding milestones, baseline data, optional import, Sync and deletion workflow state remain separate ownership dimensions.
+- Architecture: Auth initialization, identity, ledger owner, onboarding milestones, baseline data, optional import, Sync and deletion workflow state remain separate ownership dimensions.
 - Mobile: native Google/Apple transport, PWA redirect replay and physical/provider lifecycle require separate validation.
 - Data: first-owner initialization, setup milestones, baseline resolution and deletion journals require atomic/idempotent semantics.
-- Quality: typed mapping, emulator integration, onboarding interruption/restart and deletion orchestration need failure injection and independent state oracles.
-- Systems: owns identity/session/provider security and revocation semantics.
-- Design Studio: onboarding semantic actions and recovery copy downstream; persisted state must not be widget-route identity.
+- Quality: enumeration-safe error mapping, startup initialization, emulator integration, onboarding interruption/restart and deletion orchestration need failure injection and independent state oracles.
+- Systems: owns identity/session/provider security, enumeration protection and revocation semantics.
+- Design Studio: onboarding semantic actions and recovery copy downstream; persisted state must not be widget-route identity. Login/reset copy must not leak account existence.
 - Web Manager: popup/redirect/authorized-domain deployment behavior downstream.
 - Marketing Manager: no material dependency in this block.
 - Product: exact LogMate ref inspected; no product files edited.
+
+## HANDOFFS
+
+- **LogMate / Codex:** introduce an explicit Auth-initialization boundary before startup routing; preserve UID as authority; make email sign-in/reset enumeration-safe; do not use `fetchSignInMethodsForEmail()` or email equality as owner/provider-discovery authority.
+- **Quality:** table-test initialization delay/failure and enumeration-protected error collapse, then repeat with Auth Emulator/project configuration evidence.
+- **Design Studio:** authentication error/reset copy must avoid revealing whether an email is registered; no canonical design files edited.
+- **Data/Architecture:** retain separate owner/setup/baseline states and enforce Previous Total resolution before durable setup completion.
 
 ## OPEN / VALIDATION / CHANGE WATCH
 
 - OPEN: product-canonical account-required update.
 - OPEN: exact repository representation/transaction for semantic onboarding milestones and explicit-negative decisions.
-- OPEN: whether initial import needs a durable initial-decision milestone or can be omitted entirely from completion while remaining optional post-setup; product UX must decide without weakening Previous Total durability.
-- OPEN: Firebase password policy, one-account-per-email/enumeration-protection, provider enablement/OAuth/SHA/Apple capability/Service-ID/authorized domains.
+- OPEN: whether initial import is a completion milestone or remains optional post-setup.
+- OPEN: actual Firebase password policy, enumeration-protection, one-account-per-email, provider enablement/OAuth/SHA/Apple capability/Service-ID/authorized domains.
 - OPEN: exact `google_sign_in` version/configuration during implementation.
-- OPEN: executable typed-adapter tests and Firebase Auth Emulator integration on exact LogMate code.
+- OPEN: executable typed-adapter/startup/enumeration tests and Firebase Auth Emulator integration on exact LogMate code.
 - OPEN: exact FlutterFire native exception observations and real provider linking/cancellation/collision behavior.
 - OPEN: deletion authority/order, backend/Sync deletion semantics, Apple revocation implementation, secure token/code handling, and local-ledger deletion-vs-lock policy.
-- VALIDATION: no Auth/onboarding/provider/deletion runtime PASS claimed; onboarding restart/atomicity contract remains unexecuted.
-- CHANGE WATCH: Firebase Auth/FlutterFire/Auth Emulator, `google_sign_in`, Apple account-deletion/revocation/linking policy, browser popup/redirect/persistence behavior, provider console configuration.
+- VALIDATION: no Auth/onboarding/provider/deletion runtime PASS claimed; startup initialization and onboarding restart/atomicity contracts remain unexecuted.
+- CHANGE WATCH: Firebase Auth/FlutterFire/Auth Emulator, email-enumeration protection/password policy, `google_sign_in`, Apple account-deletion/revocation/linking policy, browser popup/redirect/persistence behavior, provider console configuration.
