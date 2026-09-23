@@ -11,6 +11,8 @@ Exact product evidence: `yhappcom/logmate → main → e79f97cb7edd8823860daf147
 
 ## PROJECT DECISION
 - Account is mandatory for LogMate first use.
+- Account-required product rationale includes storage of account-bound/personalized user information; authentication is part of user ownership/personalization, not merely telemetry gating.
+- Store review will receive a dedicated working reviewer account when credentials are required. Reviewer passwords/credentials must be supplied through store review metadata and must never be committed to source control.
 - V1 providers are Apple, Google, and Email.
 - Apple and Google use provider-approved/system/provider-rendered button treatment rather than a LogMate-redrawn logo/button.
 - Email uses LogMate-owned UI.
@@ -63,6 +65,10 @@ The asset acquisition script is the canonical way to refresh binary provider ass
 - Button visibility/prominence must remain comparable across Apple/Google/Email.
 
 ## VALIDATION
+Hosted Flutter render validation is recorded in `research/systems/S007_auth_button_render_validation_2026-09-24.md`. Run `35934806084`, job `107429333111`, on Flutter 3.47.5 / Dart 3.13.4 passed analysis and all 5 render/geometry/decode tests and committed four light/dark iOS/Android goldens at `c0719bd93c2fb5304fb76537faeca2d7dd9ac9f9`.
+
+The render also falsified one earlier implementation assumption: equal 375×56 layout slots do **not** make the raw pre-approved Google and Apple PNGs visibly equal. Apple 3x assets are 1125×168 (375×56 logical), Google iOS 3x assets are 564×132 (188×44), and Google Android 3x assets are 540×120 (180×40). Preserving aspect ratio leaves the Google visible button substantially narrower. The raw-raster 375×56 composition is therefore rejected as the final LogMate presentation; a provider-rendered/provider-compliant geometry path must be validated next.
+
 **Bounded asset-acquisition validation:** workflow-triggered refresh commit `70fd04dbc6a0ee222cac1f711ee9eb1effb60d18` successfully materialized 111 tracked files: one SHA-256/source manifest plus 110 provider-approved PNG assets (14 Apple, 96 Google). Apple assets were generated from Apple-owned secure button endpoints; Google assets came from Google's current pre-approved Sign in with Google ZIP. The local fetch script also passed `bash -n` syntax validation before the hosted refresh.
 
 This validates only acquisition/provenance of the stored button resources. No exact LogMate compile, native bridge registration, Firebase provider configuration, App Review, Play verification, real Google/Apple sign-in, or PWA browser execution is claimed by this note.
