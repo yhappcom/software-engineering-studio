@@ -1,6 +1,6 @@
 # S005 — Offline attestation verification attempt
 
-Status: **IN STUDY — FRESH GENERATION/PUBLICATION/PRESERVATION VALIDATED; OFFLINE VERIFIER FAILURE DIAGNOSTIC PENDING**  
+Status: **IN STUDY — BOUNDED GENERIC OFFLINE VERIFICATION CLOSED; EXACT-PRODUCT/RELEASE TRANSFER OPEN**  
 Evidence date: 2026-09-23
 
 ## Problem / scope
@@ -23,54 +23,49 @@ Historical subject from generation commit `ab6dbf4307078fc82ddc056029f686dd61eae
 **CONTRADICTION:** prior verification vs later 404 remains real. Deletion/retention/indexing/historical-identity cause remains OPEN; no unsupported ROOT CAUSE is assigned.
 
 ## Run 6 — fresh generation discriminator
-Exact head `e43d3625be67f7d7699e703a06e181c07db16473`, run/job `35826775258` / `107070135294`, completed **failure**. Step-level evidence is discriminating rather than globally negative:
-- fresh deterministic subject creation: success;
-- `actions/attest@v4` provenance generation: success;
-- runner-local attestation-path preservation: success;
-- immediate repository bundle download: success;
-- current trusted-root export: success;
-- isolated positive verification step: failure;
-- negative tests skipped because positive verification failed;
-- semantic artifact preservation: success.
+Exact head `e43d3625be67f7d7699e703a06e181c07db16473`, run/job `35826775258` / `107070135294`, completed failure. Fresh subject creation, `actions/attest@v4` generation, runner-local attestation preservation, immediate repository bundle download and trusted-root export succeeded; the isolated positive verifier failed before its stderr/exit status was preserved.
 
-Run-bound artifact `10735746062`, digest `sha256:d7916d68076e9b13d113ea47f82d9c6045a9783e49e0bc4328e14a9dc9bbe7c3`, was directly inspected. Subject SHA-256 is `9c6dd50d28b2a736cd9ff0a488f4f5ad4d93cf1f36258209374a89fdb28e6264`. The runner-local attestation at `/home/runner/work/_temp/8BCfUo/attestation.json` and immediately downloaded repository bundle are byte-identical by SHA-256: `89e64a6f11e4033240b29bc4c562cfe182ae4a08a2819bc822f4dbf11152a338`. The downloaded bundle is non-empty (11,817 bytes); trusted roots are non-empty and hash to `65ca537f6ed8a47fd0e560c421baa1f6c1efb8b25fc200d8c5c02c0e92eb2b9c`. GitHub CLI is `2.100.0 (2026-09-03)` and authenticated as `github-actions[bot]`.
+Run-bound artifact `10735746062`, digest `sha256:d7916d68076e9b13d113ea47f82d9c6045a9783e49e0bc4328e14a9dc9bbe7c3`, was directly inspected. Subject SHA-256 was `9c6dd50d28b2a736cd9ff0a488f4f5ad4d93cf1f36258209374a89fdb28e6264`. The runner-local attestation and immediately downloaded repository bundle were byte-identical at SHA-256 `89e64a6f11e4033240b29bc4c562cfe182ae4a08a2819bc822f4dbf11152a338`.
 
-**VALIDATION:** for this fresh subject, generation-time local signed material and immediate repository retrieval agree byte-for-byte. Therefore the historical 404 is not evidence of a generic current inability of this workflow identity/CLI/repository to generate, publish or immediately retrieve attestations. It remains specifically a historical-attestation availability contradiction.
+**VALIDATION:** fresh generation, publication/retrieval and generation-time preservation are distinct and were validated. Historical 404 is not evidence of a generic current inability to publish/retrieve attestations.
 
-The artifact's `offline-positive.txt` is zero bytes. Run 6 did not preserve stderr/exit status from the isolated verifier, so the exact reason for step 7 failure is not yet established. It would be invalid to call this a cryptographic/offline-verification failure without separating namespace creation, network-isolation oracle, CLI invocation and signature/policy verification.
+## Run 7 — bounded generic offline closure
+Diagnostic repair exact head `c1ca5a8ae09717fc794b7e064358938e346b56cb`, run/job `35826855911` / `107070382027`, completed **success** on the GitHub-hosted `ubuntu-latest` runner. GitHub's run/job API records success for each semantic stage: fresh subject creation, provenance generation, local attestation preservation, immediate repository bundle download, trusted-root export, network-isolated positive verification, wrong-repository rejection, mutated-subject rejection, and semantic evidence preservation. The fail-closed positive-verification fallback was skipped because the positive producer succeeded.
 
-## Run 7 diagnostic repair
-Commit `c1ca5a8ae09717fc794b7e064358938e346b56cb` changes the positive offline step to preserve stdout, stderr and producer exit status while retaining fail-closed behavior. Negative tests run only after positive offline verification succeeds; the final step fails closed if the positive producer failed. At note time its workflow run had not yet appeared in the Actions API.
+Run-bound artifact metadata binds `s005-offline-attestation-evidence` artifact `10735831041`, size 20,280 bytes, digest `sha256:3037d37b392b8d7b8567f11fc7cffaf501100d6f96a71f60952d48ff674cdabd`, to exact head `c1ca5a8ae09717fc794b7e064358938e346b56cb` and run `35826855911`. In this execution context the binary archive itself was not independently opened, so this note does not invent its internal stdout/stderr contents; the bounded verdict relies on the fail-closed workflow semantics plus GitHub's per-step terminal results and artifact identity metadata.
+
+**VALIDATION:** the generic fixture now demonstrates the complete bounded lifecycle `fresh subject → attestation generation → generation-time preservation → immediate repository retrieval → trusted-root preservation → outbound-network isolation → positive offline verification → wrong-repository rejection → mutated-subject rejection`.
+
+**FAILURE/REGRESSION CHAIN:** historical retrieval contradiction → fresh generation/retrieval success → opaque offline-positive failure → diagnostic preservation repair → exact-head hosted regression success.
 
 ## SYNTHESIS
-Generation, repository publication/retrievability, evidence preservation and verification are distinct predicates. Run 6 directly validates the first three for a fresh subject and demonstrates a stronger release-evidence pattern: preserve generation-time signed material, then independently check repository retrieval. Historical online verification alone is not an evidence-retention guarantee.
+Generation, repository publication/retrievability, evidence preservation and verification are distinct predicates. Release evidence requiring later offline verification should preserve signed material and roots at release time rather than depend solely on future service retrieval.
 
 ## ENGINEERING JUDGMENT
-For releases requiring later offline provenance verification, preserve the attestation bundle and trusted roots at attestation/release time. Do not make future repository lookup the sole evidence-retention mechanism.
+The generic S005 fixture has reached a bounded professional boundary. Repeating equivalent synthetic attestation variants has low marginal value. The next stronger evidence class is exact-product/release provenance bound to a canonical build artifact, exact source ref/version, digest, signing/release policy and retained verification material.
 
 ## RELATED DOMAIN CHECK
 - Foundations: direct Dart JIT/AOT and bounded Flutter runtime exist; not this block's blocker.
 - Architecture: generated, published/retrievable, preserved and verified are distinct lifecycle states.
 - Mobile: no app artifact/mobile signing transfer occurred.
 - Data: evidence retention is relevant but does not establish application-data durability.
-- Quality: Q006 preservation-vs-verdict discipline applies; run 6 shows why failed semantic stages require their own diagnostic artifact.
+- Quality: Q006 preservation-vs-verdict discipline transferred naturally; the run-6 failure and run-7 repair preserve the failure→diagnostic→regression chain.
 - Systems: S005 remains owner.
 - Design Studio / Web Manager / Marketing Manager: considered; no canonical decision changes this supply-chain boundary.
-- Product repositories: no product audit or production claim; exact-product transfer remains OPEN.
+- Product repositories: no product audit or production claim in run 7; exact-product transfer remains OPEN.
 
 ## HANDOFFS
 ### TO Quality / release engineering
-Use separate oracles for generation, publication/retrieval, local evidence preservation, network isolation and verifier result. Preserve stderr/exit status before assigning a cryptographic root cause.
+Retain independent oracles for generation, publication/retrieval, local evidence preservation, network isolation, verifier success and negative identity/content rejection. Preserve producer verdict separately from diagnostic output.
 
 ### TO Mobile / product release
-Future transfer must bind `repository → exact ref/tag/branch/commit → declared version → evidence date → canonical build path → artifact digest → preserved attestation/root → verification policy`; this generic Studio fixture is not delivered-product provenance.
+Future transfer must bind `repository → exact ref/tag/branch/commit → declared version → evidence date → canonical build path → artifact digest → preserved attestation/root → verification policy`. Generic Studio attestation is not delivered-product provenance.
 
 ## OPEN / VALIDATION / CHANGE WATCH
-- VALIDATION: inspect exact-head `c1ca5a8ae09717fc794b7e064358938e346b56cb` terminal run and its run-bound offline-verifier diagnostics.
 - OPEN: historical 404 deeper cause remains unresolved; lifecycle documentation alone is not deletion evidence.
-- VALIDATION: positive network-isolated verification plus wrong-repository and mutated-subject rejection remain required.
 - VALIDATION: exact-product/release transfer remains required after generic closure.
+- VALIDATION: Android/iOS signing/deployment and independent-host verification remain outside this fixture.
 - CHANGE WATCH: GitHub CLI, `actions/attest`, attestation API, Sigstore roots and hosted-runner images are version/service sensitive.
 
 ## Gate effect
-No Systems PASS. Run 6 materially advances S005 by validating fresh generation→publication/retrieval→preservation identity, but offline verification remains OPEN.
+No Systems Stage 1 PASS. The bounded generic offline-attestation verification boundary is closed by exact-head hosted regression, including positive isolated verification and two negative controls. Product/release provenance, signing/deployment, independent-host reproducibility and production evidence remain materially open.
