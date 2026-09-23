@@ -4,217 +4,142 @@ Status: **IN STUDY — SOURCE/SYNTHESIS + EXACT-PRODUCT TRANSFER; EXECUTABLE VAL
 Owner: Systems / Security / Identity
 Evidence date: 2026-09-24
 
-## Problem and scope
+## Problem and product identity
 
 LogMate is moving from account-optional local-first entry to account-required first use while preserving offline-first daily operation after ownership is established. Firebase identity/session, local-ledger ownership/access, onboarding completion, provider reachability, and Sync eligibility remain separate state dimensions.
 
-## Product evidence inspected
+Exact product evidence: `yhappcom/logmate → main → e79f97cb7edd8823860daf14770a589f28a63ffc → declared 1.0.0+1 → evidence date 2026-09-24`. Default branch is not assumed production. This ref still exposes account-free entry and therefore CONTRADICTS the newer owner direction.
 
-`yhappcom/logmate → main → e79f97cb7edd8823860daf14770a589f28a63ffc → declared 1.0.0+1 → evidence date 2026-09-24`.
+## Retained SOURCE / TRANSFER VALIDATION
 
-Default branch is **not** assumed production. At this exact ref the product still exposes `Start a new logbook`, `LocalEntryState`, `startLocalUse()`, local-only `Connect account`, and explicit unbound-ledger claim. This **CONTRADICTS** the newer owner direction; product canonical source has not yet been updated.
+Firebase Flutter Auth persists sessions and emits initial auth state after locally stored credentials are restored; startup therefore needs an Auth-initializing state. Password policy is Firebase-configured rather than a LogMate hard-coded 15-character rule. Provider linking preserves the Firebase UID of the currently authenticated user; equal email or a credential belonging to another UID is not ledger-merge authority.
 
-## Authoritative sources retained
+Current Flutter federated-auth guidance requires official `google_sign_in` for native Android/iOS Google, while Web uses Firebase popup/redirect. Apple can use FlutterFire `AppleAuthProvider`, with Web/native lifecycle/configuration differences. Exact LogMate dependency inspection found `firebase_auth 6.7.0`, `firebase_core 4.15.0`, `firebase_auth_web 6.3.0`, generated Web/Android/iOS Firebase options, and no direct `google_sign_in`. Generated app options do not prove provider-console/OAuth/SHA/Apple-capability readiness. Existing `AuthEngine` is email-centric but already maps Firebase errors into product failure codes.
 
-### SOURCE — Firebase session and password policy
-
-Firebase Flutter Auth persists authentication state across native app restarts and web reloads; native persistence is built in while web persistence is configurable. `authStateChanges()` emits its initial event after locally stored credentials, if any, are restored. Startup therefore needs an explicit Auth-initializing state; a transient pre-initialization null must not be treated as signed out.
-
-Firebase Authentication password policy is console-configured. LogMate should not maintain an independent hard-coded 15-character minimum that can disagree with the backend.
-
-Sources:
+Primary sources retained/checked 2026-09-24:
 - https://firebase.google.com/docs/auth/flutter/start
 - https://firebase.google.com/docs/auth/web/auth-state-persistence
 - https://firebase.google.com/docs/auth/android/password-auth
-
-### SOURCE — provider linking and collision
-
-Firebase's Flutter account-linking contract identifies a person by the same Firebase UID after another provider credential is linked to the currently authenticated user. A credential already belonging to another Firebase user is not authority to merge LogMate ledgers.
-
-Sources:
 - https://firebase.google.com/docs/auth/flutter/account-linking
 - https://firebase.google.com/docs/auth/flutter/errors
-
-**CHANGE WATCH:** reproduce linking with the exact FlutterFire/plugin/project configuration before release; documentation alone is not PASS.
-
-### SOURCE — Flutter federated provider mechanics
-
-Current Firebase Flutter federated-auth guidance distinguishes Google from Apple:
-
-- Google on native iOS/Android requires the official `google_sign_in` plugin to trigger Google authentication, then creates a `GoogleAuthProvider` credential for Firebase `signInWithCredential`.
-- Google on Web uses Firebase popup/redirect provider flows.
-- Apple can use FlutterFire `AppleAuthProvider`; current guidance uses `signInWithPopup` on Web and `signInWithProvider` on non-Web platforms. A manual Apple-platform nonce/ID-token credential path also exists when needed.
-- FlutterFire exposes provider-specific linking and reauthentication variants; Web popup/redirect and native provider operations have different lifecycle boundaries.
-
-Sources:
 - https://firebase.google.com/docs/auth/flutter/federated-auth
 - https://firebase.google.com/docs/auth/web/apple
-- https://firebase.google.com/docs/auth/android/apple
 
-Apple private-relay email and first-authorization-only profile fields remain attributes, not LogMate owner identity.
+## PROJECT DECISION
 
-## TRANSFER VALIDATION — exact LogMate dependency/platform audit
+Owner direction, 2026-09-23: remove normal `Start a new logbook`; first use requires Firebase-backed Apple, Google, or email; restored authenticated users route by onboarding state; established ownership remains offline-first; pre-launch/no released users means no production account-free compatibility obligation; configured Firebase password policy is authoritative. Product canonical update remains OPEN.
 
-Exact ref dependency evidence:
+## SYNTHESIS — provider-neutral command and outcome algebra
 
-- Dart SDK constraint: `^3.10.7`.
-- `firebase_auth: ^6.7.0`, lockfile exact `6.7.0`.
-- `firebase_core: ^4.15.0`, lockfile exact `4.15.0`.
-- lockfile exact `firebase_auth_web 6.3.0` and `_flutterfire_internals 1.3.77`.
-- **No direct `google_sign_in` dependency exists in `pubspec.yaml`.** Therefore the current exact source cannot implement Firebase's documented native Google flow without an explicit dependency/configuration change.
-- No `sign_in_with_apple` package is required by the simplest current FlutterFire Apple provider path; `AppleAuthProvider` is supplied by `firebase_auth`. A manual Apple credential/nonce path would be a separate implementation choice and may add dependencies.
-- `firebase_options.dart` contains generated Web, Android, and iOS Firebase app options for project `logmate-pilot-logbook`; macOS/Windows/Linux are explicitly unsupported by that generated configuration.
-- Web has an `authDomain`; Android and iOS Firebase app IDs are present. This proves generated app registration data exists, **not** that Google/Apple providers, OAuth clients, SHA fingerprints, authorized domains, Apple Service ID, Return URL, relay, or capabilities are correctly configured.
-- `ios/Runner/Info.plist` at the exact ref contains ordinary app metadata/orientation keys but no provider-specific configuration observed in that file.
-- `ios/Runner/Runner.entitlements` was not present at the inspected path. This is evidence that the expected conventional entitlement file is absent at that ref, not proof that the Xcode project has no Sign in with Apple capability through every possible configuration representation.
+The shared abstraction is a product state transition, not a shared provider transport. Keep commands distinct:
 
-### Exact AuthEngine transfer
+- `authenticate(provider)`
+- `reauthenticate(provider)`
+- `link(provider)`
+- `unlink(provider)`
 
-The existing `AuthEngine` is email-centric: `createAccount`, email/password `signIn`, password reset, email verification, session read and sign-out. `AuthFailureCode` already establishes the valuable precedent that presentation/application logic should not match raw English Firebase messages, but it does **not** yet represent provider cancellation, credential collision/provider-already-linked, popup/redirect interruption, or provider configuration failure precisely enough for Apple/Google lifecycle decisions.
+A minimum typed outcome vocabulary should distinguish:
 
-`FirebaseAuthEngine` lazily initializes Firebase only when an Auth action/session read occurs. This supports offline first-frame availability, but startup routing must still distinguish `Auth initialization unresolved` from `initialized signed out`; simply reading `currentUser` at an arbitrary pre-initialization moment is not the desired startup oracle.
+| Product outcome | Representative lower-level evidence | Durable mutation rule |
+| --- | --- | --- |
+| `authenticated(uid)` | Firebase `UserCredential` established | owner/onboarding transition may begin only after UID is known |
+| `cancelled` | provider/user closes or cancels UI; Web popup closed | no owner/onboarding mutation |
+| `credentialCollision` | `account-exists-with-different-credential`, `credential-already-in-use` | no merge/rebind; recovery flow only |
+| `providerAlreadyLinked` | provider already attached to current user | idempotent/no owner mutation; UI may report already connected |
+| `providerUnavailableOrMisconfigured` | `operation-not-allowed`, unsupported environment, missing provider configuration | no durable mutation; operational remediation |
+| `networkOrOutcomeUnknown` | network failure, redirect/process interruption before authoritative result | no optimistic completion; recover from Firebase state on restart/return |
+| `rateLimited` | `too-many-requests`, quota/rate limiting | no durable mutation; retry/backoff UX |
+| `requiresRecentLogin` | sensitive operation lacks recent proof | preserve state; invoke explicit reauthentication |
+| `accountDisabled` | disabled Firebase user | deny cloud-sensitive operation; do not reinterpret as ordinary cancel |
+| `invalidCredential` | expired/invalid/malformed credential where distinguishable | no durable mutation |
+| `failure` | unclassified lower-level exception | fail closed; preserve diagnostic cause internally |
 
-**TRANSFER VALIDATION:** provider-neutral expansion should evolve this existing boundary rather than put Firebase/provider exception switches into Welcome. Native Google needs an added dependency and platform configuration; Apple can initially remain within `firebase_auth` provider APIs if exact runtime/configuration validation supports that route.
+### SOURCE — Firebase error surface
 
-## PROJECT DECISION — current LogMate direction
+Firebase Flutter error guidance establishes `FirebaseAuthException.code` as the stable programmatic discriminator rather than message parsing. It explicitly documents `too-many-requests` and `operation-not-allowed`, and the account-exists-with-different-credential recovery shape. Current Firebase JS Auth reference additionally exposes browser lifecycle codes such as `popup-blocked`, `popup-closed-by-user`, `network-request-failed`, `provider-already-linked`, `no-such-provider`, and `operation-not-supported-in-this-environment`. These are evidence for Web adapter classification, not proof that every code is emitted identically by FlutterFire on every platform.
 
-Owner direction, 2026-09-23:
+**ENGINEERING JUDGMENT:** product enums must be intentionally coarser than SDK exception taxonomies. They should encode whether mutation/retry/recovery is safe, while retaining raw provider/Firebase code as diagnostic metadata. Do not create one enum member for every current SDK code; that couples product state to volatile SDK internals.
 
-- remove `Start a new logbook` from normal product entry;
-- first use requires Firebase-backed Apple, Google, or email authentication;
-- authenticated users who have not explicitly signed out bypass Welcome and route by onboarding state;
-- established owner access remains local/offline-first during ordinary network/Firebase unavailability;
-- LogMate is pre-launch with no released users, so no production account-free user population requires compatibility;
-- password rules follow configured Firebase policy, not a product-fixed 15-character minimum.
+### Important ambiguity boundary
 
-This remains a project decision pending canonical LogMate repository update.
+`networkOrOutcomeUnknown` must not be treated as `cancelled` or `signedOut`. A provider/backend operation may have succeeded remotely while the client lost the response. Recovery should re-observe authoritative Firebase Auth state before retrying owner initialization, linking, unlinking, or deletion. This is especially important for Web redirect/reload and process interruption.
 
-## SYNTHESIS — provider-neutral identity and command boundary
+### Collision recovery
 
-`Firebase UID` is the cloud account/owner identity key. Provider email, Apple relay email, display name, and provider subject metadata are attributes/credentials, not ledger-owner keys.
+Firebase documentation describes account-exists-with-different-credential as: authenticate with the existing provider first, then link the pending credential. For LogMate this is safe only if the authenticated Firebase UID is the expected LogMate owner. Equal email is discovery/recovery context, never ledger ownership authority.
 
-Recommended product-level operations remain distinct:
+## Startup/ownership matrix retained
 
-- `authenticate(provider)` → authenticated UID or typed cancellation/collision/configuration/transport/rate-limit/failure outcome;
-- `reauthenticate(provider)` → fresh proof for sensitive operations and must resolve to the current owner UID;
-- `link(provider)` → credential-to-current-user operation, assert UID before == UID after;
-- `unlink(provider)` → Settings-only, ensure at least one usable method remains and verify post-operation reachability.
-
-Provider adapters may differ by Android/iOS/Web/PWA. Native Google's `google_sign_in → GoogleAuthProvider credential → Firebase` chain is materially different from Web Firebase popup/redirect. Apple provider transport differs again. The shared abstraction is the product outcome/state transition, not the transport implementation.
-
-### Fresh first authentication
-
-On a fresh local store, successful Firebase authentication should initialize exactly one ledger ownership binding for that UID and then enter first-data onboarding. It should not ask the ordinary fresh user to claim a nonexistent account-free ledger.
-
-### Existing bound ledger
-
-If a local ledger is bound to UID A and Firebase restores/authenticates UID B, fail closed into mismatch/recovery. Never auto-rebind because emails match.
-
-### Web/PWA redirect transaction boundary
-
-A redirect may destroy the current Flutter page/process context. Redirect initiation and completion are separate phases. Never mark authentication, owner initialization or onboarding complete before the returned Firebase identity is established. After return, run the same idempotent ownership/onboarding transition used by native success.
-
-## Proposed startup matrix
-
-| Auth/local state | Route |
+| State | Route |
 | --- | --- |
-| Auth not initialized | startup/loading; no Welcome/Home decision yet |
-| Auth initialized, no user | Welcome: Apple / Google / email |
-| Authenticated UID, no owned ledger | idempotently initialize UID-owned ledger → onboarding |
-| Matching UID + onboarding incomplete | resume onboarding |
-| Matching UID + onboarding complete | Home |
-| Different UID + bound ledger | mismatch/recovery; no ledger exposure/rebind |
-| Explicitly signed out + bound ledger | Welcome; DB preserved but access locked |
-| Matching established owner + transient network/Firebase outage | local access continues where durable access contract allows; Sync degraded |
-| Provider cancel | origin screen; no durable owner/setup mutation |
-| Credential belongs to another Firebase UID | typed collision/recovery; no automatic ledger merge |
-| Web redirect initiated but no authenticated result recovered yet | pending/recoverable Auth transaction; no owner/setup completion |
+| Auth unresolved | startup/loading; no Welcome/Home decision |
+| initialized + signed out | Welcome |
+| authenticated UID + no owned ledger | idempotent UID-owner initialization → onboarding |
+| matching UID + onboarding incomplete | resume onboarding |
+| matching UID + onboarding complete | Home |
+| different UID + bound ledger | mismatch/recovery; no data exposure/rebind |
+| explicit sign-out + bound ledger | Welcome; DB retained and locked |
+| established matching owner + transient transport failure | local access retained where durable contract permits; Sync degraded |
 
-This is **SYNTHESIS**, not executable validation.
+Fresh-owner initialization and provider callback/redirect recovery must be idempotent. Explicit sign-out remains distinct from passive network/provider failure.
 
-## Architecture/data impact
+## VALIDATION design — adapter tests before provider UI
 
-The account-required model supersedes as ordinary UX: `Start a new logbook`, account-free Home, `startLocalUse()`, local-only `Connect account`, ordinary fresh-user `Connect this logbook`, and `LocalEntryState` as normal startup authority. No released users removes external migration compatibility, but does not prove capability-v7 stores/migrations/tests can be deleted without deliberate schema work.
+Source reading is insufficient for PASS. The next executable boundary can nevertheless validate product semantics without automating Google/Apple UI for every failure.
 
-Security boundaries retained: UID ownership, different-owner denial, explicit-sign-out durable lock, passive network failure ≠ sign-out, deletion ≠ sign-out, and Sync eligibility ≠ local access.
+Build provider adapters behind injectable ports/fakes and execute table-driven tests asserting:
 
-## Failure-first validation plan
+1. success returns exact UID before any owner mutation is permitted;
+2. cancel/popup-close maps to `cancelled` and mutation count remains zero;
+3. collision codes map to `credentialCollision`, preserve pending recovery metadata where safe, and never invoke owner rebind/merge;
+4. operation-not-allowed/configuration errors map to `providerUnavailableOrMisconfigured`;
+5. network failure maps to `networkOrOutcomeUnknown`, not sign-out/cancel;
+6. too-many-requests maps to `rateLimited`;
+7. recent-login-required maps to `requiresRecentLogin` for unlink/delete/sensitive operations;
+8. provider-already-linked is distinguishable from another-user credential collision;
+9. unknown SDK code fails closed while retaining code for diagnostics;
+10. duplicate success callbacks or redirect recovery invoke idempotent first-owner initialization once;
+11. reauthentication success must assert returned/current UID equals the ledger owner before sensitive mutation;
+12. Web popup-blocked/closed and redirect-return-without-result do not complete onboarding.
 
-Before PASS, execute at least:
+Then add Firebase Emulator/runtime tests for email/session/startup where supported, and real provider/platform tests for Google/Apple lifecycle/configuration. Emulator adapter tests cannot prove provider console, OAuth, browser popup, Apple capability, or physical-device behavior.
 
-1. restored session + setup complete → Home without Welcome;
-2. restored session + setup incomplete → onboarding resume;
-3. signed out → no Home exposure;
-4. explicit sign-out → lock persists across restart;
-5. transient offline/network failure does not manufacture sign-out;
-6. UID B cannot rebind/read UID A ledger;
-7. provider cancel → zero durable mutation;
-8. duplicate auth callback/retry initializes owner/setup once;
-9. link provider → UID unchanged;
-10. credential used by another UID → no merge/owner mutation;
-11. unlink last usable provider → blocked;
-12. PWA redirect/popup interruption → no premature onboarding mutation;
-13. native restart and web/PWA reload preserve routing;
-14. native Google cancellation/failure is translated at adapter boundary without local mutation;
-15. native Google success produces Firebase UID before any owner initialization;
-16. Apple provider cancellation/failure produces no local mutation;
-17. Apple first/later authorization and relay-email differences do not affect UID-based owner initialization;
-18. reauthentication resolving to another UID blocks the sensitive operation.
+**OPEN:** exact current FlutterFire exception emission must be captured during implementation; do not fabricate codes from Web docs as native Flutter evidence.
 
-Native, Web/PWA, emulator, and physical-device evidence are not interchangeable.
+## Account linking/unlinking consequence
 
-## Codex implementation consequence from exact dependency audit
-
-Do not begin by writing one generic provider method and assuming dependencies already exist.
-
-1. Canonically supersede account-free startup first.
-2. Extend the product-level Auth boundary with typed provider operations/outcomes.
-3. Add `google_sign_in` deliberately for native Google; rerun/verify FlutterFire and Android/iOS Google configuration rather than relying on transitive packages.
-4. Prefer the current FlutterFire `AppleAuthProvider` provider path initially unless an identified requirement forces the manual nonce/plugin path; validate iOS capability and Android/Web Apple configuration separately.
-5. Preserve Web popup/redirect as a distinct lifecycle implementation behind the shared semantic boundary.
-6. Add adapter-level tests that prove raw provider/Firebase exceptions map to no-mutation/collision/configuration/ambiguous outcomes correctly.
-7. Do not call provider support complete from `firebase_options.dart` presence or successful compilation; provider-console/capability/OAuth runtime validation remains mandatory.
-
-## Alternatives considered
-
-- **Auto-merge by equal email:** rejected.
-- **Sign into provider B then merge UID B into UID A:** rejected for V1.
-- **Never allow provider linking:** simpler initially but harms account reachability; keep Settings-only after executable validation.
-- **One identical provider implementation for native and Web/PWA:** rejected; semantics can be shared, transport cannot.
-- **Add a third-party Apple plugin immediately:** not justified by current evidence. FlutterFire already exposes Apple provider APIs; add another dependency only for a demonstrated requirement such as a chosen manual credential path.
+Linking is credential-to-current-UID, not account merge. Assert UID before == UID after. A credential attached to another UID enters collision recovery. Unlink must ensure another usable login method remains and sensitive account changes may require recent authentication. Apple additionally requires explicit consent before linking Apple credentials to other data/accounts; this is a product/UX handoff and release-policy CHANGE WATCH.
 
 ## RELATED DOMAIN CHECK
 
-- **Foundations:** direct Dart/Flutter runtime evidence exists; not the blocker.
-- **Architecture:** Auth identity, ledger owner, onboarding state, and Sync eligibility remain separate ownership.
-- **Mobile:** native Google dependency and native/Web provider lifecycle need separate transfer validation.
-- **Data:** capability-v7 cleanup and idempotent first-owner initialization require schema/transaction review.
-- **Quality:** provider exception mapping, cancel/restart/duplicate/redirect/collision oracles required.
-- **Systems:** canonical owner for identity/session/provider security semantics.
-- **Design Studio:** provider visual hierarchy/recovery copy downstream.
-- **Web Manager:** PWA redirect/authorized-domain behavior later handoff.
-- **Marketing Manager:** not materially relevant.
-- **Product:** exact LogMate ref and dependencies inspected; no product files edited.
+- Foundations: Dart/Flutter runtime evidence exists; not the current blocker.
+- Architecture: Auth identity, ledger owner, onboarding, and Sync remain separate state ownership.
+- Mobile: native Google/Apple transport and physical/provider lifecycle require separate validation.
+- Data: first-owner initialization must be atomic/idempotent; account-free capability cleanup needs deliberate schema review.
+- Quality: typed mapping needs executable mutation/no-mutation oracles and unknown-code negative control.
+- Systems: owns identity/session/provider security semantics.
+- Design Studio: recovery/collision/reauth copy and consent presentation downstream.
+- Web Manager: popup/redirect/authorized-domain deployment behavior downstream.
+- Marketing Manager: no material dependency in this block.
+- Product: exact LogMate ref inspected previously; no product files edited.
 
 ## HANDOFFS
 
 ### LogMate / Codex
 
-The exact product does not currently include native Google's required `google_sign_in` dependency. Treat adding/configuring it as an explicit implementation slice. Apple can start from FlutterFire's `AppleAuthProvider` path, but provider enablement, iOS capability and Android/Web Apple configuration remain unverified. Expand `AuthEngine` at the semantic boundary rather than placing provider-specific exception logic in Welcome. Do not infer provider readiness from generated Firebase app options.
+Evolve the existing `AuthEngine` instead of branching on raw Firebase/provider messages in Welcome. Add a provider-neutral typed result plus diagnostic metadata, then implement native Google, Apple, Web adapters behind it. Treat `networkOrOutcomeUnknown` as recoverable ambiguity: re-observe Firebase state before durable retry. Add table-driven adapter tests before UI polish. Do not auto-merge equal-email accounts or mutate ledger ownership on collision.
 
-### Architecture / Data / Quality / Mobile
+### Quality / Data / Mobile
 
-Architecture: review command/state ownership. Data: define atomic first-owner initialization and capability-v7 cleanup. Quality: implement adapter exception/outcome and lifecycle failure tests. Mobile: validate native Google and Apple separately from PWA.
+Quality: build fake-provider exception matrix and mutation-count oracle. Data: expose idempotent first-owner initializer whose precondition is an established UID. Mobile: capture real native provider cancellation/configuration behavior later; Web/PWA separately capture popup/redirect interruption/reload.
 
 ## OPEN / VALIDATION / CHANGE WATCH
 
-- **OPEN:** LogMate canonical update superseding account-free AUTH portions.
-- **OPEN:** exact Firebase password policy, one-account-per-email and enumeration-protection configuration.
-- **OPEN:** Google/Apple provider console/capability/OAuth/SHA/Service-ID/authorized-domain configuration.
-- **OPEN:** exact `google_sign_in` version and configuration selected during implementation; it is absent at the audited product ref.
-- **OPEN:** whether a manual Apple nonce/plugin path is required; current evidence does not justify it by default.
-- **OPEN:** executable provider-linking behavior under the final FlutterFire/project configuration.
-- **OPEN:** deployed PWA popup/redirect/reload/cancel recovery.
-- **OPEN:** account deletion/revocation failure/retry design.
-- **VALIDATION:** no runtime Auth/onboarding/provider PASS is claimed.
-- **CHANGE WATCH:** Firebase Auth/FlutterFire, `google_sign_in`, Apple policy, browser popup/redirect/persistence behavior, provider console configuration.
+- OPEN: product-canonical account-required update.
+- OPEN: Firebase password policy, one-account-per-email/enumeration-protection, provider enablement/OAuth/SHA/Apple capability/Service-ID/authorized domains.
+- OPEN: exact `google_sign_in` version/configuration during implementation.
+- OPEN: executable typed-adapter tests and exact FlutterFire native exception observations.
+- OPEN: provider linking under final project configuration; Firebase docs retain a known linking issue warning in some projects.
+- OPEN: deployed PWA popup/redirect recovery and account deletion/revocation transaction semantics.
+- VALIDATION: no Auth/onboarding/provider runtime PASS claimed.
+- CHANGE WATCH: Firebase Auth/FlutterFire, `google_sign_in`, Apple linking/consent policy, browser popup/redirect/persistence behavior, provider console configuration.
