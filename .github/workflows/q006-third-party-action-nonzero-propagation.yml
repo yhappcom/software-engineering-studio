@@ -1,0 +1,38 @@
+name: Q006 third-party action nonzero propagation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/q006-third-party-action-nonzero-propagation.yml'
+  workflow_dispatch:
+
+jobs:
+  delegated-nonzero-propagation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Delegate intentional nonzero script through Android emulator action
+        id: delegated
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: |
+            echo 'Q006_INTENTIONAL_DELEGATED_FAILURE'
+            exit 37
+
+      - name: Require wrapper to expose delegated failure
+        shell: bash
+        env:
+          DELEGATED_OUTCOME: ${{ steps.delegated.outcome }}
+          DELEGATED_CONCLUSION: ${{ steps.delegated.conclusion }}
+        run: |
+          set -euo pipefail
+          printf 'outcome=%s\nconclusion=%s\n' "$DELEGATED_OUTCOME" "$DELEGATED_CONCLUSION"
+          test "$DELEGATED_OUTCOME" = failure
+          test "$DELEGATED_CONCLUSION" = success
+          echo 'Q006_THIRD_PARTY_ACTION_NONZERO_PROPAGATION_PASS'
