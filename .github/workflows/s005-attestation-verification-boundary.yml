@@ -62,14 +62,17 @@ jobs:
           printf 'mutation=1\n' >> wrong-subject.txt
           if gh attestation verify wrong-subject.txt --repo yhappcom/software-engineering-studio; then exit 1; else exit 0; fi
 
-      - name: Record verification boundary
+      - name: Record verification boundary and propagate verdict
         env:
           QUERY: ${{ steps.query.outcome }}
           EXACT: ${{ steps.exact.outcome }}
           WRONG_REPO_REJECTION: ${{ steps.wrongrepo.outcome }}
           WRONG_SUBJECT_REJECTION: ${{ steps.wrongsubject.outcome }}
         run: |
+          set -euo pipefail
           printf 'query=%s\nexact=%s\nwrong_repo_rejection=%s\nwrong_subject_rejection=%s\n' \
             "$QUERY" "$EXACT" "$WRONG_REPO_REJECTION" "$WRONG_SUBJECT_REJECTION"
+          test "$QUERY" = success
+          test "$EXACT" = success
           test "$WRONG_REPO_REJECTION" = success
           test "$WRONG_SUBJECT_REJECTION" = success
