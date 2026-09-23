@@ -32,12 +32,15 @@ jobs:
       - name: Execute Safari service-worker lifecycle oracle
         working-directory: research/mobile/fixtures/m006_safari_service_worker
         run: |
+          set -o pipefail
           printf 'V1\n' > version.txt
           python3 server.py > "$RUNNER_TEMP/server.log" 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           sleep 1
           "$RUNNER_TEMP/m006-sw-venv/bin/python" validate.py | tee "$RUNNER_TEMP/oracle.json"
+          test -s "$RUNNER_TEMP/oracle.json"
+          grep -q 'SAFARI_SW_REGISTER_UPDATE_RESTART_PASS' "$RUNNER_TEMP/oracle.json"
       - name: Preserve run-bound evidence
         if: always()
         uses: actions/upload-artifact@v4
