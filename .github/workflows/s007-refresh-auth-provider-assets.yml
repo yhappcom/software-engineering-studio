@@ -1,0 +1,38 @@
+name: S007 Refresh Auth Provider Assets
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s007-refresh-auth-provider-assets.yml'
+      - 'research/systems/fixtures/S007_auth_provider_buttons/tools/fetch_official_provider_buttons.sh'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-provider-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact triggering revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Fetch provider-approved button assets
+        run: bash research/systems/fixtures/S007_auth_provider_buttons/tools/fetch_official_provider_buttons.sh
+
+      - name: Record provider asset refresh
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/systems/fixtures/S007_auth_provider_buttons/assets
+          if git diff --cached --quiet; then
+            echo "No provider asset changes."
+            exit 0
+          fi
+          git commit -m "S007 refresh official auth provider button assets"
+          git push origin HEAD:${GITHUB_REF_NAME}
