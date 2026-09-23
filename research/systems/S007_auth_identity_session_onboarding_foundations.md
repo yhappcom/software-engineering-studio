@@ -18,7 +18,7 @@ Default branch is **not** assumed production. At this exact ref the product stil
 
 ### SOURCE — Firebase session and password policy
 
-Firebase Flutter Auth persists authentication state across native app restarts and web reloads; native persistence is built in while web persistence is configurable. Startup must observe initialized Auth state rather than treating a transient pre-initialization null as signed out.
+Firebase Flutter Auth persists authentication state across native app restarts and web reloads; native persistence is built in while web persistence is configurable. `authStateChanges()` emits its initial event only after locally stored credentials, if any, have been restored. Startup therefore needs an explicit Auth-initializing state; a transient pre-initialization null must not be treated as signed out.
 
 Firebase Authentication password policy is console-configured. LogMate should not maintain an independent hard-coded 15-character minimum that can disagree with the backend.
 
@@ -44,18 +44,33 @@ Sources:
 
 Firebase documents that unlinking a provider removes that sign-in method. Platform documentation warns that signing in again with an unlinked provider can create a new separate Firebase user rather than restoring the former link. Therefore LogMate must not expose unlink as a harmless preference toggle.
 
-Source:
+Sources:
 - https://firebase.google.com/docs/auth/flutter/account-linking
 - https://firebase.google.com/docs/auth/android/account-linking
+- https://firebase.google.com/docs/auth/ios/account-linking
 
 ### SOURCE — Apple cross-platform and privacy boundaries
 
 Apple states Sign in with Apple can be offered across Apple and non-Apple platforms. Apple's authentication documentation uses a nonce to bind an authorization response to a client session. Firebase's Apple flows likewise require secure nonce handling in manual flows. Apple private-relay identities require applicable anonymized-data rules; relay email must not be treated as LogMate ownership authority.
 
+Apple/Firebase web setup is materially different from native Apple setup: web requires Apple Developer configuration including a Service ID and Return URL and Firebase Apple-provider configuration. Firebase's web flow supports popup or full-page redirect and recommends redirect on mobile devices. Apple only supplies some profile information such as display name on first authorization, and hidden-email users receive an Apple private-relay address. Those attributes therefore cannot be mandatory LogMate ledger fields or durable identity keys.
+
 Sources:
 - https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple/
 - https://developer.apple.com/documentation/signinwithapple/authenticating-users-with-sign-in-with-apple
 - https://firebase.google.com/docs/auth/android/apple
+- https://firebase.google.com/docs/auth/web/apple
+
+### SOURCE — Flutter/Firebase platform configuration is not one uniform provider path
+
+FlutterFire configuration registers separate Firebase applications for selected iOS, Android and Web platforms. Firebase explicitly says to rerun `flutterfire configure` when adding a new platform or beginning to use a new Firebase service such as Google Sign-In so platform configuration remains current. Android emulator validation requires a Google Play image for Firebase's documented Flutter setup.
+
+On Web, OAuth provider flows use popup or redirect mechanics and the Firebase JS Auth layer exposes separate popup/redirect resolver and persistence dependencies. Redirect is a navigation boundary: result recovery occurs after the application returns and initializes. Therefore Web/PWA cannot be modeled as a native modal callback with identical lifetime semantics.
+
+Sources:
+- https://firebase.google.com/docs/flutter/setup
+- https://firebase.google.com/docs/auth/web/custom-dependencies
+- https://firebase.google.com/docs/reference/js/auth
 - https://firebase.google.com/docs/auth/web/apple
 
 ## PROJECT DECISION — current LogMate direction
@@ -97,10 +112,31 @@ Before unlink, compute whether at least one independently usable sign-in method 
 
 Provider cancellation is a no-mutation outcome. Network interruption or browser redirect loss can be ambiguous; do not persist owner/setup transitions until Firebase identity success is established and local ownership initialization is committed idempotently.
 
+## SYNTHESIS — platform-neutral command, platform-specific adapter
+
+The product-level Auth API should expose intent and typed outcome, not force Welcome/onboarding to know popup, redirect, native activity, nonce or provider SDK details.
+
+Recommended semantic boundary:
+
+- `authenticate(provider)` → `authenticated(uid)` / `cancelled` / `credentialCollision` / `providerUnavailableOrMisconfigured` / `networkOrOutcomeUnknown` / `rateLimited` / `failure`;
+- `reauthenticate(provider)` is a distinct command for sensitive operations and must verify the returned UID remains the current owner;
+- `link(provider)` operates on the already-authenticated Firebase user and must assert UID-before == UID-after;
+- `unlink(provider)` is Settings-only, requires a remaining usable method and post-operation reachability checks;
+- adapter implementation may differ by Android/iOS/Web/PWA while the product-level result vocabulary stays stable.
+
+**ENGINEERING JUDGMENT:** do not make a single `try/catch FirebaseAuthException → message` abstraction. Cancellation, collision, configuration failure and ambiguous redirect/network interruption have materially different mutation/recovery rules. Provider/platform-specific raw codes should be translated at the adapter boundary and retained for diagnostics without becoming presentation copy.
+
+### Web/PWA redirect transaction boundary
+
+A redirect may destroy the current Flutter page/process context. Treat redirect initiation and redirect completion as two phases rather than one in-memory Future. Before leaving, persist only a non-authoritative operation intent/correlation marker if needed; never mark authentication, owner initialization or onboarding complete. After return, recover Firebase redirect/Auth state, establish the authenticated UID, then run the same idempotent ownership/onboarding transition used by native success.
+
+A popup blocked/closed by the user is not equivalent to an authenticated result. A reload between redirect initiation and completion must not create duplicate ledgers or skip onboarding.
+
 ## Proposed startup matrix
 
 | Auth/local state | Route |
 | --- | --- |
+| Auth not initialized | startup/loading; no Welcome/Home decision yet |
 | Auth initialized, no user | Welcome: Apple / Google / email |
 | Authenticated UID, no owned ledger | idempotently initialize UID-owned ledger → onboarding |
 | Matching UID + onboarding incomplete | resume onboarding |
@@ -110,6 +146,7 @@ Provider cancellation is a no-mutation outcome. Network interruption or browser 
 | Matching established owner + transient network/Firebase outage | local access continues where durable access contract allows; Sync degraded |
 | Provider cancel | origin screen; no durable owner/setup mutation |
 | Credential belongs to another Firebase UID | typed collision/recovery; no automatic ledger merge |
+| Web redirect initiated but no authenticated result recovered yet | pending/recoverable Auth transaction; no owner/setup completion |
 
 This is **SYNTHESIS**, not executable validation.
 
@@ -136,7 +173,13 @@ Before PASS, execute at least:
 11. unlink last usable provider → blocked;
 12. unlink non-last provider → remaining provider still authenticates same UID;
 13. PWA redirect/popup interruption → no premature onboarding mutation;
-14. native restart and web/PWA reload preserve intended routing.
+14. native restart and web/PWA reload preserve intended routing;
+15. Web redirect → full reload → recovered authenticated UID initializes owner exactly once;
+16. Web redirect → user cancels/returns without credential → no owner/setup mutation;
+17. popup blocked/closed → typed no-mutation outcome;
+18. Apple first authorization supplies name, later authorization does not → onboarding remains correct without relying on name;
+19. Apple hidden-email relay address → owner remains UID-based and email-dependent workflows are tested separately;
+20. reauthentication with a credential resolving to a different UID → sensitive operation blocked.
 
 Native, web/PWA, emulator, and physical-device evidence are not interchangeable.
 
@@ -146,6 +189,8 @@ Native, web/PWA, emulator, and physical-device evidence are not interchangeable.
 - **Sign into provider B then merge UID B into UID A:** rejected for V1; Firebase linking is credential-to-current-user, not a general ledger/user merge primitive.
 - **Never allow provider linking:** simpler and safer initially, but reduces recovery/reachability. Keep linking as a Settings capability only after executable validation.
 - **Allow unlink freely:** rejected; can strand identity or create a later separate Firebase user.
+- **One identical provider implementation for native and Web/PWA:** rejected. The product semantics can be shared, but OAuth transport/lifecycle/configuration and validation evidence differ by platform.
+- **Persist onboarding completion before redirect/provider success:** rejected; navigation/network/provider ambiguity can create false-complete local state.
 
 ## RELATED DOMAIN CHECK
 
@@ -153,7 +198,7 @@ Native, web/PWA, emulator, and physical-device evidence are not interchangeable.
 - **Architecture:** Auth identity, ledger owner, onboarding state, and Sync eligibility require separate ownership.
 - **Mobile:** native vs web provider flows and session restoration require separate transfer validation.
 - **Data:** capability-v7 cleanup and idempotent first-owner initialization need schema/transaction review.
-- **Quality:** collision/cancel/restart/duplicate-callback failure oracles required.
+- **Quality:** collision/cancel/restart/duplicate-callback/redirect failure oracles required.
 - **Systems:** canonical owner for identity/session/provider security semantics.
 - **Design Studio:** provider visual hierarchy and recovery copy are downstream of these states.
 - **Web Manager:** PWA redirect/authorized-domain behavior is a later handoff.
@@ -164,18 +209,22 @@ Native, web/PWA, emulator, and physical-device evidence are not interchangeable.
 
 ### LogMate / Codex
 
-Before provider UI polish: canonically supersede account-free startup; implement a provider-neutral result model; bind fresh ownership idempotently to Firebase UID; preserve mismatch/sign-out/offline boundaries; treat provider collision as recovery rather than merge; prevent last-provider unlink; and add restart/cancel/collision tests.
+Before provider UI polish: canonically supersede account-free startup; implement a provider-neutral result model; keep Android/iOS/Web/PWA provider adapters free to use different mechanics; bind fresh ownership idempotently to Firebase UID; preserve mismatch/sign-out/offline boundaries; treat provider collision as recovery rather than merge; prevent last-provider unlink; and add restart/cancel/collision/redirect tests.
+
+Do not implement Web/PWA redirect as if it were an in-memory native callback. Redirect completion must re-enter startup/Auth resolution and only then perform the idempotent owner/onboarding transition. Do not require Apple display name or real email for logbook initialization.
 
 ### Architecture / Data / Quality / Mobile
 
-Architecture: review the four-state ownership split. Data: define capability-v7 retirement and atomic first-owner initialization. Quality: implement failure-first state-transition oracles. Mobile: transfer-test Google/Apple/session restoration separately on Android/iOS/PWA.
+Architecture: review the four-state ownership split and adapter boundary. Data: define capability-v7 retirement and atomic first-owner initialization. Quality: implement failure-first state-transition and redirect-lifecycle oracles. Mobile: transfer-test Google/Apple/session restoration separately on Android/iOS/PWA.
 
 ## OPEN / VALIDATION / CHANGE WATCH
 
 - **OPEN:** LogMate canonical update superseding AUTH-E1/E2/E4/E5 account-free portions.
 - **OPEN:** exact Firebase password policy and one-account-per-email/enumeration-protection configuration.
 - **OPEN:** exact Google/Apple provider console/capability/OAuth configuration.
+- **OPEN:** exact current FlutterFire Google/Apple adapter APIs/dependencies chosen by LogMate; source research establishes platform differences but does not select an implementation package without product dependency inspection.
 - **OPEN:** executable provider-linking behavior under current FlutterFire/project configuration, including documented known issue.
+- **OPEN:** executable popup/redirect/reload/cancel recovery on deployed LogMate PWA origin.
 - **OPEN:** account deletion/revocation failure/retry design.
 - **VALIDATION:** no runtime Auth/onboarding PASS is claimed.
-- **CHANGE WATCH:** Firebase Auth/FlutterFire provider behavior, Apple policy, browser popup/redirect/persistence behavior.
+- **CHANGE WATCH:** Firebase Auth/FlutterFire provider behavior, Apple policy, browser popup/redirect/persistence behavior, provider console configuration.
