@@ -22,16 +22,49 @@ jobs:
           test "$(sha256sum subject.txt | awk '{print $1}')" = '9f2ddf6d0d14733ead35f5d1050f4455b19877f501fd19e5220e725ba626b071'
 
       - name: Export attestation bundle while online
+        id: bundle
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          set -euo pipefail
-          gh attestation download subject.txt -R yhappcom/software-engineering-studio
-          bundle="$(find . -maxdepth 1 -type f -name 'sha256:*.jsonl' -print -quit)"
-          test -n "$bundle"
-          mv "$bundle" bundle.jsonl
-          test -s bundle.jsonl
+          set +e
+          gh --version > gh-version.txt 2>&1
+          gh auth status >> gh-version.txt 2>&1
+          gh attestation download subject.txt -R yhappcom/software-engineering-studio > bundle-stdout.txt 2> bundle-stderr.txt
+          rc=$?
+          printf '%s\n' "$rc" > bundle-rc.txt
+          if [ "$rc" -eq 0 ]; then
+            bundle="$(find . -maxdepth 1 -type f -name 'sha256:*.jsonl' -print -quit)"
+            if [ -n "$bundle" ] && [ -s "$bundle" ]; then
+              mv "$bundle" bundle.jsonl
+            else
+              printf '%s\n' 'download returned zero but no non-empty bundle file was found' >> bundle-stderr.txt
+              exit 97
+            fi
+          fi
+          exit "$rc"
+
+      - name: Preserve bundle export diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: s005-bundle-export-diagnostics
+          path: |
+            subject.txt
+            gh-version.txt
+            bundle-stdout.txt
+            bundle-stderr.txt
+            bundle-rc.txt
+            bundle.jsonl
+          if-no-files-found: warn
+
+      - name: Fail closed on bundle export
+        if: steps.bundle.outcome != 'success'
+        shell: bash
+        run: |
+          cat bundle-stderr.txt >&2 || true
+          exit 98
 
       - name: Export current trusted roots while online
         shell: bash
