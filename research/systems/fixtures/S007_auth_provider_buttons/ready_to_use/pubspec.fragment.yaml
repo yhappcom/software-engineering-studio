@@ -1,0 +1,16 @@
+# Merge into LogMate after resolving versions against the exact Flutter toolchain.
+
+dependencies:
+  # Existing product dependencies retained:
+  firebase_auth: ^6.7.0
+  firebase_core: ^4.15.0
+
+  # Native Google credential acquisition.
+  google_sign_in: ^7.2.0
+
+  # Required only by the PWA/Web renderer file.
+  google_sign_in_web: ^1.1.3
+
+flutter:
+  assets:
+    - assets/auth/
