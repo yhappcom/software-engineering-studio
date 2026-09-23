@@ -27,7 +27,7 @@ Build engineering capability to define correctness, design tests with valid orac
 
 ### Q006 — Fault injection, recovery verification and regression governance
 **IN STUDY — process-crash recovery + CI verdict-propagation failure/isolation/repair/regression + complete selected-pattern workflow inventory + natural false-green repair + continuing semantic classification.**  
-Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`, `research/quality/Q006_real_crash_recovery_oracle_transfer.md`, `research/quality/Q006_ci_pipeline_exit_status_oracle_integrity.md`, `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `research/quality/Q006_semantic_verdict_path_classification_2.md`.
+Canonical: `research/quality/Q006_fault_injection_recovery_regression_governance.md`, `research/quality/Q006_real_crash_recovery_oracle_transfer.md`, `research/quality/Q006_ci_pipeline_exit_status_oracle_integrity.md`, `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `research/quality/Q006_semantic_verdict_path_classification_2.md`, `research/quality/Q006_third_party_action_verdict_boundary.md`.
 
 The retained hosted Bash discriminator established that evidence preservation and verdict propagation are independent controls. Repaired exact head `bd763b301752b3adebd36b963c06d064aec94ca8`, run `35792678785`, observed control/treatment pipeline statuses 0/23 while both logs preserved the same producer failure payload.
 
@@ -37,24 +37,27 @@ Semantic review found a genuine false-green path in `s005-attestation-verificati
 
 A further exact-ref semantic pass at `a87f71d5a4cb1632c21426aa6a6bf4b84093c5b9` classified additional high-risk paths without inventing defects: M003 Keystore's trap/`exit 0` preserves the original oracle status in outputs and is followed by an unconditional fail-closed consumer; M003 first-launch `tee` paths are protected by `pipefail` while `|| true` is confined to diagnostics immediately before explicit failure; M003 one-time expiry uses `continue-on-error` for evidence preservation but separately rejects harness failure and non-success emulator outcome; and M006 Chromium service-worker validation supplies a non-pattern sample whose semantic validators are direct fatal commands. **ENGINEERING JUDGMENT:** these are valid evidence-preservation/status-handoff patterns at the inspected wrapper boundary, not new runtime PASSes. `INCONCLUSIVE_WINDOW_EXHAUSTED` must never be promoted to evidence that expiry occurred.
 
+Third-party action propagation is now an explicit non-pattern audit class. At Studio ref `5bdda29210ce52b863f31088a062eaaddf000b6e`, M002 delegates its fail-fast process-death/storage oracle to `reactivecircus/android-emulator-runner@v2`. Inspection of the upstream `v2` action source shows user scripts executed through `@actions/exec`; execution errors are caught and passed to `core.setFailed`, consistent with fail-closed wrapper propagation. **ENGINEERING JUDGMENT:** the inspected wrapper contract is sound, but this is not a new Android/runtime PASS. The moving `@v2` tag leaves exact resolved action identity and future behavior as CHANGE WATCH; an intentional nonzero negative-control run through the exact action remains OPEN.
+
 ## Gate assessment
-Quality Stage 1 remains **NOT PASS**. Q001-Q006 have substantial Foundation evidence and Q006 now includes synthetic and natural false-green mechanisms, a repository-wide selected-pattern inventory, a semantic repair/regression, additional safe-path classifications, and an initial non-pattern verdict sample. Repository-wide semantic classification, broader non-pattern sampling, GitHub-expression/third-party-action propagation review, non-Bash/platform transfer, physical/mobile/backend/storage-power and production release-gate evidence remain incomplete.
+Quality Stage 1 remains **NOT PASS**. Q001-Q006 have substantial Foundation evidence and Q006 now includes synthetic and natural false-green mechanisms, a repository-wide selected-pattern inventory, a semantic repair/regression, additional safe-path classifications, initial non-pattern verdict samples, and explicit third-party-action wrapper analysis. Repository-wide semantic classification, broader non-pattern sampling, executable negative control for third-party action propagation, GitHub-expression/action-output review, non-Bash/platform transfer, physical/mobile/backend/storage-power and production release-gate evidence remain incomplete.
 
 ## Dependencies / handoffs
 - **Foundations:** direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; older SDK-unavailable notes are stale.
 - **Architecture:** contracts/invariants and externally meaningful progress state supply semantic recovery oracles.
 - **Mobile:** M006 supplied the first natural false-green case; M003 demonstrates that normalized fixture exit is acceptable only when original status is preserved and consumed fail-closed. Navigation/property lifetime remains separate from shell verdict propagation.
 - **Data:** recovery oracles must compare semantic state with durable progress/replayability.
-- **Systems:** S005 supplied the second natural verdict-propagation defect. Diagnostic continuation is acceptable only when every required positive/negative outcome participates in a fail-closed aggregate verdict.
+- **Systems:** S005 supplied the second natural verdict-propagation defect. Third-party action identity/pinning is now also a material supply-chain dependency when the action carries a verdict-bearing script; diagnostic continuation is acceptable only when every required positive/negative outcome participates in a fail-closed aggregate verdict.
 - **Design Studio / Web Manager / Marketing Manager:** considered; no canonical evidence there changes this bounded Quality method.
 
 ## CHANGE WATCH / OPEN
 - Semantic classification of the remaining selected-pattern hits remains OPEN; 131 lexical hits are not 131 defects.
 - Broader verdict-bearing commands outside the selected lexical patterns require sampling.
 - GitHub-expression conditions and third-party action output/outcome propagation require semantic review where they participate in acceptance.
+- `reactivecircus/android-emulator-runner@v2` is a moving major tag; exact resolved action identity and an executable delegated-nonzero negative control remain OPEN.
 - PowerShell/cmd/other CI-shell transfer remains OPEN.
 - Q004 broader framework/platform transfer remains OPEN.
 - Q006 actual Android/iOS process death, backend/cursor batches, combined network+process faults, filesystem/device/power faults and production release-gate evidence remain OPEN.
 
 ## Next work
-Continue the same Q006 professional boundary until repository semantic classification is credible. Prioritize remaining verdict-bearing selected-pattern paths plus non-pattern acceptance commands and GitHub-expression/action-output boundaries. Repair and hosted-regress any additional genuine defect before considering semantic-audit closure.
+Continue the same Q006 professional boundary until repository semantic classification is credible. Prioritize GitHub-expression/action-output acceptance paths and other verdict-bearing third-party actions, then remaining selected-pattern paths. Add an executable delegated-nonzero negative control where it materially strengthens wrapper evidence. Repair and hosted-regress any additional genuine defect before considering semantic-audit closure.
