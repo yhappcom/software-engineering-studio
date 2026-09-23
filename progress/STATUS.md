@@ -11,7 +11,7 @@ Governance sync: 2026-09-23
 | Mobile | Stage 1 IN STUDY — M001 Android Emulator; M002 process/file + HOME lifecycle; M003 permission/FGS + bounded Keystore replication; M006 Chromium PWA + macOS Safari runtime + bounded Safari SW registration/update/restart transfer + same-session origin-down offline |
 | Data | Stage 1 IN STUDY — D001-D006 initiated; D005 real rollback/storage/WAL/backup interruption evidence |
 | Quality | Stage 1 IN STUDY — Q001-Q006 professional boundaries; Q006 complete selected-pattern workflow inventory + natural false-green repairs/regressions |
-| Systems | Stage 1 IN STUDY — S004 exact product baseline/lock/build-path transfer; S005 generic offline attestation boundary closed; exact-product/release transfer OPEN |
+| Systems | Stage 1 IN STUDY — S004 product build provenance; S005 generic offline attestation; S007 LogMate account-required Auth/session/onboarding foundations with product-canonical update and runtime validation OPEN |
 
 No specialist has passed Foundation.
 
@@ -32,9 +32,9 @@ Exact repaired head `54bbd5283920aa3d82057cc2da8a14b0db4bacbf`, run `35810765603
 Generic fresh-attestation offline verification remains bounded PASS at exact repaired head `c1ca5a8ae09717fc794b7e064358938e346b56cb`, run `35826855911`. This does not resolve the older historical-subject availability contradiction and does not constitute exact-product release provenance.
 
 ## Current Balance Loop
-Continue Q006 because its professional semantic-audit boundary is not complete and it has now produced a second natural false-green finding with direct Systems/release leverage. Prioritize verdict-bearing `continue-on-error`, `set +e`, `exit 0`, and `tee` paths; classify them semantically rather than treating lexical hits as defects. Also sample verdict-bearing commands that use none of the selected tokens. Repair and hosted-regress any additional genuine false-green path.
+Live LogMate onboarding/Auth work now has the highest immediate product leverage and security/state-model risk. Continue S007 as one coherent block while the owner is finalizing Welcome/onboarding: account-required startup, restored-session routing, provider-neutral Google/Apple/email identity, collision/link/unlink/reauth/deletion boundaries, and executable failure-first startup tests. Q006 remains professionally incomplete and should resume after the live Auth/onboarding handoff reaches a stable implementation contract or if S007 hits an external blocker.
 
-Do not spend the next block on equivalent Safari lifecycle or generic attestation variants. F001 direct Dart JIT/AOT and bounded Flutter Chrome/Safari runtime evidence already exist; the historical prompt blocker is stale.
+Do not regress to the stale F001 prompt blocker; direct Dart JIT/AOT and bounded Flutter Chrome/Safari runtime evidence already exist.
 
 ## CHANGE WATCH / OPEN
 - Q006 repository-wide semantic audit remains OPEN; complete selected-pattern inventory does not itself prove semantic correctness.
@@ -46,6 +46,8 @@ Do not spend the next block on equivalent Safari lifecycle or generic attestatio
 - S004 canonical LogMate source build/artifact identity remains dependent on execution-context source authorization.
 - S005 historical attestation availability cause remains OPEN; exact-product/release provenance remains OPEN.
 - Product/default branch is never assumed production without evidence.
+- S007 LogMate exact ref `e79f97c...` still contradicts the newly stated account-required startup direction; product-canonical update is OPEN.
+- Firebase password-policy configuration and Google/Apple provider operational setup/cross-surface validation are OPEN.
 
 ## Evidence rule
 No PASS from reading or workflow-green alone. Preserve exact claim/oracle/environment boundaries, subprocess verdict propagation, lifecycle-valid semantic oracles at every navigation boundary, and run-bound semantic evidence; never infer unexecuted evidence.
