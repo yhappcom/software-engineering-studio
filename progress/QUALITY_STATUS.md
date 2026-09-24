@@ -26,33 +26,32 @@ Build engineering capability to define correctness, design tests with valid orac
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
 
 ### Q006 — Fault injection, recovery verification and regression governance
-**IN STUDY — repository semantic CI audit; third-party-action hosted outcome propagation observed, delegated-script causality still OPEN.**  
+**IN STUDY — repository semantic CI audit; bounded third-party-action delegated nonzero causality VALIDATED.**  
 Canonical includes `research/quality/Q006_complete_workflow_verdict_risk_inventory.md` and `research/quality/Q006_third_party_action_verdict_boundary.md`.
 
 Retained evidence includes the hosted Bash verdict discriminator, the exact-head 29-workflow/131-hit selected-pattern inventory, and the repaired S005 natural false-green aggregate-verdict defect. These remain bounded evidence, not repository-wide correctness PASS.
 
 Third-party action propagation is a distinct non-pattern class. M002 delegates a verdict-bearing oracle to `reactivecircus/android-emulator-runner@v2`; source inspection supports fail-closed propagation but the moving tag remains a provenance dependency.
 
-**NEW VALIDATION:** exact head `9ea9c97838d443c8fa81b04729e0447aee54c175`, run `35867323951`, job `107202131771`, completed success. The delegated action step was followed by a successful independent assertion requiring `steps.delegated.outcome == failure` and post-`continue-on-error` `conclusion == success`. This validates the bounded GitHub action outcome/conclusion propagation boundary: `continue-on-error` did not erase the action's failure outcome, and downstream workflow logic could observe it fail-closed.
+**VALIDATION — causal strengthening:** exact head `91f4e5de13974d724b5d46bfbd801ab6af4ed721`, run `35942964741`, job `107454700986`, completed success. The delegated script first wrote `/tmp/q006-delegated-reachability.txt`, then intentionally exited 37. An `if: always()` upload step required that marker to exist, while an independent downstream assertion required `steps.delegated.outcome == failure` and post-`continue-on-error` `conclusion == success`.
 
-**CAUSAL LIMIT:** the available run/job API evidence does not expose the raw `Q006_INTENTIONAL_DELEGATED_FAILURE` marker. Provisioning or another action-internal failure can produce the same action outcome, so the narrower claim that the intentional delegated `exit 37` itself propagated is still OPEN. Do not promote the run to that PASS without durable reachability evidence.
+Artifact `10785418174`, digest `sha256:42ad5c3b2bc71dc41e5c9ccd4f8000b4ea12dd14dde9fdc86025d79f7b7c5d8f`, was directly downloaded and inspected. It contains one 43-byte file with exact content `Q006_INTENTIONAL_DELEGATED_FAILURE_REACHED`. **VERDICT:** provisioning/action-internal failure before script execution can no longer satisfy the same oracle. At this bounded hosted target, the delegated script reached its intentional failure path and the third-party action exposed a failure outcome through the wrapper boundary.
 
 ## Gate assessment
-Quality Stage 1 remains **NOT PASS**. Q006 now has hosted evidence for the third-party-action outcome/conclusion boundary, but intentional-script causality, exact resolved action identity, remaining semantic classification, broader non-pattern/GitHub-expression review, non-Bash transfer and production release-gate evidence remain incomplete.
+Quality Stage 1 remains **NOT PASS**. Q006 now closes the intentional delegated-script causality gap for this exact hosted control. Exact resolved action identity, remaining semantic classification, broader non-pattern/GitHub-expression/action-output review, non-Bash transfer and production release-gate evidence remain incomplete.
 
 ## Dependencies / handoffs
 - **Foundations:** direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; historical SDK blocker is stale.
 - **Architecture:** contracts/invariants and externally meaningful progress state supply semantic recovery oracles.
 - **Mobile:** M002 supplies the representative delegated action boundary; this control does not revalidate Android process-death behavior.
 - **Data:** recovery oracles must compare semantic state with durable progress/replayability.
-- **Systems:** action identity/pinning remains material supply-chain provenance; a runtime control cannot make moving `@v2` immutable.
+- **Systems:** exact action identity/pinning remains material supply-chain provenance; runtime causal evidence cannot make moving `@v2` immutable.
 - **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded CI-verdict mechanism.
 
 ## CHANGE WATCH / OPEN
-- Add durable proof that the delegated script reached `Q006_INTENTIONAL_DELEGATED_FAILURE` before intentional nonzero exit; provisioning/action-internal failure remains an alternative cause in run `35867323951`.
-- Exact resolved `reactivecircus/android-emulator-runner@v2` commit identity remains OPEN.
+- Exact resolved `reactivecircus/android-emulator-runner@v2` commit identity remains OPEN for the causal control and historical M002 runs.
 - Remaining selected-pattern semantic classification and broader verdict-bearing non-pattern/GitHub-expression/action-output paths remain OPEN.
-- PowerShell/cmd/other CI-shell transfer, physical/mobile/backend/storage-power and production release-gate evidence remain OPEN.
+- PowerShell/cmd/other CI-shell and action-type transfer, physical/mobile/backend/storage-power and production release-gate evidence remain OPEN.
 
 ## Next work
-Return to Balance Loop. S007 retains higher live LogMate leverage while product Auth implementation is active. When Q006 resumes, first strengthen the third-party-action control so script reachability is independently durable, then inspect resolved action identity and continue GitHub-expression/action-output verdict paths rather than repeating equivalent shell variants.
+Return to Balance Loop. Do not repeat delegated-script reachability variants. S007 exact-product transfer remains higher live LogMate leverage when implementation becomes available. Otherwise Q006's next materially different rung is resolved third-party-action provenance or GitHub-expression/action-output acceptance-path audit.
