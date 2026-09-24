@@ -187,7 +187,7 @@ class _ReadyPreview extends StatelessWidget {
           shape: const StadiumBorder(),
         ),
         icon: const Icon(Icons.mail_outline, size: 18),
-        label: const Text('Continue with Email'),
+        label: const Text('Sign in with Email'),
       ),
     );
   }
