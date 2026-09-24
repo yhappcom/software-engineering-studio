@@ -22,8 +22,18 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           script: |
+            printf '%s\n' 'Q006_INTENTIONAL_DELEGATED_FAILURE_REACHED' > /tmp/q006-delegated-reachability.txt
             echo 'Q006_INTENTIONAL_DELEGATED_FAILURE'
             exit 37
+
+      - name: Persist delegated-script reachability marker
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: q006-delegated-reachability
+          path: /tmp/q006-delegated-reachability.txt
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Require wrapper to expose delegated failure
         shell: bash
