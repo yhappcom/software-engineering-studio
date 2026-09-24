@@ -14,7 +14,10 @@ jobs:
       - name: Delegate intentional nonzero script through Android emulator action
         id: delegated
         continue-on-error: true
-        uses: reactivecircus/android-emulator-runner@v2
+        # Provenance snapshot 2026-09-24: upstream annotated tag v2 -> tag object
+        # 4c44018e59b437e86cdfc41da381398f93ed8808 -> commit below.
+        # Pin the executable control so future reruns do not silently change action code.
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
         with:
           api-level: 35
           arch: x86_64
