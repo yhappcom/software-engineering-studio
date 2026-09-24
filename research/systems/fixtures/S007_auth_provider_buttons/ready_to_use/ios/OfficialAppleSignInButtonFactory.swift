@@ -55,7 +55,7 @@ final class OfficialAppleSignInButtonView: NSObject, FlutterPlatformView {
 
     container = UIView(frame: frame)
     button = ASAuthorizationAppleIDButton(
-      authorizationButtonType: .continue,
+      authorizationButtonType: .signIn,
       authorizationButtonStyle: buttonStyle
     )
     channel = FlutterMethodChannel(
