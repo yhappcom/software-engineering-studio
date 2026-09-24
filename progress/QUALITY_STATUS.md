@@ -26,28 +26,29 @@ Build engineering capability to define correctness, design tests with valid orac
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
 
 ### Q006 — Fault injection, recovery verification and regression governance
-**IN STUDY — repository semantic CI audit; delegated nonzero causality, immutable pinned-action regression, same-workflow expression/job-output composition, reusable-workflow output transfer, and matrix reusable-output aggregation VALIDATED at bounded hosted targets.**  
-Canonical includes `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `research/quality/Q006_third_party_action_verdict_boundary.md`, `research/quality/Q006_expression_output_verdict_composition.md`, `research/quality/Q006_reusable_workflow_output_verdict_boundary.md`, and `research/quality/Q006_matrix_reusable_workflow_output_aggregation.md`.
+**IN STUDY — repository semantic CI audit; delegated nonzero causality, immutable pinned-action regression, same-workflow expression/job-output composition, reusable/matrix output transfer, and skipped-producer output boundary VALIDATED at bounded hosted targets.**
 
-Retained evidence includes the hosted Bash verdict discriminator, the exact-head 29-workflow/131-hit selected-pattern inventory, the repaired S005 natural false-green aggregate-verdict defect, causal third-party action control, immutable action pin regression, same-workflow semantic output composition, and non-matrix reusable-workflow output transfer.
+Canonical includes `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `Q006_third_party_action_verdict_boundary.md`, `Q006_expression_output_verdict_composition.md`, `Q006_reusable_workflow_output_verdict_boundary.md`, `Q006_matrix_reusable_workflow_output_aggregation.md`, and `Q006_skipped_job_output_boundary.md`.
 
-**VALIDATION — matrix reusable output aggregation:** exact head `e407b88c47d64170dc6a565d2ed6112758fc55b7`, run `35969760559`, completed success. `PASS` member job `107536467918` succeeded and emitted first; `FAIL` member job `107536468186` succeeded and emitted later. Acceptance job `107536521104` succeeded only after asserting matrix transport `success`, exact aggregated output `FAIL`, and an independent fail-closed oracle requiring the semantic-PASS control's outcome to be `failure`. This directly validates GitHub's documented last-successful-nonempty matrix reusable-workflow output rule under controlled completion ordering. It also demonstrates that a scalar matrix output is not inherently an `all(matrix members)` reduction.
+Retained evidence includes the hosted Bash verdict discriminator, exact-head selected-pattern inventory, repaired S005 natural false-green, causal third-party action control with immutable pin, same-workflow semantic output composition, reusable-workflow transfer, and controlled matrix aggregation.
+
+**VALIDATION — skipped producer / absent semantic output:** exact head `cc42697d60daf94e6c801bf68ccbbf61c28e3f03`, run `35987588099`, completed success. Producer job `107593783363` was `skipped` with no executed steps. Acceptance job `107593782370` succeeded only after asserting producer result `skipped`, empty semantic output, raw failure of an intentionally unsafe `verdict != FAIL` discriminator, and explicit refusal to treat the absent verdict as `PASS`. This validates at the bounded hosted target that non-execution/empty output is not affirmative semantic evidence and that negative-only acceptance can false-accept missing verdicts.
 
 ## Gate assessment
-Quality Stage 1 remains **NOT PASS**. Q006 now covers shell/process propagation, causal third-party wrapper propagation, same-workflow semantic output composition, non-matrix reusable-workflow semantic output transfer, and controlled matrix reusable-output aggregation. Historical resolved action identity, remaining natural semantic classification, empty/skipped/redacted/cancelled output paths, non-Bash/action-type transfer and production release-gate evidence remain incomplete.
+Quality Stage 1 remains **NOT PASS**. Q006 now covers shell/process propagation, causal third-party wrapper propagation, same-workflow semantic output composition, non-matrix reusable-workflow transfer, controlled matrix aggregation, and skipped-producer/empty-output behavior. Historical resolved action identity, remaining natural semantic classification, secret-redacted/cancelled paths, non-Bash/action-type transfer and production release-gate evidence remain incomplete.
 
 ## Dependencies / handoffs
 - **Foundations:** direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; historical SDK blocker is stale.
-- **Architecture:** exported CI verdicts and matrix aggregation are interface semantics distinct from transport success; a scalar matrix output is not automatically an all-members contract.
-- **Mobile:** build/test matrices for Android/iOS/browser should transfer-test member identity and aggregation rather than infer product coverage from one scalar output.
+- **Architecture:** result and semantic output are separate interface semantics; absent output must not become implicit PASS.
+- **Mobile:** conditional Android/iOS/browser jobs require explicit required-member identity and fail-closed treatment of skipped required members.
 - **Data:** recovery oracles must compare semantic state with durable progress/replayability.
-- **Systems:** binary release/security reusable workflows should preferably fail internally per required matrix member or use an explicit all-member aggregation gate; scalar matrix output plus transport success is insufficient.
+- **Systems:** release/security gates should require positive semantic PASS from required producers; skipped/empty is non-evidence unless explicitly optional by contract.
 - **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded CI-verdict mechanism.
 
 ## CHANGE WATCH / OPEN
 - Exact resolved action identity for historical causal and M002 runs remains OPEN; do not infer it from current tag state.
 - Remaining selected-pattern semantic classification and natural verdict-bearing non-pattern paths remain OPEN.
-- Empty/skipped/redacted reusable outputs, cancellation, cross-repository reusable workflows, PowerShell/cmd/other action-type transfer and production release-gate evidence remain OPEN.
+- Secret-redacted outputs, cancellation, cross-repository reusable workflows, PowerShell/cmd/other action-type transfer and production release-gate evidence remain OPEN.
 
 ## Next work
-Return to Balance Loop. S007 exact-product transfer remains higher live LogMate leverage when implementation becomes available. If it is still unavailable, do not repeat equivalent nonempty matrix controls; prefer skipped/empty output behavior, a natural repository defect, cross-repository transfer, non-Bash action type, or a production-oriented release gate.
+Return to Balance Loop. S007 exact-product transfer remains higher live LogMate leverage when implementation becomes available. If still unavailable, do not repeat equivalent skipped/empty controls; prefer cancellation, secret-redaction, a natural repository defect, cross-repository/non-Bash transfer, or a production-oriented release gate.
