@@ -1,6 +1,6 @@
 # Q006 — Matrix Reusable Workflow Output Aggregation Boundary
 
-Status: **SOURCE / SYNTHESIS / EXECUTABLE CONTROL COMMITTED — HOSTED VALIDATION OPEN**  
+Status: **SOURCE / SYNTHESIS / BOUNDED HOSTED VALIDATION COMPLETE**  
 Owner: Quality, Testing & Reliability  
 Evidence date: 2026-09-24
 
@@ -22,34 +22,34 @@ Committed fixtures:
 - `.github/workflows/q006-reusable-matrix-verdict-producer.yml`
 - `.github/workflows/q006-reusable-matrix-output-verdict.yml`
 
-Current control head after caller creation: `e407b88c47d64170dc6a565d2ed6112758fc55b7`.
+Exact control head: `e407b88c47d64170dc6a565d2ed6112758fc55b7`.
 
 The caller invokes two successful reusable-workflow matrix members:
 - `PASS`, delayed 1 second;
 - `FAIL`, delayed 6 seconds.
 
-Both called workflows are intended to succeed as executions. The later successful `FAIL` member sets a nonempty output. The acceptance job independently requires:
+Both called workflows succeed as executions. The later successful `FAIL` member sets a nonempty output. The acceptance job independently requires:
 1. matrix call result `success`;
 2. aggregated `semantic_verdict == FAIL`;
 3. transport-only acceptance can therefore still be green;
 4. a semantic predicate requiring `PASS` fails under `continue-on-error`;
 5. a final oracle requires that semantic-control outcome to be `failure`.
 
-The delay is an experimental ordering aid, not proof that GitHub scheduling will always produce the intended completion order. The exact hosted observation must be inspected before any PASS.
+The delay is an experimental ordering aid, not a general scheduling guarantee.
 
 ## VALIDATION
-**OPEN.** At the time this note was created, no hosted run existed yet for exact head `e407b88c47d64170dc6a565d2ed6112758fc55b7`. Do not infer execution from committed YAML or from the official documented rule.
+Hosted run `35969760559` at exact head `e407b88c47d64170dc6a565d2ed6112758fc55b7` completed **success**. Run metadata binds the referenced reusable workflow to the same exact head.
 
-Required closure evidence:
-- exact run/head identity;
-- both matrix called jobs successful;
-- observable member outputs/order sufficient to support the aggregation claim;
-- acceptance log shows `MATRIX_RESULT=success`;
-- acceptance log shows `AGGREGATED_VERDICT=FAIL`;
-- semantic control outcome is `failure`;
-- terminal marker `Q006_MATRIX_REUSABLE_OUTPUT_FAIL_CLOSED_PASS`.
+Jobs:
+- `call-matrix (PASS, 1) / producer` — job `107536467918` — success; emit step completed at 07:28:07Z;
+- `call-matrix (FAIL, 6) / producer` — job `107536468186` — success; emit step completed at 07:28:13Z;
+- `acceptance` — job `107536521104` — success.
 
-If observed ordering differs, revise the fixture rather than reinterpret the oracle.
+The job API independently establishes the intended completion ordering: PASS member completed first, FAIL member completed later. The acceptance job's exact-value aggregation assertion completed successfully, so its observed aggregated reusable-workflow output was `FAIL`. The transport-success assertion also completed successfully. The semantic-control step is intentionally `continue-on-error`; GitHub's job summary reports that step as completed/success at the job-step layer, so its raw command exit is not independently visible through this API response. However, the following independent fail-closed oracle step completed successfully and its predicate requires `steps.semantic_control.outcome == failure`. Thus the control could not reach terminal job success unless the semantic PASS predicate had failed as intended.
+
+**VERDICT — bounded PASS:** with two successful reusable-workflow matrix invocations that export different nonempty semantic verdicts, the caller receives the last successful completing nonempty value under this controlled ordering. Matrix transport success coexists with aggregated semantic `FAIL`; therefore transport success is not an all-members semantic acceptance oracle, and a scalar matrix reusable output is not inherently an `all` reduction.
+
+Evidence boundary: this is a GitHub-hosted Studio control. It does not prove production release-gate correctness, arbitrary scheduling order, or behavior for empty/skipped/redacted outputs.
 
 ## FAILURE MODEL
 Covers the risk that a release/security/test caller treats a matrix reusable-workflow's transport result or one aggregated scalar output as evidence that every matrix member semantically passed.
@@ -77,4 +77,4 @@ Does not establish skipped/empty/redacted output behavior, cancellation, cross-r
 - **Product CI:** transfer-test real build/test matrices; Studio control is not production evidence.
 
 ## OPEN / NEXT
-Wait for and inspect the hosted control. If it validates, close only this matrix aggregation boundary and move to a materially different class such as skipped/empty outputs, cross-repository transfer, non-Bash action types, or a natural production-oriented gate. If the hosted result contradicts the expected ordering/aggregation, preserve the contradiction and debug the harness or platform semantics before proceeding.
+Do not repeat this controlled nonempty-output ordering. Remaining materially different Q006 boundaries include empty/skipped/redacted outputs, cancellation, cross-repository reusable workflows, non-Bash/action-type transfer, remaining natural semantic classification, and production-oriented release gates. S007 exact LogMate transfer remains higher live-product priority as soon as product implementation becomes available.
