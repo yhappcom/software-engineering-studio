@@ -2,7 +2,7 @@
 
 Date: 2026-09-24
 Lead: Quality
-Status: IN STUDY — intentional delegated-script failure causality VALIDATED at bounded hosted target; action provenance and broader transfer OPEN
+Status: IN STUDY — intentional delegated-script failure causality VALIDATED at bounded hosted target; current upstream tag provenance resolved and future control pinned; pinned rerun + historical run provenance remain OPEN
 
 ## Problem
 
@@ -16,17 +16,20 @@ Causal-strengthening head: `91f4e5de13974d724b5d46bfbd801ab6af4ed721`
 Hosted causal run: `35942964741`
 Hosted causal job: `107454700986`
 Reachability artifact: `10785418174`, name `q006-delegated-reachability`, digest `sha256:42ad5c3b2bc71dc41e5c9ccd4f8000b4ea12dd14dde9fdc86025d79f7b7c5d8f`
+Provenance-pin commit: `7101e179449d5a222d6c8d4d16a96292526333eb`
 Evidence date: 2026-09-24
 
 Representative consumer: `.github/workflows/m002-android-process-death-storage-validation.yml`, which delegates its fail-fast oracle to `reactivecircus/android-emulator-runner@v2`.
 
-## SOURCE — action implementation boundary
+## SOURCE — action implementation and provenance boundary
 
-Inspection of the upstream `v2` action source showed user scripts executed through `@actions/exec`; execution errors are caught and passed to `core.setFailed`. This supports a fail-closed wrapper model, but the moving major tag is not immutable provenance and source reading is not runtime validation.
+Inspection of the upstream `v2` action source showed user scripts executed through `@actions/exec`; execution errors are caught and passed to `core.setFailed`. This supports a fail-closed wrapper model, but source reading is not runtime validation.
+
+Fresh GitHub Git-reference inspection on 2026-09-24 resolves `refs/tags/v2` to annotated tag object `4c44018e59b437e86cdfc41da381398f93ed8808`, whose target is commit `a421e43855164a8197daf9d8d40fe71c6996bb0d`; the tagger timestamp is 2026-07-05T05:06:13Z. This establishes the **current observed tag resolution** at the evidence date. It does not, by itself, prove what commit GitHub Actions resolved for historical run `35942964741` or historical M002 runs because a mutable ref can be force-moved and the job metadata API does not expose the resolved action commit.
 
 ## SYNTHESIS
 
-Verdict propagation has at least three layers: producer/oracle exit semantics; action-wrapper semantics; workflow/job acceptance semantics. A lexical audit of workflow shell cannot prove the action-wrapper layer.
+Verdict propagation has at least three layers: producer/oracle exit semantics; action-wrapper semantics; workflow/job acceptance semantics. A lexical audit of workflow shell cannot prove the action-wrapper layer. Dependency provenance is a fourth independent concern: a runtime pass through `@v2` does not make the action source immutable.
 
 ## Executable negative control
 
@@ -57,64 +60,49 @@ Provisioning failure before the delegated script cannot create the committed rea
 
 At exact head `91f4e5de13974d724b5d46bfbd801ab6af4ed721`, workflow run `35942964741`, job `107454700986`, completed `success`.
 
-GitHub's job record shows:
+GitHub's job record shows the delegated Android-emulator action step completed under `continue-on-error`; the reachability-artifact upload completed; and the independent wrapper-outcome assertion completed. The artifact contains exact content `Q006_INTENTIONAL_DELEGATED_FAILURE_REACHED`.
 
-- delegated Android-emulator action step completed under `continue-on-error`;
-- `Persist delegated-script reachability marker` completed successfully;
-- `Require wrapper to expose delegated failure` completed successfully.
+**VALIDATION verdict:** the prior provisioning/action-internal alternative cause is closed for this bounded run. The delegated script definitely reached the intentional failure path and the action invocation exposed a failure outcome through the wrapper boundary.
 
-The run published artifact `10785418174`, digest `sha256:42ad5c3b2bc71dc41e5c9ccd4f8000b4ea12dd14dde9fdc86025d79f7b7c5d8f`. Direct inspection of the downloaded ZIP found exactly one 43-byte file, `q006-delegated-reachability.txt`, whose content is:
+## PROVENANCE REPAIR — immutable future control
 
-`Q006_INTENTIONAL_DELEGATED_FAILURE_REACHED`
+Commit `7101e179449d5a222d6c8d4d16a96292526333eb` replaces the Q006 control's moving `reactivecircus/android-emulator-runner@v2` reference with the exact current target commit:
 
-The downstream assertion can succeed only when the delegated step's `outcome` is `failure` and its post-continue `conclusion` is `success`.
+`reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d`
 
-**VALIDATION verdict:** the prior provisioning/action-internal alternative cause is closed for this bounded run. The delegated script definitely reached the intentional failure path and the action invocation exposed a failure outcome through the wrapper boundary. This validates the intended nonzero-propagation mechanism at this exact hosted target.
+This is an **ENGINEERING JUDGMENT / REPAIR**, not yet a validation result. At the time of this record, no Actions run was yet returned for that head. The causal test must rerun successfully with the pinned action and its artifact/outcome oracles before the pinned configuration receives VALIDATION status.
+
+The representative M002 workflow is intentionally not changed in this Quality block: changing another validated fixture's dependency would require its own transfer/regression run and belongs in a separate authorized evidence block.
 
 ## Evidence limit
 
-This does not prove:
-
-- that every command failure mode inside `reactivecircus/android-emulator-runner` propagates identically;
-- that future `@v2` resolutions behave identically;
-- that the historical M002 action resolved to the same upstream commit;
-- repository-wide CI semantic correctness;
-- PowerShell/cmd/container/composite-action transfer;
-- production release-gate correctness.
-
-The workflow intentionally converts the expected delegated failure into an overall green control job after independently asserting the failure outcome. Therefore the overall green run is evidence only because the negative-control oracle and durable reachability artifact are both inspected; workflow green alone remains insufficient.
-
-## ENGINEERING JUDGMENT
-
-The professional boundary for this specific causal question is now materially stronger than source inspection or outcome metadata alone: producer reachability and wrapper verdict propagation are independently observable. Future third-party-action controls should use the same pattern when infrastructure/setup failure can mimic the expected action outcome.
-
-The remaining high-value issue is provenance: `reactivecircus/android-emulator-runner@v2` is a moving major tag. Runtime propagation evidence cannot make that dependency immutable or establish the exact action source used by historical runs.
+This does not prove that every command failure mode inside the action propagates identically; that historical runs resolved to the currently observed commit; repository-wide CI semantic correctness; PowerShell/cmd/container/composite-action transfer; or production release-gate correctness.
 
 ## VALIDATION / OPEN
 
-- **VALIDATED, bounded:** delegated script reached the intentional failure path and the third-party action exposed `outcome=failure`; `continue-on-error` preserved downstream observability with `conclusion=success`.
-- **VALIDATED, bounded:** durable artifact plus independent step-outcome oracle distinguishes delegated-script reachability from provisioning failure for run `35942964741`.
-- **OPEN / DEPENDENCY:** exact resolved `reactivecircus/android-emulator-runner@v2` commit identity for this run and historical M002 runs.
+- **VALIDATED, bounded:** delegated script reached the intentional failure path and the third-party action exposed `outcome=failure` in run `35942964741`.
+- **SOURCE / provenance snapshot:** on 2026-09-24 upstream `v2` resolved through annotated tag `4c44018...` to commit `a421e438...`.
+- **REPAIR / VALIDATION OPEN:** Q006 future causal control is pinned to `a421e438...` at Studio commit `7101e179...`; exact pinned hosted rerun is still required.
+- **OPEN / DEPENDENCY:** exact resolved action commit for historical causal run and historical M002 runs is not established by current tag state.
 - **OPEN:** semantic review of other third-party actions and GitHub-expression/action-output acceptance paths.
 - **OPEN / TRANSFER VALIDATION:** non-Bash shells, other action types, and production release gates.
 - No repository-wide semantic correctness PASS is awarded.
 
 ## RELATED DOMAIN CHECK
 
-- Foundations: command/process exit semantics are prerequisite; direct Dart/Flutter evidence is already available and is not this block's blocker.
+- Foundations: command/process exit semantics are prerequisite; direct Dart/Flutter evidence already exists.
 - Architecture: wrapper boundary is an interface contract between delegated oracle and CI runner.
-- Mobile: M002 is the representative consumer; this control does not revalidate Android process-death/storage behavior.
+- Mobile: M002 is the representative consumer; this block does not alter or revalidate its Android process-death/storage evidence.
 - Data: persistent-file semantics are not revalidated.
-- Quality: owner; causal delegated-script nonzero propagation is now bounded VALIDATED.
-- Systems: moving action identity/pinning remains a supply-chain/provenance dependency.
-- Design Studio / Web Manager / Marketing Manager: considered; not materially relevant to this bounded CI-verdict mechanism.
+- Quality: owner; causal propagation validated and future control provenance hardened.
+- Systems: exact dependency identity/pinning is a supply-chain provenance concern; current tag resolution is now explicit.
+- Design Studio / Web Manager / Marketing Manager: considered; not materially relevant to this bounded CI-verdict/provenance mechanism.
 - Product source/ref: not required; this block audits Studio CI only.
 
 ## HANDOFFS
 
 ### Quality → Systems
-- Finding: verdict-bearing third-party actions require both runtime wrapper-failure evidence and dependency provenance. The runtime causal gap is now closed for run `35942964741`; moving `@v2` identity remains unresolved.
-- Evidence: this note; exact head `91f4e5de...`; run `35942964741`; job `107454700986`; artifact `10785418174`.
-- Impact: do not infer immutable supply-chain provenance from successful runtime validation.
-- Requested action: preserve/resolution-check exact action identity and compare commit pinning when S004/S005 revisits supply-chain provenance.
-- Status: OPEN.
+- Current upstream `v2` provenance snapshot: annotated tag `4c44018...` → commit `a421e438...` on 2026-09-24.
+- Q006 control is now pinned to that commit at Studio head `7101e179...`.
+- Do not backfill this current resolution as historical-run proof. Historical exact action identity remains OPEN unless run-bound evidence is recovered.
+- Consider the same immutable-reference discipline for verdict-bearing third-party actions in release/security-sensitive workflows, with regression validation after pinning.
