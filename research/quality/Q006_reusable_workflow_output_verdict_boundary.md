@@ -1,6 +1,6 @@
 # Q006 — Reusable Workflow Output Verdict Boundary
 
-Status: **SOURCE / SYNTHESIS / EXECUTABLE CONTROL COMMITTED — HOSTED VALIDATION OPEN**  
+Status: **SOURCE / SYNTHESIS / BOUNDED HOSTED VALIDATION COMPLETE**  
 Owner: Quality, Testing & Reliability  
 Evidence date: 2026-09-24
 
@@ -34,15 +34,27 @@ The called reusable workflow intentionally exits successfully while exporting `s
 3. a semantic predicate requiring `PASS` fails under `continue-on-error`;
 4. a final oracle requires that control step's outcome to be `failure`.
 
-This design distinguishes successful workflow transport from semantic acceptance without converting the overall control into an expected-red run.
-
 ## VALIDATION
-GitHub automatically created hosted run `35964842513` for exact head `ac6fee0a185912ecefd642a381c787d265496c51`. At the time of this record the run is **queued**. No executable PASS is awarded yet.
+Hosted run `35964842513` at exact head `ac6fee0a185912ecefd642a381c787d265496c51` completed **success**. Run metadata binds the referenced reusable workflow to the same exact head.
 
-The run metadata already records the referenced reusable workflow at the same exact head, which binds the caller and called workflow source identity for this attempt. Completion, job steps, and semantic oracle execution remain to be inspected.
+Jobs:
+- `call-producer / producer` — job `107521033912` — success;
+- `acceptance` — job `107521051965` — success.
+
+Acceptance job environment: GitHub runner `2.337.0`, Ubuntu `24.04.5`, runner image `ubuntu-24.04` version `20260920.314.1`.
+
+Direct job-log inspection establishes the complete oracle chain:
+- `CALLED_RESULT: success` and the transport assertion passed;
+- `SEMANTIC_VERDICT: FAIL` crossed the reusable-workflow boundary and the exact-value assertion passed;
+- the control requiring `SEMANTIC_VERDICT == PASS` exited `1` under `continue-on-error`;
+- the next step observed `CONTROL_OUTCOME: failure` and emitted `Q006_REUSABLE_OUTPUT_FAIL_CLOSED_PASS`.
+
+**VERDICT — bounded PASS:** a reusable workflow can complete successfully while exporting a semantic failure value. A caller that requires semantic acceptance must explicitly validate the exported output; called-workflow success alone is insufficient.
+
+This is a GitHub-hosted Studio control, not production release-gate evidence.
 
 ## FAILURE MODEL
-This control targets:
+This control covers:
 - caller accepts reusable workflow solely because the called job completed successfully;
 - semantic failure crosses `workflow_call` as data but is omitted from the caller acceptance predicate;
 - reusable-workflow output mapping is absent/broken and therefore cannot satisfy the exact `FAIL` oracle.
@@ -55,7 +67,7 @@ It does not establish:
 - production release-gate correctness.
 
 ## ALTERNATIVE / TRADE-OFF
-For binary release gates, the strongest design is often to make the called reusable workflow itself fail when semantic acceptance fails, reducing the chance that every caller must remember a second predicate. Verdict outputs remain useful when callers need diagnostics or multiple states, but then the caller must treat the output as a typed contract rather than informational text.
+For binary release gates, prefer making the called reusable workflow itself fail when semantic acceptance fails where practical, reducing the chance that every caller must remember a second predicate. Verdict outputs remain useful when callers need diagnostics or multiple states, but then the caller must treat the output as a typed contract rather than informational text.
 
 ## RELATED DOMAIN CHECK
 - **Foundations:** process/job success versus application semantic completion is the same general boundary already observed in F006; no new Foundations execution prerequisite.
@@ -73,4 +85,4 @@ For binary release gates, the strongest design is often to make the called reusa
 - **Product CI:** when a product begins consuming reusable gates, transfer-test the caller acceptance predicate rather than assuming Studio control behavior proves product correctness.
 
 ## OPEN / NEXT
-Inspect run `35964842513` after completion. If the called workflow succeeds, the `FAIL` value crosses the reusable boundary, and the final fail-closed oracle succeeds, close this bounded validation. Do not repeat equivalent non-matrix controls afterward; next materially different Q006 candidates are matrix output aggregation, skipped/redacted output behavior, cross-repository reusable workflows, or a natural production-oriented gate.
+Do not repeat equivalent non-matrix reusable-workflow controls. Remaining materially different Q006 boundaries include matrix output aggregation, skipped/redacted outputs, cross-repository reusable workflows, non-Bash/action-type transfer, and natural production-oriented release gates. S007 exact LogMate transfer remains higher priority as soon as product implementation appears.
