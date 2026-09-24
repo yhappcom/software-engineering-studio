@@ -136,7 +136,9 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Execute permission grant-revoke oracle on Android emulator
-        uses: reactivecircus/android-emulator-runner@v2
+        # Reviewed Q006 provenance snapshot 2026-09-24: reactivecircus/android-emulator-runner v2
+        # resolved to this commit. Pinning prevents future tag movement from changing the action implementation.
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
         with:
           api-level: 35
           arch: x86_64
