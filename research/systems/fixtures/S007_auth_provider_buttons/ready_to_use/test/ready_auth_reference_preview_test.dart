@@ -279,7 +279,7 @@ void main() {
         surface: LogMateAuthSurface.pwa,
         brightness: brightness,
         file: 'goldens/pwa_compact_$suffix.png',
-        pwaWidth: 360,
+        pwaWidth: 390,
       );
     });
 
