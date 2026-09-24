@@ -1,0 +1,24 @@
+name: S007 Onboarding Deletion State Model
+
+on:
+  push:
+    paths:
+      - 'research/systems/fixtures/S007_onboarding_deletion_state_model.py'
+      - '.github/workflows/s007-onboarding-deletion-state-model.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record environment
+        run: |
+          python3 --version
+          uname -a
+          git rev-parse HEAD
+      - name: Execute failure-first model
+        run: python3 research/systems/fixtures/S007_onboarding_deletion_state_model.py
