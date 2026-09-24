@@ -71,7 +71,7 @@ class LogMateNativeAuthButtons extends StatelessWidget {
               surface: surface,
               brightness: brightness,
             ),
-            semanticLabel: 'Continue with Apple',
+            semanticLabel: 'Sign in with Apple',
             width: geometry.width,
             height: geometry.height,
             onPressed: onApple,
@@ -85,7 +85,7 @@ class LogMateNativeAuthButtons extends StatelessWidget {
         platform: platform,
         brightness: brightness,
       ),
-      semanticLabel: 'Continue with Google',
+      semanticLabel: 'Sign in with Google',
       width: geometry.width,
       height: geometry.height,
       onPressed: onGoogle,
@@ -233,7 +233,7 @@ class _EmailButton extends StatelessWidget {
           ),
         ),
         icon: const Icon(Icons.mail_outline, size: 18),
-        label: const Text('Continue with Email'),
+        label: const Text('Sign in with Email'),
       ),
     );
   }
