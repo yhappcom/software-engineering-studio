@@ -2,7 +2,7 @@
 
 Date: 2026-09-24
 Lead: Quality
-Status: IN STUDY — intentional delegated-script failure causality VALIDATED at bounded hosted target; current upstream tag provenance resolved and future control pinned; pinned rerun + historical run provenance remain OPEN
+Status: IN STUDY — intentional delegated-script failure causality + immutable pinned-action regression VALIDATED at bounded hosted target; historical run provenance remains OPEN
 
 ## Problem
 
@@ -17,6 +17,9 @@ Hosted causal run: `35942964741`
 Hosted causal job: `107454700986`
 Reachability artifact: `10785418174`, name `q006-delegated-reachability`, digest `sha256:42ad5c3b2bc71dc41e5c9ccd4f8000b4ea12dd14dde9fdc86025d79f7b7c5d8f`
 Provenance-pin commit: `7101e179449d5a222d6c8d4d16a96292526333eb`
+Pinned hosted regression run: `35951572264`
+Pinned hosted regression job: `107481046377`
+Pinned reachability artifact: `10788483491`, digest `sha256:4a6697445957fd4b107cd77178bcefcf9edca00986b253e01ffef568d3285a31`
 Evidence date: 2026-09-24
 
 Representative consumer: `.github/workflows/m002-android-process-death-storage-validation.yml`, which delegates its fail-fast oracle to `reactivecircus/android-emulator-runner@v2`.
@@ -66,13 +69,23 @@ GitHub's job record shows the delegated Android-emulator action step completed u
 
 ## PROVENANCE REPAIR — immutable future control
 
-Commit `7101e179449d5a222d6c8d4d16a96292526333eb` replaces the Q006 control's moving `reactivecircus/android-emulator-runner@v2` reference with the exact current target commit:
+Commit `7101e179449d5a222d6c8d4d16a96292526333eb` replaces the Q006 control's moving `reactivecircus/android-emulator-runner@v2` reference with the exact observed target commit:
 
 `reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d`
 
-This is an **ENGINEERING JUDGMENT / REPAIR**, not yet a validation result. At the time of this record, no Actions run was yet returned for that head. The causal test must rerun successfully with the pinned action and its artifact/outcome oracles before the pinned configuration receives VALIDATION status.
+### VALIDATION — pinned regression
 
-The representative M002 workflow is intentionally not changed in this Quality block: changing another validated fixture's dependency would require its own transfer/regression run and belongs in a separate authorized evidence block.
+The exact pinned head triggered run `35951572264`, job `107481046377`, on GitHub-hosted `ubuntu-latest`. The run completed `success` on 2026-09-24. The job record shows the delegated action step, durable reachability upload, and independent wrapper-outcome assertion all completed successfully.
+
+Artifact `10788483491` was downloaded and directly inspected. It contains exact content:
+
+`Q006_INTENTIONAL_DELEGATED_FAILURE_REACHED`
+
+The artifact digest reported by GitHub is `sha256:4a6697445957fd4b107cd77178bcefcf9edca00986b253e01ffef568d3285a31`.
+
+**VALIDATION verdict:** the immutable pinned action commit preserves the causal behavior established by the earlier moving-tag control: the delegated script reaches the intentional nonzero path and the wrapper exposes failure to the independent downstream oracle. The future Q006 control is therefore no longer dependent on movement of the `v2` tag.
+
+This does not retroactively establish the exact action commit used by historical causal or M002 runs. The representative M002 workflow is intentionally not changed in this Quality block: changing another validated fixture's dependency would require its own transfer/regression run and belongs in a separate authorized evidence block.
 
 ## Evidence limit
 
@@ -82,7 +95,7 @@ This does not prove that every command failure mode inside the action propagates
 
 - **VALIDATED, bounded:** delegated script reached the intentional failure path and the third-party action exposed `outcome=failure` in run `35942964741`.
 - **SOURCE / provenance snapshot:** on 2026-09-24 upstream `v2` resolved through annotated tag `4c44018...` to commit `a421e438...`.
-- **REPAIR / VALIDATION OPEN:** Q006 future causal control is pinned to `a421e438...` at Studio commit `7101e179...`; exact pinned hosted rerun is still required.
+- **REPAIR + VALIDATION:** Q006 causal control is pinned to `a421e438...` at Studio commit `7101e179...`; pinned run `35951572264` preserved both reachability and wrapper-outcome oracles.
 - **OPEN / DEPENDENCY:** exact resolved action commit for historical causal run and historical M002 runs is not established by current tag state.
 - **OPEN:** semantic review of other third-party actions and GitHub-expression/action-output acceptance paths.
 - **OPEN / TRANSFER VALIDATION:** non-Bash shells, other action types, and production release gates.
@@ -94,8 +107,8 @@ This does not prove that every command failure mode inside the action propagates
 - Architecture: wrapper boundary is an interface contract between delegated oracle and CI runner.
 - Mobile: M002 is the representative consumer; this block does not alter or revalidate its Android process-death/storage evidence.
 - Data: persistent-file semantics are not revalidated.
-- Quality: owner; causal propagation validated and future control provenance hardened.
-- Systems: exact dependency identity/pinning is a supply-chain provenance concern; current tag resolution is now explicit.
+- Quality: owner; causal propagation and immutable pinned regression are validated.
+- Systems: exact dependency identity/pinning is a supply-chain provenance concern; current tag resolution is explicit while historical identity remains open.
 - Design Studio / Web Manager / Marketing Manager: considered; not materially relevant to this bounded CI-verdict/provenance mechanism.
 - Product source/ref: not required; this block audits Studio CI only.
 
@@ -103,6 +116,6 @@ This does not prove that every command failure mode inside the action propagates
 
 ### Quality → Systems
 - Current upstream `v2` provenance snapshot: annotated tag `4c44018...` → commit `a421e438...` on 2026-09-24.
-- Q006 control is now pinned to that commit at Studio head `7101e179...`.
+- Q006 control is pinned to that commit at Studio head `7101e179...` and pinned hosted regression `35951572264` preserves the causal oracle.
 - Do not backfill this current resolution as historical-run proof. Historical exact action identity remains OPEN unless run-bound evidence is recovered.
-- Consider the same immutable-reference discipline for verdict-bearing third-party actions in release/security-sensitive workflows, with regression validation after pinning.
+- Apply immutable-reference discipline to verdict-bearing third-party actions in release/security-sensitive workflows, with regression validation after pinning.
