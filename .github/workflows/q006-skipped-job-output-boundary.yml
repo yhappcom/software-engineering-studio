@@ -1,0 +1,59 @@
+name: Q006 skipped-job output boundary
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/q006-skipped-job-output-boundary.yml'
+
+jobs:
+  producer:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    outputs:
+      semantic_verdict: ${{ steps.emit.outputs.semantic_verdict }}
+    steps:
+      - id: emit
+        run: echo "semantic_verdict=PASS" >> "$GITHUB_OUTPUT"
+
+  acceptance:
+    if: ${{ always() }}
+    needs: producer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Observe skipped producer boundary
+        env:
+          PRODUCER_RESULT: ${{ needs.producer.result }}
+          SEMANTIC_VERDICT: ${{ needs.producer.outputs.semantic_verdict }}
+        run: |
+          set -euo pipefail
+          printf 'PRODUCER_RESULT=%s\n' "$PRODUCER_RESULT"
+          printf 'SEMANTIC_VERDICT=<%s>\n' "$SEMANTIC_VERDICT"
+          test "$PRODUCER_RESULT" = "skipped"
+          test -z "$SEMANTIC_VERDICT"
+
+      - name: Unsafe truthiness/defaulting discriminator
+        id: unsafe
+        continue-on-error: true
+        env:
+          SEMANTIC_VERDICT: ${{ needs.producer.outputs.semantic_verdict }}
+        run: |
+          set -euo pipefail
+          # Simulates a dangerous consumer that treats missing output as non-failure.
+          if [ "$SEMANTIC_VERDICT" != "FAIL" ]; then
+            echo "Q006_UNSAFE_ACCEPTED_MISSING_VERDICT"
+            exit 37
+          fi
+
+      - name: Fail-closed semantic acceptance oracle
+        env:
+          PRODUCER_RESULT: ${{ needs.producer.result }}
+          SEMANTIC_VERDICT: ${{ needs.producer.outputs.semantic_verdict }}
+          UNSAFE_OUTCOME: ${{ steps.unsafe.outcome }}
+        run: |
+          set -euo pipefail
+          test "$PRODUCER_RESULT" = "skipped"
+          test -z "$SEMANTIC_VERDICT"
+          test "$UNSAFE_OUTCOME" = "failure"
+          test "$SEMANTIC_VERDICT" != "PASS"
+          echo "Q006_SKIPPED_OUTPUT_FAIL_CLOSED_PASS"
