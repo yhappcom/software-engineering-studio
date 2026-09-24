@@ -1,0 +1,64 @@
+name: Q006 Reusable Matrix Output Verdict Boundary
+
+on:
+  push:
+    paths:
+      - '.github/workflows/q006-reusable-matrix-verdict-producer.yml'
+      - '.github/workflows/q006-reusable-matrix-output-verdict.yml'
+  workflow_dispatch:
+
+jobs:
+  call-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - verdict: PASS
+            delay_seconds: 1
+          - verdict: FAIL
+            delay_seconds: 6
+    uses: ./.github/workflows/q006-reusable-matrix-verdict-producer.yml
+    with:
+      verdict: ${{ matrix.verdict }}
+      delay_seconds: ${{ matrix.delay_seconds }}
+
+  acceptance:
+    runs-on: ubuntu-latest
+    needs: call-matrix
+    steps:
+      - name: Assert matrix transport succeeded
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "MATRIX_RESULT=${{ needs.call-matrix.result }}"
+          test "${{ needs.call-matrix.result }}" = "success"
+
+      - name: Assert aggregated output is last successful nonempty completion
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "AGGREGATED_VERDICT=${{ needs.call-matrix.outputs.semantic_verdict }}"
+          test "${{ needs.call-matrix.outputs.semantic_verdict }}" = "FAIL"
+
+      - name: Demonstrate unsafe transport-only acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ needs.call-matrix.result }}" = "success"
+          echo "Q006_MATRIX_TRANSPORT_ONLY_WOULD_ACCEPT"
+
+      - name: Semantic acceptance control must reject aggregated FAIL
+        id: semantic_control
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ needs.call-matrix.outputs.semantic_verdict }}" = "PASS"
+
+      - name: Independent fail-closed oracle
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CONTROL_OUTCOME=${{ steps.semantic_control.outcome }}"
+          test "${{ steps.semantic_control.outcome }}" = "failure"
+          echo "Q006_MATRIX_REUSABLE_OUTPUT_FAIL_CLOSED_PASS"
