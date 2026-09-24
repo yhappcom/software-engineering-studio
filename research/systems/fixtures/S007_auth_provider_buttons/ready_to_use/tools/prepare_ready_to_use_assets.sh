@@ -50,7 +50,7 @@ fetch_apple apple_pwa_regular_light.png 360 40 black false 20
 fetch_apple apple_pwa_regular_dark.png 360 40 white true 20
 
 {
-  echo "Generated: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+  echo "Manifest: deterministic; generation timestamp intentionally omitted"
   echo "Apple source: $APPLE"
   echo "Google source: canonical Studio provider asset set generated from https://developers.google.com/static/identity/images/signin-assets.zip"
   echo
