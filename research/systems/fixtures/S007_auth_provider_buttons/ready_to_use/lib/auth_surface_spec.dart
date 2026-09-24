@@ -77,7 +77,7 @@ abstract final class AuthSurfaceSpec {
   static LogMateAuthButtonGeometry pwaGeometry({
     required double viewportWidth,
   }) {
-    final width = viewportWidth <= 360 ? 280.0 : 360.0;
+    final width = viewportWidth < 400 ? 280.0 : 360.0;
     return LogMateAuthButtonGeometry(
       width: width,
       height: 40,
