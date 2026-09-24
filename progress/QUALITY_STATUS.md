@@ -26,29 +26,32 @@ Build engineering capability to define correctness, design tests with valid orac
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
 
 ### Q006 — Fault injection, recovery verification and regression governance
-**IN STUDY — repository semantic CI audit; delegated nonzero causality, immutable pinned-action regression, same-workflow expression/job-output composition, reusable/matrix output transfer, and skipped-producer output boundary VALIDATED at bounded hosted targets.**
+**IN STUDY — repository semantic CI audit; delegated nonzero causality, immutable pinned-action regression, same-workflow expression/job-output composition, reusable/matrix output transfer, and skipped-producer output boundary VALIDATED at bounded hosted targets; natural Mobile action-pin transfer gap identified.**
 
-Canonical includes `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `Q006_third_party_action_verdict_boundary.md`, `Q006_expression_output_verdict_composition.md`, `Q006_reusable_workflow_output_verdict_boundary.md`, `Q006_matrix_reusable_workflow_output_aggregation.md`, and `Q006_skipped_job_output_boundary.md`.
+Canonical includes `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `Q006_third_party_action_verdict_boundary.md`, `Q006_expression_output_verdict_composition.md`, `Q006_reusable_workflow_output_verdict_boundary.md`, `Q006_matrix_reusable_workflow_output_aggregation.md`, `Q006_skipped_job_output_boundary.md`, and `Q006_third_party_action_pin_transfer_audit_2026-09-24.md`.
 
-Retained evidence includes the hosted Bash verdict discriminator, exact-head selected-pattern inventory, repaired S005 natural false-green, causal third-party action control with immutable pin, same-workflow semantic output composition, reusable-workflow transfer, and controlled matrix aggregation.
+Retained evidence includes the hosted Bash verdict discriminator, exact-head selected-pattern inventory, repaired S005 natural false-green, causal third-party action control with immutable pin, same-workflow semantic output composition, reusable-workflow transfer, controlled matrix aggregation, and skipped-producer fail-closed evidence.
 
-**VALIDATION — skipped producer / absent semantic output:** exact head `cc42697d60daf94e6c801bf68ccbbf61c28e3f03`, run `35987588099`, completed success. Producer job `107593783363` was `skipped` with no executed steps. Acceptance job `107593782370` succeeded only after asserting producer result `skipped`, empty semantic output, raw failure of an intentionally unsafe `verdict != FAIL` discriminator, and explicit refusal to treat the absent verdict as `PASS`. This validates at the bounded hosted target that non-execution/empty output is not affirmative semantic evidence and that negative-only acceptance can false-accept missing verdicts.
+**VALIDATION — skipped producer / absent semantic output:** exact head `cc42697d60daf94e6c801bf68ccbbf61c28e3f03`, run `35987588099`, completed success. Producer job `107593783363` was `skipped` with no executed steps. Acceptance job `107593782370` succeeded only after asserting producer result `skipped`, empty semantic output, raw failure of an intentionally unsafe `verdict != FAIL` discriminator, and explicit refusal to treat the absent verdict as `PASS`.
+
+**TRANSFER VALIDATION / CONTRADICTION — immutable action identity:** at Studio head `2f0cf3ac01c08561347f1707350c98eaab22eead`, current natural M001 and M003 Android evidence workflows still invoke `reactivecircus/android-emulator-runner@v2`, while the dedicated Q006 causal control has already been repaired to immutable commit `a421e43855164a8197daf9d8d40fe71c6996bb0d`. This does not retroactively invalidate historical Mobile runs; it limits deterministic replay claims from the current workflow source. Exact historical action resolution must not be inferred from today's `v2` target. Pin repair plus exact-head Mobile regression remains OPEN.
 
 ## Gate assessment
-Quality Stage 1 remains **NOT PASS**. Q006 now covers shell/process propagation, causal third-party wrapper propagation, same-workflow semantic output composition, non-matrix reusable-workflow transfer, controlled matrix aggregation, and skipped-producer/empty-output behavior. Historical resolved action identity, remaining natural semantic classification, secret-redacted/cancelled paths, non-Bash/action-type transfer and production release-gate evidence remain incomplete.
+Quality Stage 1 remains **NOT PASS**. Q006 now covers shell/process propagation, causal third-party wrapper propagation, same-workflow semantic output composition, non-matrix reusable-workflow transfer, controlled matrix aggregation, skipped-producer/empty-output behavior, and a natural cross-track provenance-transfer contradiction. Historical resolved action identity, immutable-pin regression on natural Mobile workflows, remaining natural semantic classification, secret-redacted/cancelled paths, non-Bash/action-type transfer and production release-gate evidence remain incomplete.
 
 ## Dependencies / handoffs
 - **Foundations:** direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; historical SDK blocker is stale.
 - **Architecture:** result and semantic output are separate interface semantics; absent output must not become implicit PASS.
-- **Mobile:** conditional Android/iOS/browser jobs require explicit required-member identity and fail-closed treatment of skipped required members.
+- **Mobile:** conditional Android/iOS/browser jobs require explicit required-member identity and fail-closed treatment of skipped required members. M001/M003 also need reviewed immutable emulator-runner pins before claiming replay of the same action implementation; preserve semantic oracles and rerun after the dependency change.
 - **Data:** recovery oracles must compare semantic state with durable progress/replayability.
-- **Systems:** release/security gates should require positive semantic PASS from required producers; skipped/empty is non-evidence unless explicitly optional by contract.
-- **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded CI-verdict mechanism.
+- **Systems:** release/security gates should require positive semantic PASS from required producers; skipped/empty is non-evidence unless explicitly optional by contract. Treat action identity as supply-chain/release provenance distinct from semantic correctness.
+- **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded CI/provenance mechanism.
 
 ## CHANGE WATCH / OPEN
-- Exact resolved action identity for historical causal and M002 runs remains OPEN; do not infer it from current tag state.
+- Exact resolved action identity for historical causal, M001/M002/M003 runs remains OPEN where the historical run does not independently preserve it; do not infer it from current tag state.
+- Immutable pin + hosted regression for the inspected natural M001/M003 workflows remains OPEN.
 - Remaining selected-pattern semantic classification and natural verdict-bearing non-pattern paths remain OPEN.
 - Secret-redacted outputs, cancellation, cross-repository reusable workflows, PowerShell/cmd/other action-type transfer and production release-gate evidence remain OPEN.
 
 ## Next work
-Return to Balance Loop. S007 exact-product transfer remains higher live LogMate leverage when implementation becomes available. If still unavailable, do not repeat equivalent skipped/empty controls; prefer cancellation, secret-redaction, a natural repository defect, cross-repository/non-Bash transfer, or a production-oriented release gate.
+Return to Balance Loop. S007 exact-product transfer remains higher live LogMate leverage when implementation becomes available. If still unavailable, prefer closing the natural M001/M003 pin-and-regression transfer or another materially different evidence class; do not repeat equivalent skipped/empty controls.
