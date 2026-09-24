@@ -1,11 +1,11 @@
 # S007 — Onboarding + Deletion Failure-First Executable Model
 
-Status: **VALIDATION PENDING — workflow queued; no PASS awarded**  
+Status: **BOUNDED STUDIO MODEL VALIDATED — exact LogMate transfer OPEN**  
 Owner: Systems / Security / Identity  
 Evidence date: 2026-09-24
 
 ## Problem
-The integrated LogMate Auth/Onboarding contract now has stable project decisions, but exact LogMate implementation remains absent. The highest-value independent next rung is therefore an executable semantic oracle that makes the new three-path onboarding and full-deletion invariants falsifiable before product transfer.
+The integrated LogMate Auth/Onboarding contract now has stable project decisions, but exact LogMate implementation remains absent. The highest-value independent next rung was an executable semantic oracle making the new three-path onboarding and full-deletion invariants falsifiable before product transfer.
 
 ## PROJECT DECISION inputs
 Canonical decision input: `S007_logmate_auth_onboarding_integrated_product_contract_2026-09-24.md`.
@@ -28,8 +28,10 @@ Nine failure-first tests cover:
 
 Workflow: `.github/workflows/s007-onboarding-deletion-state-model.yml`.
 
-Exact workflow head: `967e0e2b087cec80b767d6586b2208c1d07908d1`.
-Run `35938569294` was automatically created from the workflow commit and was **queued** when this note was written. Therefore execution observation and verdict remain OPEN. Do not infer PASS from fixture review or workflow creation.
+### VALIDATION
+Exact workflow head: `967e0e2b087cec80b767d6586b2208c1d07908d1`. GitHub Actions run `35938569294`, job `107441122312`, completed **success** on 2026-09-24. The environment-recording step and the failure-first model step both completed successfully; the job used GitHub-hosted `ubuntu-latest`.
+
+**VERDICT:** bounded Studio semantic model validated. This is not a LogMate product PASS. The mechanical oracle establishes that the committed reference model satisfies the nine encoded invariants at that exact head; it does not establish that LogMate implements the model.
 
 ## Failure model / evidence limit
 This reference model can expose semantic collapse such as `signedOut == firstUse`, data-presence-as-onboarding, cross-UID mutation, or identity-delete-as-full-erasure. It cannot validate Firebase persistence, Flutter routing, Sembast atomicity, Apple/Google SDK behavior, backend erasure, actual local wipe, process durability, or LogMate code.
@@ -42,7 +44,7 @@ Exact product remains `yhappcom/logmate → main → e79f97cb7edd8823860daf14770
 - Architecture: separate auth/owner/onboarding/deletion axes remain required; the fixture intentionally does not collapse them.
 - Mobile: exact native/PWA lifecycle transfer remains OPEN.
 - Data: durable deletion marker and local erasure need real persistence/crash validation in product transfer.
-- Quality: workflow execution must supply the mechanical verdict; exact-product failure injection remains required.
+- Quality: hosted execution supplies a bounded mechanical verdict; exact-product failure injection remains required.
 - Systems: owns this semantic security/state boundary.
 - Design Studio: no visual/interaction canonical change required by this bounded model.
 - Web Manager: external deletion surface remains a later integration dependency, not exercised here.
@@ -50,10 +52,10 @@ Exact product remains `yhappcom/logmate → main → e79f97cb7edd8823860daf14770
 - Product: exact LogMate ref checked; no product files edited.
 
 ## VALIDATION / OPEN
-- Await run `35938569294` terminal result and job/environment evidence.
-- If green, record exact Python/runner environment and test output; this will be bounded Studio-model validation only.
 - Reproduce equivalent invariants in actual LogMate Dart/Flutter tests after product implementation.
-- Add persistence/process-death and backend/Auth independent oracles during exact-product transfer.
+- Add Firebase Auth Emulator/backend independent UID and erasure oracles.
+- Add real persistence/process-death tests proving deletion lock survives restart and stale local data cannot become ordinary first-use state.
+- Add native/PWA provider lifecycle transfer separately.
 
 ## HANDOFFS
 - LogMate/Codex: use the nine cases as minimum semantic regression tests when implementing the integrated contract.
