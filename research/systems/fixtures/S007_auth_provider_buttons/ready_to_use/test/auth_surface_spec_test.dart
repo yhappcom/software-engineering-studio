@@ -44,8 +44,8 @@ void main() {
     });
 
     test('PWA compact and regular footprints', () {
-      final compact = AuthSurfaceSpec.pwaGeometry(viewportWidth: 360);
-      final regular = AuthSurfaceSpec.pwaGeometry(viewportWidth: 361);
+      final compact = AuthSurfaceSpec.pwaGeometry(viewportWidth: 399);
+      final regular = AuthSurfaceSpec.pwaGeometry(viewportWidth: 400);
       expect(compact.width, 280);
       expect(compact.height, 40);
       expect(regular.width, 360);
