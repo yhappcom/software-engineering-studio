@@ -21,8 +21,8 @@ Native platform widths:
 All three visible buttons on a given native surface use the same width and height.
 
 PWA:
-- viewport <= 360 logical px: 280 × 40
-- wider viewport: 360 × 40
+- viewport < 400 logical px: 280 × 40
+- viewport >= 400 logical px: 360 × 40
 - Google GIS renderer supports width configuration up to 400 px.
 - Apple uses an official generated button at the same footprint.
 - Email uses a LogMate-owned button at the same footprint.
@@ -103,4 +103,4 @@ The final kit must pass:
 - PWA composition reference render;
 - later exact LogMate native/PWA runtime transfer.
 
-The PWA golden uses the current Google-approved Android+Web raster as a **visual reference only**. Production PWA Google sign-in must use Google Identity Services / `google_sign_in_web.renderButton()`, not a hand-wired image button.
+The PWA golden uses a **structural placeholder** for the Google control because the real GIS button is provider-rendered at browser runtime. Production PWA Google sign-in must use Google Identity Services / `google_sign_in_web.renderButton()`, not a hand-wired image button.
