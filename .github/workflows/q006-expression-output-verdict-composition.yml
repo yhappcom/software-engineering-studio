@@ -1,0 +1,94 @@
+name: Q006 expression output verdict composition
+
+on:
+  push:
+    paths:
+      - '.github/workflows/q006-expression-output-verdict-composition.yml'
+  workflow_dispatch:
+
+jobs:
+  producer:
+    runs-on: ubuntu-latest
+    outputs:
+      semantic_verdict: ${{ steps.semantic.outputs.verdict }}
+      diagnostic_verdict: ${{ steps.diagnostic.outputs.verdict }}
+    steps:
+      - name: Emit failing semantic verdict as data
+        id: semantic
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'verdict=FAIL' >> "$GITHUB_OUTPUT"
+          echo 'Q006_SEMANTIC_VERDICT_FAIL_EMITTED'
+
+      - name: Emit passing diagnostic verdict as data
+        id: diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'verdict=PASS' >> "$GITHUB_OUTPUT"
+          echo 'Q006_DIAGNOSTIC_VERDICT_PASS_EMITTED'
+
+  acceptance:
+    needs: producer
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require producer transport success
+        shell: bash
+        env:
+          PRODUCER_RESULT: ${{ needs.producer.result }}
+        run: |
+          set -euo pipefail
+          printf 'producer_result=%s\n' "$PRODUCER_RESULT"
+          test "$PRODUCER_RESULT" = success
+
+      - name: Demonstrate transport success is not semantic acceptance
+        id: weak_acceptance
+        continue-on-error: true
+        shell: bash
+        env:
+          PRODUCER_RESULT: ${{ needs.producer.result }}
+          SEMANTIC_VERDICT: ${{ needs.producer.outputs.semantic_verdict }}
+        run: |
+          set -euo pipefail
+          # A downstream gate that checked only PRODUCER_RESULT would accept here,
+          # even though the semantic verdict is explicitly FAIL.
+          test "$PRODUCER_RESULT" = success
+          printf 'semantic_verdict=%s\n' "$SEMANTIC_VERDICT"
+          test "$SEMANTIC_VERDICT" = PASS
+
+      - name: Require weak acceptance control to fail
+        shell: bash
+        env:
+          WEAK_OUTCOME: ${{ steps.weak_acceptance.outcome }}
+          WEAK_CONCLUSION: ${{ steps.weak_acceptance.conclusion }}
+        run: |
+          set -euo pipefail
+          printf 'weak_outcome=%s\nweak_conclusion=%s\n' "$WEAK_OUTCOME" "$WEAK_CONCLUSION"
+          test "$WEAK_OUTCOME" = failure
+          test "$WEAK_CONCLUSION" = success
+
+      - name: Fail closed on semantic output
+        id: fail_closed
+        continue-on-error: true
+        shell: bash
+        env:
+          SEMANTIC_VERDICT: ${{ needs.producer.outputs.semantic_verdict }}
+          DIAGNOSTIC_VERDICT: ${{ needs.producer.outputs.diagnostic_verdict }}
+        run: |
+          set -euo pipefail
+          printf 'semantic=%s diagnostic=%s\n' "$SEMANTIC_VERDICT" "$DIAGNOSTIC_VERDICT"
+          test "$SEMANTIC_VERDICT" = PASS
+
+      - name: Require fail-closed oracle to reject
+        shell: bash
+        env:
+          CLOSED_OUTCOME: ${{ steps.fail_closed.outcome }}
+          CLOSED_CONCLUSION: ${{ steps.fail_closed.conclusion }}
+        run: |
+          set -euo pipefail
+          printf 'closed_outcome=%s\nclosed_conclusion=%s\n' "$CLOSED_OUTCOME" "$CLOSED_CONCLUSION"
+          test "$CLOSED_OUTCOME" = failure
+          test "$CLOSED_CONCLUSION" = success
+          echo 'Q006_EXPRESSION_OUTPUT_VERDICT_COMPOSITION_PASS'
