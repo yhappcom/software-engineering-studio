@@ -1,0 +1,38 @@
+name: D005 Dart Candidate Publication Transfer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'research/data/fixtures/D005_dart_candidate_publication_transfer.dart'
+      - '.github/workflows/d005-dart-candidate-publication-transfer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact workflow head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Setup Dart 3.13.4
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        with:
+          sdk: '3.13.4'
+      - name: Record environment
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          dart --version
+          uname -a
+      - name: Run fail-closed candidate publication transfer
+        run: |
+          set -euo pipefail
+          dart run research/data/fixtures/D005_dart_candidate_publication_transfer.dart | tee /tmp/d005.log
+          grep -Fx 'D005_DART_CANDIDATE_PUBLICATION_TRANSFER_PASS' /tmp/d005.log
+          grep -E '^child_exit=-?[1-9][0-9]*$' /tmp/d005.log
+          grep -Fx 'old_generation=1 old_rows=10' /tmp/d005.log
+          grep -Fx 'new_generation=2 new_rows=200' /tmp/d005.log
