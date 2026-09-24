@@ -58,7 +58,7 @@ The asset acquisition script is the canonical way to refresh binary provider ass
 ## Engineering constraints
 - Do not recolor, crop, stretch, recreate, or substitute either provider logo.
 - Do not ship the Google SVG variants without the required Google font handling; the kit fetches PNG resources by default.
-- Apple button type should use `continue` where one control covers both first-time account creation and returning sign-in; use `sign-in` only when the product language is explicitly sign-in-only.
+- LogMate's selected shared copy is `Sign in with Apple / Google / Email`; Apple system/REST button type is therefore `signIn` / `sign-in`, and Google uses its official `Sign in with Google` presentation.
 - Provider button tap must delegate into provider-neutral Auth commands; UI assets never become identity authority.
 - Loading/disabled state must not modify provider artwork in a way that violates branding. Prefer an external progress indicator or disable pointer input while preserving the image.
 - Provider-specific errors must map to typed Auth outcomes rather than leak raw SDK strings.
@@ -67,11 +67,35 @@ The asset acquisition script is the canonical way to refresh binary provider ass
 ## VALIDATION
 Hosted Flutter render validation is recorded in `research/systems/S007_auth_button_render_validation_2026-09-24.md`. Run `35934806084`, job `107429333111`, on Flutter 3.47.5 / Dart 3.13.4 passed analysis and all 5 render/geometry/decode tests and committed four light/dark iOS/Android goldens at `c0719bd93c2fb5304fb76537faeca2d7dd9ac9f9`.
 
-The render also falsified one earlier implementation assumption: equal 375×56 layout slots do **not** make the raw pre-approved Google and Apple PNGs visibly equal. Apple 3x assets are 1125×168 (375×56 logical), Google iOS 3x assets are 564×132 (188×44), and Google Android 3x assets are 540×120 (180×40). Preserving aspect ratio leaves the Google visible button substantially narrower. The raw-raster 375×56 composition is therefore rejected as the final LogMate presentation; a provider-rendered/provider-compliant geometry path must be validated next.
+The render also falsified one earlier implementation assumption: equal 375×56 layout slots do **not** make the raw pre-approved Google and Apple PNGs visibly equal. Apple 3x assets are 1125×168 (375×56 logical), Google iOS 3x assets are 564×132 (188×44), and Google Android 3x assets are 540×120 (180×40). Preserving aspect ratio leaves the Google visible button substantially narrower. The raw-raster 375×56 composition is therefore rejected as the final LogMate presentation.
+
+### Ready-to-use LogMate package
+
+A directly reusable package is now stored at `research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/`.
+
+It explicitly separates:
+- **native mobile** — 48 logical-px height; iOS ≈205.09×48, Android 216×48;
+- **native tablet** — 56 logical-px height; iPadOS ≈239.27×56, Android 252×56;
+- **PWA** — 280×40 below 400 logical-px viewport width, otherwise 360×40.
+
+Ordering:
+- iPhone/iPad: Apple → Google → Email;
+- Android phone/tablet: Google → Apple → Email;
+- PWA Apple-family host: Apple → Google → Email; other PWA: Google → Apple → Email, with explicit override support.
+
+Rendering:
+- iOS/iPadOS Apple uses `ASAuthorizationAppleIDButton`;
+- Android Apple uses exact-size Apple REST-generated official assets;
+- native Google uses provider-approved Pill PNGs without aspect-ratio distortion;
+- PWA Google uses `google_sign_in_web.renderButton()`;
+- Email is LogMate-owned Flutter UI matched to the selected footprint.
+- shared product copy is `Sign in with Apple / Google / Email`.
+
+Latest bounded package validation: workflow run `35937075501`, job `107436392513`, Flutter 3.47.5 / Dart 3.13.4. `flutter analyze` reported no issues and **17 tests passed**. Current deterministic generated assets/renders were already materialized in repository state, so the final run reported no generated diff. The generated asset/render line is retained through commits `9c5eb99fb0196c5a6f008a6844b6af3467f24667` and deterministic-manifest commit `5eb345f5bba33ec70a6b76a5e0948c9174851840`.
 
 **Bounded asset-acquisition validation:** workflow-triggered refresh commit `70fd04dbc6a0ee222cac1f711ee9eb1effb60d18` successfully materialized 111 tracked files: one SHA-256/source manifest plus 110 provider-approved PNG assets (14 Apple, 96 Google). Apple assets were generated from Apple-owned secure button endpoints; Google assets came from Google's current pre-approved Sign in with Google ZIP. The local fetch script also passed `bash -n` syntax validation before the hosted refresh.
 
-This validates only acquisition/provenance of the stored button resources. No exact LogMate compile, native bridge registration, Firebase provider configuration, App Review, Play verification, real Google/Apple sign-in, or PWA browser execution is claimed by this note.
+The Studio package now has hosted Flutter analysis/geometry/reference-render evidence. It still does not establish exact LogMate integration, iOS Swift/Xcode compilation or physical-device rendering, Firebase provider configuration, real Google/Apple authentication, live browser GIS/OAuth execution, App Store review, or Play review.
 
 Required transfer validation after LogMate integration:
 1. `flutter pub get` / static analysis on the exact LogMate ref;
