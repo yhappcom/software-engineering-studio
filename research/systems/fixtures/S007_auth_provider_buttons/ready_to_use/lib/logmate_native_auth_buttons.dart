@@ -177,7 +177,7 @@ class _OfficialRasterButton extends StatelessWidget {
               '$assetRoot/$assetPath',
               width: width,
               height: height,
-              fit: BoxFit.fill,
+              fit: BoxFit.contain,
               excludeFromSemantics: true,
               filterQuality: FilterQuality.high,
             ),
