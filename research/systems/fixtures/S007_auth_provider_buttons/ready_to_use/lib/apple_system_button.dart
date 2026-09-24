@@ -31,7 +31,7 @@ class LogMateAppleSystemButton extends StatelessWidget {
           'style': Theme.of(context).brightness == Brightness.dark
               ? 'white'
               : 'black',
-          'type': 'continue',
+          'type': 'signIn',
           'cornerRadius': height / 2,
         },
         creationParamsCodec: const StandardMessageCodec(),
