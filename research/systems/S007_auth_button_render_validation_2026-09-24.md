@@ -102,6 +102,45 @@ Next implementation candidates:
 
 Engineering preference for LogMate is candidate 1, but final visual acceptance belongs with Design Studio/product review after a compliant render is produced.
 
+## Ready-to-use surface validation
+
+The rejected 375×56 raw-raster experiment was followed by a reusable surface-aware package at:
+`research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/`.
+
+### Selected visible geometry
+
+| Surface | Apple/iOS-family | Google/Android-family | Height | Order |
+| --- | ---: | ---: | ---: | --- |
+| native phone | iOS ≈205.09×48 | Android 216×48 | 48 | iOS Apple→Google→Email; Android Google→Apple→Email |
+| native tablet | iPadOS ≈239.27×56 | Android 252×56 | 56 | iPadOS Apple→Google→Email; Android Google→Apple→Email |
+| PWA compact | 280×40 | GIS 280×40 | 40 | host-family dependent |
+| PWA regular | 360×40 | GIS 360×40 | 40 | host-family dependent |
+
+PWA compact applies below 400 logical px viewport width; regular applies at 400 and above.
+
+The selected native width is derived from the provider-approved Google raster aspect ratio at the desired height so Google artwork is not stretched. Apple is rendered/generated to the same visible footprint. Email uses the same footprint. All three use a pill/capsule silhouette.
+
+### Implementation boundary
+- iOS/iPadOS Apple: native `ASAuthorizationAppleIDButton`, `.signIn`.
+- Android Apple: Apple REST-generated official sign-in button image at exact selected dimensions.
+- native Google: provider-approved Pill PNG.
+- PWA Google: provider-rendered `google_sign_in_web.renderButton()`; reference goldens use a structural placeholder because the GIS control is created by the browser SDK at runtime.
+- Email: LogMate-owned Flutter button.
+- shared visible copy: `Sign in with Apple / Google / Email`.
+
+### Hosted validation
+Latest closed Studio validation:
+- workflow: `S007 Ready Auth Button Kit`
+- run: `35937075501`
+- job: `107436392513`
+- Flutter: 3.47.5 stable
+- Dart: 3.13.4
+- `flutter analyze`: **No issues found**
+- package tests/reference renders: **17 passed**
+- generated assets/renders: current and deterministic; final validation found no generated diff.
+
+The CI materialization loop was also repaired: generated asset/golden paths no longer trigger the workflow, the source manifest omits volatile generation timestamps, and the materialization workflow serializes by branch and rebases before push. This closes the previously observed concurrent-push failure class for this bounded workflow design.
+
 ## Evidence limit
 This validation proves the Studio Flutter harness, exact selected official PNG dimensions, order/slot invariants, and the raw-raster visual mismatch. It does not prove:
 - actual LogMate UI integration;
@@ -124,8 +163,8 @@ This validation proves the Studio Flutter harness, exact selected official PNG d
 - Product: LogMate source not modified.
 
 ## HANDOFFS
-- **Design Studio:** do not treat equal 375×56 slots as equal visible buttons. Review a second compliant render using Google provider-rendered/custom-compliant geometry.
-- **LogMate / Codex:** do not copy the current raw-raster 375×56 composition as final UI. Preserve the validated order/semantics but replace Google native presentation with a compliant geometry strategy.
+- **Design Studio:** the surface-aware second render is now available. Treat the selected mobile/tablet/PWA footprints as the engineering baseline while retaining provider-owned internal branding.
+- **LogMate / Codex:** use the `ready_to_use/` surface-aware package rather than the rejected 375×56 experiment. Preserve provider-neutral Auth semantics; copy the native/PWA adapter appropriate to the target surface.
 - **Quality/Mobile:** next validation must exercise the selected compliant implementation on native iOS/Android and PWA.
 
 ## CHANGE WATCH / OPEN
