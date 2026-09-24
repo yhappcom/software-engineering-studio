@@ -2,7 +2,7 @@
 
 Date: 2026-09-24
 Lead: Quality
-Status: **IN STUDY — SOURCE/SYNTHESIS + EXECUTABLE CONTROL COMMITTED; HOSTED VALIDATION OPEN**
+Status: **IN STUDY — HOSTED EXPRESSION/JOB-OUTPUT VERDICT COMPOSITION VALIDATED AT BOUNDED TARGET**
 
 ## Problem
 
@@ -31,7 +31,7 @@ Execution transport and semantic acceptance are separate dimensions.
 
 Therefore, when a workflow exports a verdict-bearing output, the downstream acceptance predicate must explicitly consume and validate that output. Checking only `needs.<producer>.result == success` is insufficient whenever the producer intentionally represents domain failure as data rather than process failure.
 
-This complements, rather than replaces, Q006's prior third-party-action finding:
+This complements Q006's prior third-party-action finding:
 
 1. producer/oracle semantics;
 2. wrapper/step failure propagation;
@@ -43,11 +43,11 @@ A green state at one layer does not imply green at the next.
 
 ## Executable control
 
-Committed workflow:
+Workflow:
 
 `.github/workflows/q006-expression-output-verdict-composition.yml`
 
-Exact commit introducing control:
+Exact control head:
 
 `6e0fc7cbac5e97a55c14f40c136f20bb48b33316`
 
@@ -59,29 +59,35 @@ The producer intentionally exits successfully while emitting:
 The downstream acceptance job independently checks:
 
 1. `needs.producer.result == success` — transport/execution success;
-2. a weak acceptance control that would accept on producer result alone but fails when it also checks `semantic_verdict == PASS`;
+2. a weak acceptance control that sees producer success but rejects when it actually checks `semantic_verdict == PASS`;
 3. the failed control's `steps.<id>.outcome == failure` and corrected `conclusion == success`;
 4. a separate fail-closed semantic-output assertion that must reject the `FAIL` value.
 
-This structure is designed to prove that successful job transport and failed semantic verdict can coexist, and that the verdict must be part of the acceptance predicate.
+## VALIDATION — hosted observation
 
-## VALIDATION
+Exact head: `6e0fc7cbac5e97a55c14f40c136f20bb48b33316`
+Workflow run: `35960071095`
+Producer job: `107506554735`
+Acceptance job: `107506578077`
+Environment: GitHub-hosted `ubuntu-latest`
+Evidence date: 2026-09-24
 
-**OPEN.** Immediately after commit `6e0fc7c...`, GitHub Actions had not yet registered a workflow run for that head. No hosted PASS is claimed.
+The run completed `success`. The producer job completed `success`; both output-emitting steps completed successfully. The dependent acceptance job also completed `success`.
 
-Required hosted evidence:
+Within the acceptance job:
 
-- exact head/run/job identity;
-- producer job terminal success;
-- acceptance job terminal success;
-- weak control step `outcome=failure`, corrected `conclusion=success`;
-- final fail-closed oracle completes and emits `Q006_EXPRESSION_OUTPUT_VERDICT_COMPOSITION_PASS`.
+- `Require producer transport success` completed;
+- `Demonstrate transport success is not semantic acceptance` was intentionally run under `continue-on-error` and the following independent assertion completed, requiring its raw `outcome=failure` and corrected `conclusion=success`;
+- `Fail closed on semantic output` likewise intentionally rejected the semantic `FAIL` value under `continue-on-error`;
+- `Require fail-closed oracle to reject` completed and requires the raw failure/corrected-success pair before emitting the final PASS marker.
 
-If any condition differs, investigate rather than reinterpret a green workflow as proof.
+**VALIDATION verdict:** a producer job can be terminally successful while transporting an explicitly failing semantic verdict. Downstream acceptance that cares about that semantic property must validate the verdict-bearing output; job transport success alone is not a sufficient oracle.
+
+This is a bounded GitHub Actions control. It does not establish repository-wide semantic correctness.
 
 ## Failure model / limits
 
-This control targets semantic verdict represented as job output while the producer process/job succeeds. It does not yet establish:
+This control targets semantic verdict represented as job output while the producer process/job succeeds. It does not establish:
 
 - reusable-workflow output behavior;
 - matrix output collisions/order;
@@ -108,4 +114,6 @@ For release/security-sensitive workflows, inventory not only nonzero propagation
 
 ## OPEN / next step
 
-Wait for and inspect the exact hosted run of commit `6e0fc7c...`. If validated, update Q006 canonical/status/index and then move to another materially different acceptance path rather than repeating equivalent output controls.
+- **VALIDATED, bounded:** job-result success and semantic-output failure can coexist; explicit semantic-output acceptance is required when that output carries the verdict.
+- **OPEN:** reusable-workflow outputs, matrix output semantics, skipped/redacted outputs, other shells/action types, and production release-gate transfer.
+- Do not repeat equivalent producer-success/semantic-FAIL controls. Continue Q006 only with a materially different acceptance path or a natural repository defect/transfer.
