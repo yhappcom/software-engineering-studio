@@ -5,8 +5,15 @@ on:
   push:
     paths:
       - '.github/workflows/s007-ready-auth-button-kit.yml'
-      - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/**'
+      - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/lib/**'
+      - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/tools/**'
+      - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/test/*.dart'
+      - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/pubspec.yaml'
       - 'research/systems/fixtures/S007_auth_provider_buttons/assets/**'
+
+concurrency:
+  group: s007-ready-auth-button-kit-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -15,7 +22,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout exact triggering revision
+      - name: Checkout current branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
@@ -41,20 +48,23 @@ jobs:
           flutter pub get
           flutter analyze
 
-      - name: Test package
+      - name: Test and render package
         working-directory: research/systems/fixtures/S007_auth_provider_buttons/ready_to_use
         run: flutter test --update-goldens --reporter expanded
 
-      - name: Commit exact provider assets
+      - name: Commit generated assets and renders
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/assets research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/test/goldens
+          git add research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/assets
+          git add research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/test/goldens
           if git diff --cached --quiet; then
-            echo "No ready-to-use provider asset changes."
+            echo "No generated auth-button changes."
             exit 0
           fi
           git commit -m "S007 materialize ready-to-use auth buttons and renders"
-          git push origin HEAD:${GITHUB_REF_NAME}
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
