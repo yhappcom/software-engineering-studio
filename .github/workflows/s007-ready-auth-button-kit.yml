@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/s007-ready-auth-button-kit.yml'
       - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/lib/**'
+      - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/ios/**'
       - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/tools/**'
       - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/test/*.dart'
       - 'research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/pubspec.yaml'
