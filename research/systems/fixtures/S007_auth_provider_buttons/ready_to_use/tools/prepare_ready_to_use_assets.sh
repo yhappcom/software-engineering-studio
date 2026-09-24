@@ -27,7 +27,7 @@ fetch_apple() {
   local border="$5"
   local radius="$6"
 
-  curl --fail --get --silent --show-error "$APPLE"     --data-urlencode "width=$width"     --data-urlencode "height=$height"     --data-urlencode "color=$color"     --data-urlencode "border=$border"     --data-urlencode "type=continue"     --data-urlencode "border_radius=$radius"     --data-urlencode "scale=3"     --data-urlencode "locale=en_US"     -o "$OUT/$output"
+  curl --fail --get --silent --show-error "$APPLE"     --data-urlencode "width=$width"     --data-urlencode "height=$height"     --data-urlencode "color=$color"     --data-urlencode "border=$border"     --data-urlencode "type=sign-in"     --data-urlencode "border_radius=$radius"     --data-urlencode "scale=3"     --data-urlencode "locale=en_US"     -o "$OUT/$output"
 }
 
 # iOS/iPad images are references for hosted render validation only.
