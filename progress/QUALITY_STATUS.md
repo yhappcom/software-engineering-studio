@@ -26,8 +26,8 @@ Build engineering capability to define correctness, design tests with valid orac
 **IN STUDY — first integrated Foundation block complete.** Canonical: `research/quality/Q005_debugging_fault_isolation_observability.md`.
 
 ### Q006 — Fault injection, recovery verification and regression governance
-**IN STUDY — repository semantic CI audit; delegated nonzero causality, immutable pinned-action regression, and expression/job-output verdict composition VALIDATED at bounded hosted targets.**  
-Canonical includes `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `research/quality/Q006_third_party_action_verdict_boundary.md`, and `research/quality/Q006_expression_output_verdict_composition.md`.
+**IN STUDY — repository semantic CI audit; delegated nonzero causality, immutable pinned-action regression, and expression/job-output verdict composition VALIDATED at bounded hosted targets; reusable-workflow output transfer control now queued.**  
+Canonical includes `research/quality/Q006_complete_workflow_verdict_risk_inventory.md`, `research/quality/Q006_third_party_action_verdict_boundary.md`, `research/quality/Q006_expression_output_verdict_composition.md`, and `research/quality/Q006_reusable_workflow_output_verdict_boundary.md`.
 
 Retained evidence includes the hosted Bash verdict discriminator, the exact-head 29-workflow/131-hit selected-pattern inventory, the repaired S005 natural false-green aggregate-verdict defect, and the causal third-party action control.
 
@@ -37,23 +37,26 @@ Retained evidence includes the hosted Bash verdict discriminator, the exact-head
 
 **REPAIR + VALIDATION — immutable control:** Studio commit `7101e179449d5a222d6c8d4d16a96292526333eb` pins the Q006 causal control to exact action commit `a421e43855164a8197daf9d8d40fe71c6996bb0d`. Exact pinned run `35951572264`, job `107481046377`, completed success. Artifact `10788483491`, digest `sha256:4a6697445957fd4b107cd77178bcefcf9edca00986b253e01ffef568d3285a31`, was directly inspected and contains `Q006_INTENTIONAL_DELEGATED_FAILURE_REACHED`; the independent wrapper-outcome assertion also completed.
 
-**NEW VALIDATION — expression/job-output composition:** workflow `.github/workflows/q006-expression-output-verdict-composition.yml`, exact head `6e0fc7cbac5e97a55c14f40c136f20bb48b33316`, run `35960071095`, producer job `107506554735`, acceptance job `107506578077`, completed success on GitHub-hosted `ubuntu-latest`. The producer intentionally completed successfully while exporting `semantic_verdict=FAIL`; the downstream controls established that transport/job success can coexist with a failing semantic output and that the semantic value must be explicitly included in the acceptance predicate. Canonical: `research/quality/Q006_expression_output_verdict_composition.md`.
+**VALIDATION — expression/job-output composition:** workflow `.github/workflows/q006-expression-output-verdict-composition.yml`, exact head `6e0fc7cbac5e97a55c14f40c136f20bb48b33316`, run `35960071095`, producer job `107506554735`, acceptance job `107506578077`, completed success on GitHub-hosted `ubuntu-latest`. The producer intentionally completed successfully while exporting `semantic_verdict=FAIL`; the downstream controls established that transport/job success can coexist with a failing semantic output and that the semantic value must be explicitly included in the acceptance predicate. Canonical: `research/quality/Q006_expression_output_verdict_composition.md`.
+
+**NEW CONTROL — reusable workflow boundary:** GitHub's current reusable-workflow contract maps called-workflow job outputs to `on.workflow_call.outputs` and exposes them separately from caller job result. Studio now has `.github/workflows/q006-reusable-semantic-verdict.yml` plus caller `.github/workflows/q006-reusable-output-verdict-composition.yml`. Exact caller head `ac6fee0a185912ecefd642a381c787d265496c51` intentionally calls a successful reusable workflow exporting `semantic_verdict=FAIL`, then requires an independent semantic predicate to reject it. Hosted run `35964842513` is currently queued; **VALIDATION remains OPEN and no PASS is awarded yet.** Canonical: `research/quality/Q006_reusable_workflow_output_verdict_boundary.md`.
 
 ## Gate assessment
-Quality Stage 1 remains **NOT PASS**. Q006 now covers shell/process propagation, a causal third-party wrapper boundary with immutable dependency regression, and a distinct expression/job-output semantic acceptance boundary. Historical resolved action identity, remaining natural semantic classification, reusable-workflow/matrix/skipped-output paths, non-Bash/action-type transfer and production release-gate evidence remain incomplete.
+Quality Stage 1 remains **NOT PASS**. Q006 covers shell/process propagation, a causal third-party wrapper boundary with immutable dependency regression, and a distinct expression/job-output semantic acceptance boundary. Reusable-workflow output transfer now has a committed fail-closed control but no completed hosted verdict yet. Historical resolved action identity, remaining natural semantic classification, matrix/skipped-output paths, non-Bash/action-type transfer and production release-gate evidence remain incomplete.
 
 ## Dependencies / handoffs
 - **Foundations:** direct Dart JIT/AOT and bounded Flutter Chrome/Safari execution exist; historical SDK blocker is stale.
-- **Architecture:** contracts/invariants and externally meaningful progress state supply semantic recovery oracles; exported CI verdicts are interface values distinct from transport success.
+- **Architecture:** contracts/invariants and externally meaningful progress state supply semantic recovery oracles; exported CI verdicts are interface values distinct from transport success, including across reusable-workflow boundaries.
 - **Mobile:** M002 supplies the representative delegated action boundary; this block does not modify or revalidate its Android process-death behavior.
 - **Data:** recovery oracles must compare semantic state with durable progress/replayability.
-- **Systems:** verdict-bearing job outputs require explicit semantic acceptance; current action tag resolution is explicit and Q006 future control is commit-pinned + regression-validated; historical run identity remains a supply-chain provenance gap.
+- **Systems:** verdict-bearing job/reusable-workflow outputs require explicit semantic acceptance; current action tag resolution is explicit and Q006 future control is commit-pinned + regression-validated; historical run identity remains a supply-chain provenance gap.
 - **Design Studio / Web Manager / Marketing Manager:** considered; not materially relevant to this bounded CI-verdict mechanism.
 
 ## CHANGE WATCH / OPEN
 - Exact resolved action identity for historical causal and M002 runs remains OPEN; do not infer it from current tag state.
 - Remaining selected-pattern semantic classification and natural verdict-bearing non-pattern paths remain OPEN.
-- Reusable-workflow outputs, matrix output behavior, skipped/redacted outputs, PowerShell/cmd/other action-type transfer and production release-gate evidence remain OPEN.
+- Reusable-workflow hosted validation run `35964842513` remains OPEN until completion and job-step inspection.
+- Matrix output behavior, skipped/redacted outputs, PowerShell/cmd/other action-type transfer and production release-gate evidence remain OPEN.
 
 ## Next work
-Return to Balance Loop. S007 exact-product transfer remains higher live LogMate leverage when implementation becomes available. If it is not yet available, do not repeat equivalent output controls; continue Q006 only through a materially different acceptance path, natural repository defect, reusable-workflow boundary, or production-oriented transfer.
+Inspect run `35964842513`; if its independent transport/output/fail-closed oracles all execute as designed, close only the bounded reusable-workflow boundary. S007 exact-product transfer remains higher live LogMate leverage when implementation becomes available. Otherwise continue Q006 only through a materially different acceptance path or natural production-oriented gate.
