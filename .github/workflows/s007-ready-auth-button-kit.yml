@@ -43,7 +43,7 @@ jobs:
 
       - name: Test package
         working-directory: research/systems/fixtures/S007_auth_provider_buttons/ready_to_use
-        run: flutter test --reporter expanded
+        run: flutter test --update-goldens --reporter expanded
 
       - name: Commit exact provider assets
         shell: bash
@@ -51,10 +51,10 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/assets
+          git add research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/assets research/systems/fixtures/S007_auth_provider_buttons/ready_to_use/test/goldens
           if git diff --cached --quiet; then
             echo "No ready-to-use provider asset changes."
             exit 0
           fi
-          git commit -m "S007 materialize ready-to-use auth button assets"
+          git commit -m "S007 materialize ready-to-use auth buttons and renders"
           git push origin HEAD:${GITHUB_REF_NAME}
