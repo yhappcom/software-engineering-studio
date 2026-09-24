@@ -1,0 +1,32 @@
+name: Q006 Reusable Matrix Verdict Producer
+
+on:
+  workflow_call:
+    inputs:
+      verdict:
+        required: true
+        type: string
+      delay_seconds:
+        required: true
+        type: number
+    outputs:
+      semantic_verdict:
+        description: Semantic verdict exported by one matrix reusable-workflow invocation
+        value: ${{ jobs.producer.outputs.semantic_verdict }}
+
+jobs:
+  producer:
+    runs-on: ubuntu-latest
+    outputs:
+      semantic_verdict: ${{ steps.emit.outputs.semantic_verdict }}
+    steps:
+      - name: Delay to make completion ordering observable
+        shell: bash
+        run: sleep "${{ inputs.delay_seconds }}"
+      - name: Emit matrix semantic verdict
+        id: emit
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "semantic_verdict=${{ inputs.verdict }}" >> "$GITHUB_OUTPUT"
+          echo "Q006_MATRIX_MEMBER_VERDICT=${{ inputs.verdict }}"
