@@ -46,7 +46,7 @@ Recommended invariant set:
 2. Apple revocation success/known-already-revoked is recorded before Firebase identity deletion is accepted as complete;
 3. remote deletion request is idempotent and resumable across process death/network loss;
 4. Firebase identity deletion is not used as the oracle that product data was deleted;
-5. local data deletion/retention is an explicit product policy and separate durable step;
+5. local data erasure is an explicit required durable step; voluntary deletion retains no user-accessible local archive;
 6. after any ambiguous network result, reobserve authoritative state before retrying a non-idempotent provider operation;
 7. completion means all required product/provider/policy obligations reached their terminal accepted states, not merely `currentUser == null`.
 
@@ -63,7 +63,7 @@ Recommended invariant set:
 - web deletion request from an uninstalled-device user → external path can authenticate/verify request without requiring app reinstall, satisfying the Google Play surface requirement.
 
 ## OPEN / DEPENDENCY / VALIDATION
-- **PROJECT DECISION:** define local ledger disposition after voluntary account deletion: erase, export-then-erase, retained encrypted tomb/locked archive, or legally required retention. Do not infer this from Firebase Auth.
+- **PROJECT DECISION — CLOSED:** voluntary account deletion immediately revokes normal local access and requires deletion of all device-local LogMate user data. No user-accessible retained local archive is part of the deleted-account state. A durable deletion-pending/locked state must survive restart until required server, identity, provider-revocation, and local-erasure steps are complete.
 - **DEPENDENCY — Web Manager/product web:** Google Play requires an external deletion-request resource. Engineering should provide identity-verification and deletion-status requirements; Web Manager owns the public web surface/operations.
 - **DEPENDENCY — backend architecture:** if LogMate has no server-side deletion coordinator yet, account deletion cannot honestly claim atomic erasure across remote product data merely from a client Firebase delete.
 - **VALIDATION:** exact FlutterFire version behavior for `requires-recent-login`, Apple authorization-code/access-token revocation, process-death resume, duplicate request, and post-Firebase-delete startup.
@@ -83,7 +83,7 @@ Recommended invariant set:
 - Product repositories: no product files edited in this block; exact LogMate product evidence remains the S007 retained ref in Systems status, and default branch is not assumed production.
 
 ## HANDOFFS
-- **LogMate/Codex:** model deletion as a resumable state machine, not `user.delete()`; enforce same-UID reauth; for Apple obtain fresh authorization and revoke before Firebase identity deletion; preserve deletion state across restart; never use `currentUser == null` as proof of data erasure.
+- **LogMate/Codex:** model deletion as a resumable state machine, not `user.delete()`; enforce same-UID reauth; for Apple obtain fresh authorization and revoke before Firebase identity deletion; preserve deletion state across restart; immediately lock normal local access after confirmation; delete all device-local LogMate user data before completion; never use `currentUser == null` as proof of data erasure.
 - **Data/Architecture:** define durable deletion-request/idempotency schema and local-ledger disposition; separate product-data deletion acceptance from Auth identity deletion.
 - **Quality:** build crash/network/duplicate/ambiguous-result tests at every saga boundary; Auth Emulator validates Firebase state only, not Apple revocation.
 - **Web Manager:** provide an external LogMate account-deletion request surface that does not require reinstalling the app; align its identity-verification/status semantics with the product deletion coordinator.
