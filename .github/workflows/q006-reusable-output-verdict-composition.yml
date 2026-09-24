@@ -1,0 +1,54 @@
+name: Q006 Reusable Workflow Output Verdict Composition
+
+on:
+  push:
+    paths:
+      - '.github/workflows/q006-reusable-semantic-verdict.yml'
+      - '.github/workflows/q006-reusable-output-verdict-composition.yml'
+  workflow_dispatch:
+
+jobs:
+  call-producer:
+    uses: ./.github/workflows/q006-reusable-semantic-verdict.yml
+
+  acceptance:
+    needs: call-producer
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prove called workflow transport succeeded
+        shell: bash
+        env:
+          CALLED_RESULT: ${{ needs.call-producer.result }}
+        run: |
+          set -euo pipefail
+          test "$CALLED_RESULT" = "success"
+
+      - name: Prove semantic output crossed reusable workflow boundary
+        shell: bash
+        env:
+          SEMANTIC_VERDICT: ${{ needs.call-producer.outputs.semantic_verdict }}
+        run: |
+          set -euo pipefail
+          test "$SEMANTIC_VERDICT" = "FAIL"
+
+      - name: Demonstrate transport-only acceptance would false-green
+        id: transport_only
+        continue-on-error: true
+        shell: bash
+        env:
+          CALLED_RESULT: ${{ needs.call-producer.result }}
+          SEMANTIC_VERDICT: ${{ needs.call-producer.outputs.semantic_verdict }}
+        run: |
+          set -euo pipefail
+          test "$CALLED_RESULT" = "success"
+          test "$SEMANTIC_VERDICT" = "PASS"
+
+      - name: Assert semantic predicate rejected the failing verdict
+        shell: bash
+        env:
+          CONTROL_OUTCOME: ${{ steps.transport_only.outcome }}
+        run: |
+          set -euo pipefail
+          test "$CONTROL_OUTCOME" = "failure"
+          echo "Q006_REUSABLE_OUTPUT_FAIL_CLOSED_PASS"
