@@ -55,7 +55,7 @@ class LogMatePwaAuthButtons extends StatelessWidget {
               ? google_web.GSIButtonTheme.filledBlack
               : google_web.GSIButtonTheme.outline,
           size: google_web.GSIButtonSize.large,
-          text: google_web.GSIButtonText.continueWith,
+          text: google_web.GSIButtonText.signinWith,
           shape: google_web.GSIButtonShape.pill,
           logoAlignment: google_web.GSIButtonLogoAlignment.left,
           minimumWidth: geometry.width,
@@ -66,7 +66,7 @@ class LogMatePwaAuthButtons extends StatelessWidget {
 
     final apple = _PwaRasterButton(
       key: const Key('appleAuthButton'),
-      semanticLabel: 'Continue with Apple',
+      semanticLabel: 'Sign in with Apple',
       assetPath: _appleAsset(
         geometry: geometry,
         brightness: brightness,
@@ -211,7 +211,7 @@ class _PwaEmailButton extends StatelessWidget {
           ),
         ),
         icon: const Icon(Icons.mail_outline, size: 18),
-        label: const Text('Continue with Email'),
+        label: const Text('Sign in with Email'),
       ),
     );
   }
