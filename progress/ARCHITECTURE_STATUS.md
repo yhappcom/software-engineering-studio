@@ -36,9 +36,11 @@ The synthetic executable block rejects missing evidence, blank validation on Acc
 **PROJECT-SPECIFIC ARCHITECTURE TRANSFER / PRE-IMPLEMENTATION CONTRACT — RUNTIME VALIDATION OPEN.**  
 Canonical: `research/architecture/A007_logmate_light_dark_semantic_theme_ownership_transfer_2026-09-26.md`.
 
-Exact product evidence: `yhappcom/logmate → main → 88d71141963240b559785e5cd49c87afd9a4fb1e → declared 1.0.0+1 → evidence 2026-09-26`; production identity unknown. Current Theme, Welcome and Auth code distribute Light/Dark representation knowledge across the global theme, screen-level branches and component-local literals. Design Studio C017/C020/C103/C104 supplies a semantic role contract and separate Light/Dark mappings; Engineering now recommends one LogMate semantic theme authority, Material `ColorScheme` as adapter/projection, explicit provider-owned presentation boundaries, and separation of structural refactor from intentional Dark visual retuning.
+Exact product evidence: `yhappcom/logmate → main → 88d71141963240b559785e5cd49c87afd9a4fb1e → declared 1.0.0+1 → evidence 2026-09-26`; production identity unknown. Current Theme, Welcome and Auth code distribute Light/Dark representation knowledge across the global theme, screen-level branches and component-local literals. Design Studio C017/C020/C103/C104 supplies a semantic-role contract and separate Light/Dark mappings.
 
-The transfer deliberately does **not** select final production color values. Existing Light evidence should remain a regression oracle for the structural migration, Dark/state evidence should be added, and provider-owned Apple/Google presentation must not be silently recolored or redefined by product theme tokens.
+Owner direction on 2026-09-26 refines the transfer: visual design/approval proceeds **screen by screen** as Light/Dark pairs, while repeated semantic meanings are promoted into a shared core and genuine screen-specific roles remain scoped. Welcome and Initial Onboarding keep fixed Standard appearance. Post-onboarding Dark surfaces are prepared for a bounded fine-grained text-luminance slider, preferably stored as a device-local appearance preference and applied through semantic-role resolution rather than raw per-screen color math.
+
+The transfer deliberately does **not** select final production color values, exact slider ranges or role-response curves. Existing Light evidence should remain a regression oracle for the structural migration; Dark Standard/min/max/state evidence should be added; provider-owned Apple/Google presentation must not be silently recolored or redefined by product theme tokens.
 
 ## Queue
 - `A001` — substantial Foundation block complete.
@@ -47,7 +49,7 @@ The transfer deliberately does **not** select final production color values. Exi
 - `A004` — patterns and misuse; useful but not required as a pattern catalog for Foundation closure.
 - `A005` — executable blocks + natural exact-ref LogMate evolution transfer; direct Flutter execution and repeated long-horizon product evolution OPEN.
 - `A006` — executable governance sensitivity + natural product decision-state transfer; natural ADR lifecycle corpus and long-horizon supersession transfer OPEN.
-- `A007` — pre-implementation theme ownership contract complete; exhaustive LogMate color inventory, exact implementation refactor, Light regression, Dark/state renders and native/PWA transfer remain OPEN.
+- `A007` — pre-implementation theme ownership contract refined for screen-by-screen approval plus post-onboarding Dark text-luminance control; exhaustive color inventory, product-spec canonicalization, exact implementation refactor, preference persistence, Light regression, Dark Standard/min/max/state renders and native/PWA transfer remain OPEN.
 
 ## Gate assessment
 Architecture Stage 1 remains **NOT PASS**. A001-A003/A005-A007 cover the roadmap's principal Foundation concepts and now include a live LogMate theme-ownership transfer. A007 is an architecture advisory contract, not product runtime evidence. Exact refactor execution, Flutter/native/PWA validation, provider compliance and final Design Studio palette decisions remain outside the PASS claim.
@@ -58,13 +60,15 @@ Architecture Stage 1 remains **NOT PASS**. A001-A003/A005-A007 cover the roadmap
 - **Mobile:** validate exact-ref Flutter/native/PWA theme transfer; one host render is not cross-platform proof.
 - **Systems:** provider-owned Apple/Google presentation remains an external constraint and must not be silently redefined by semantic-theme migration.
 - **Design Studio:** Engineering accepts role-based Light/Dark mapping and requests the final product role inventory/values without transferring palette authority into Engineering.
-- **LogMate / Codex:** inventory first; introduce one semantic theme authority; migrate Welcome/Auth with current values; regress; then apply approved Dark retuning; migrate remaining screens incrementally.
+- **LogMate / Codex:** inventory first; establish shared semantic core + screen-scoped roles; approve each screen's Light/Dark pair; keep Welcome/Initial Onboarding fixed Standard; add the post-onboarding Settings text-luminance slider only after semantic resolution/persistence boundaries are in place; then continue surfaces incrementally.
 - **Product teams:** preserve decision status separately from implementation/evidence status when contracts can be confirmed before implementation; do not infer technical debt from changed-file count.
 
 ## CHANGE WATCH / OPEN
 - A005 long-horizon repeated natural product evolution and runtime validation remain OPEN.
 - A006 natural ADR lifecycle corpus with explicit alternatives/rationale/consequences/supersession remains OPEN.
 - A007 exhaustive hard-coded color/theme inventory is OPEN.
+- A007 owner-directed screen-by-screen workflow and post-onboarding text-luminance control still require canonical LogMate product-spec synchronization before code changes.
+- A007 exact slider range, per-role response curves, contrast clamps and device-local persistence implementation remain OPEN.
 - A007 final LogMate production Light/Dark palette is Design/Product-owned and remains unselected by Engineering.
 - A007 exact Flutter implementation mechanism, product refactor and runtime evidence remain OPEN.
 - Apple provider-brand compliance for the current shared-shell/platform-symbol treatment remains OPEN in product evidence.
@@ -72,4 +76,4 @@ Architecture Stage 1 remains **NOT PASS**. A001-A003/A005-A007 cover the roadmap
 - ISO/IEC/IEEE 42010:2022 remains current from prior check; DIS 42024 remains CHANGE WATCH.
 
 ## Next work
-For this live LogMate dependency, do not change product Dark hex values first. The next project rung is the A007 Phase 0 inventory followed by an exact-ref semantic-theme structural migration and regression evidence. Outside that project work, return to the Balance Loop rather than manufacturing more synthetic architecture variants.
+For this live LogMate dependency, do not change product Dark hex values first. The next project rung is A007 Phase 0 inventory, then product-spec synchronization for screen-scoped Light/Dark approval and the post-onboarding text-luminance preference, followed by exact-ref structural migration and regression evidence. Outside that project work, return to the Balance Loop rather than manufacturing more synthetic architecture variants.
