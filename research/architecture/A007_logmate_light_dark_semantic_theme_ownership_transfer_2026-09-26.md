@@ -156,17 +156,25 @@ Material roles are useful for framework integration, but LogMate has product sem
 
 Forcing unrelated meanings into one Material field would replace duplicated hex values with semantic collisions.
 
-### Alternative C — one LogMate semantic theme authority plus adapters
+### Alternative C — shared semantic core plus screen-scoped appearance profiles/adapters
 
-**Recommended architecture.**
+**Recommended architecture, refined by owner direction on 2026-09-26.**
 
 Model:
 
-`Design semantic role → LogMate semantic theme → appearance mapping (Light/Dark) → component/surface consumer`
+`screen-by-screen Light/Dark design → repeated semantic roles promoted to shared core → screen profile/role aliases → component/surface consumer`
 
-Material `ColorScheme` becomes an adapter/projection for Material-owned controls, not a competing semantic authority.
+This deliberately separates **design/review granularity** from **implementation ownership**.
 
-Provider-owned controls/assets remain an external adapter boundary.
+- The owner reviews and approves each screen's Light/Dark pair independently.
+- A screen may retain a scoped role when its hierarchy is genuinely surface-specific.
+- A role is promoted into the shared semantic core only when repeated evidence shows the same meaning should behave consistently across screens.
+- Material `ColorScheme` remains an adapter/projection for Material-owned controls, not a competing semantic authority.
+- Provider-owned controls/assets remain an external adapter boundary.
+
+This avoids both extremes:
+1. one global palette that forces every screen into the same visual hierarchy;
+2. unrelated per-screen hard-coded colors that duplicate semantic meaning without a shared owner.
 
 ## Recommended ownership contract
 
@@ -198,11 +206,20 @@ Dark is therefore not implemented as:
 - a global black background plus near-white foreground;
 - per-screen conditional literals.
 
-### 3. One product semantic owner
+### 3. Shared semantic core with screen-scoped ownership
 
-The final Flutter mechanism may be a strongly typed Theme extension or equivalent theme-owned object. The mechanism is secondary to the contract:
+The final Flutter mechanism may be a strongly typed Theme extension or equivalent theme-owned object. The mechanism is secondary to the contract.
 
-> there is one authoritative LogMate semantic appearance mapping consumed through `ThemeData`, not multiple screen-owned Light/Dark rule sets.
+The architecture has two levels of ownership:
+
+1. **shared semantic core** — meanings that have proven cross-screen invariance, such as ordinary primary/secondary text, focus, error, selection or shared surfaces where the same semantics truly apply;
+2. **screen/component-scoped roles** — meanings whose visual hierarchy is intentionally local to a surface, such as Welcome identity prominence or dense-ledger comparison hierarchy.
+
+A screen is allowed to own a scoped role. It is **not** allowed to own an arbitrary Light/Dark literal for a meaning that already has a shared semantic owner.
+
+Promotion rule:
+
+`screen-specific role → repeated same meaning across screens → promote to shared semantic core`
 
 Do not add extra palette/alias layers unless they hide a real independently changing decision. A001's counterexample remains controlling: abstraction must earn its carrying cost.
 
@@ -307,6 +324,127 @@ from
 Move Home, onboarding/auth forms, Add Flight, Activity, View Logbook/import/configuration surfaces as their semantic roles are audited.
 
 Do not create one huge token-replacement diff unless the inventory proves that risk is lower than staged migration.
+
+## Screen-by-screen design and approval contract
+
+Owner direction on 2026-09-26 establishes the preferred UI workflow:
+
+`screen Light → screen Dark → render/review → approve → next screen`
+
+The shared semantic system is therefore **not** a prerequisite that must be visually finalized for the whole application before individual screens can be designed.
+
+For each screen:
+- author and review Light/Dark as a pair;
+- preserve the screen's own information hierarchy;
+- classify each visual role as shared, screen-scoped, provider-owned or state-specific;
+- promote only repeated semantics into the shared core;
+- keep screen-specific optical roles local when global promotion would make unrelated screens move together.
+
+This is especially relevant because LogMate currently has a bounded set of primary product screens. The lower screen count makes direct screen-by-screen optical review practical and reduces the need for premature global abstraction.
+
+The implementation still avoids raw screen-local Light/Dark literals where a semantic role can own the decision.
+
+## User-adjustable Dark text luminance
+
+### Owner direction
+
+Prepare a fine-grained user control for **Dark-mode text brightness/luminance** after onboarding.
+
+Scope:
+- **excluded:** signed-out Welcome and Initial Logbook Onboarding;
+- **eligible:** post-onboarding application surfaces, including Settings and ordinary operational screens;
+- the control has no effect in Light mode;
+- Welcome and onboarding always use their approved fixed Standard appearance, even if a saved user preference exists.
+
+The setting should be exposed from the existing Settings surface under an Appearance section when implementation begins.
+
+### Interaction model
+
+Preferred control:
+- continuous slider rather than only three presets;
+- internal normalized value may be represented as `0...1` or `0...100`;
+- UI does not need to expose a numeric percentage unless later usability evidence supports it;
+- provide an explicit reset-to-Standard action.
+
+The slider does **not** control device display brightness. It controls LogMate-authored Dark-theme text luminance within a bounded authored range.
+
+### Semantic application
+
+Do not apply one scalar directly to every foreground RGB value.
+
+The adjustment function should resolve per semantic role, for example:
+
+`user intensity → role-specific bounded luminance mapping → text.primary / text.secondary / text.tertiary / owned-icon roles`
+
+Each role may have:
+- its own minimum;
+- Standard/default value;
+- maximum;
+- response curve/sensitivity.
+
+This preserves hierarchy while allowing fine adjustment.
+
+### Roles excluded from generic text-luminance scaling
+
+Do not automatically scale:
+- error / critical / warning / success state colors;
+- focus indicator;
+- selection/current-context state;
+- disabled semantics where contrast/state distinction would be corrupted;
+- provider-owned Apple/Google artwork or provider-rendered controls;
+- any role whose independent semantic contrast contract would be broken.
+
+A screen-scoped identity role such as a wordmark may react partially, fully or not at all, but that behavior must be explicitly authored rather than inherited accidentally.
+
+### Safety clamp
+
+The user control must be bounded by the authored role contract.
+
+At both slider extremes:
+- required text remains legible;
+- primary/secondary/tertiary ordering remains intact;
+- operational values are not demoted below their labels when the screen contract requires the opposite;
+- state colors remain independently recognizable;
+- non-color state cues remain intact.
+
+The slider therefore adjusts **within** the approved Dark system; it does not let the user redesign the palette.
+
+### Persistence and scope
+
+Engineering recommendation:
+- store this as a **device-local appearance preference**, not canonical logbook/account data;
+- preserve the value across restarts;
+- retain it while Light mode is active but do not apply it until Dark mode becomes active;
+- do not sync it across devices by default, because perceived luminance needs can differ materially by phone/tablet/display/environment.
+
+This persistence decision must be canonicalized in the LogMate product repository before implementation. It is not a data-ledger or flight-record preference.
+
+### Runtime update
+
+When the slider moves:
+- eligible currently visible surfaces should update without app restart;
+- Theme resolution should recompute semantic text roles from Standard Dark + user luminance preference;
+- screens must not manually read the raw slider value and calculate their own colors;
+- Welcome/onboarding must bypass this user layer and resolve fixed Standard mappings.
+
+### Validation matrix
+
+At minimum validate:
+- Standard Dark;
+- lower supported bound;
+- upper supported bound;
+- one or more intermediate values;
+- Settings live update;
+- navigation between eligible screens retains the same preference;
+- app restart retains the preference;
+- system Light → Dark transition applies the saved preference;
+- Dark → Light ignores it without deleting it;
+- sign-out / Welcome ignores it;
+- Initial Onboarding ignores it;
+- 200% text and constrained-height layouts remain unaffected geometrically;
+- semantic focus/error/selection states do not drift with the text slider.
+
+Physical-device and low-light evaluation remain necessary before any cockpit/night-readability claim.
 
 ## Validation contract
 
@@ -420,13 +558,15 @@ Do not begin by changing Dark hex values across screens.
 
 Implementation order:
 1. inventory;
-2. introduce one semantic theme authority;
-3. migrate Welcome/Auth using current visual values;
-4. run regression evidence;
-5. apply approved Dark value changes;
-6. then migrate other screens incrementally.
+2. establish the shared semantic core plus screen-scoped role mechanism;
+3. preserve Welcome/Initial Onboarding as fixed Standard appearance surfaces;
+4. migrate and approve screens Light/Dark one at a time;
+5. promote only repeated semantics into the shared core;
+6. add the device-local Dark text-luminance preference and Settings slider for post-onboarding surfaces;
+7. run Standard/min/max/intermediate regression evidence;
+8. continue remaining screens incrementally.
 
-Do not rewrite Auth behavior or provider flow as part of the theme refactor.
+Do not rewrite Auth behavior or provider flow as part of the theme refactor. Do not let eligible screens consume the raw slider value directly; they consume resolved semantic roles.
 
 ### Quality
 Define structural and visual regression oracles separately. Preserve existing Light evidence, add Dark/state evidence, and reject blind golden regeneration.
@@ -437,6 +577,9 @@ Return any platform/provider constraint that prevents the shared semantic shell 
 ## OPEN / CHANGE WATCH
 
 - Exhaustive LogMate hard-coded color/theme inventory is not yet complete.
+- The owner-directed screen-by-screen design workflow and post-onboarding Dark text-luminance control still require canonical LogMate product-spec synchronization before code implementation.
+- Exact slider range, role-specific response curves and minimum/maximum luminance values remain Design/Product-owned and OPEN until rendered validation.
+- Device-local persistence mechanism for the appearance preference is not yet implemented.
 - Final LogMate production Light/Dark palette is not selected by Engineering Studio.
 - Whether a dedicated Flutter Theme extension is the final implementation mechanism remains a product implementation decision; the semantic ownership contract is independent of that choice.
 - Apple provider-brand compliance for the current shared-shell/platform-symbol presentation remains OPEN in product evidence.
@@ -450,13 +593,16 @@ Return any platform/provider constraint that prevents the shared semantic shell 
 
 Promote the following as the pre-implementation architecture contract:
 
-1. one LogMate semantic theme authority;
-2. separately authored Light/Dark mappings of the same semantic roles;
-3. Material `ColorScheme` as adapter/projection, not competing product authority;
-4. component aliases only for evidenced independent semantics;
-5. provider-owned presentation isolated from LogMate-owned color tokens;
-6. structural refactor separated from intentional Dark visual retuning;
-7. Light regression preserved; Dark/state evidence added;
-8. remaining product surfaces migrated incrementally after Welcome/Auth proves the transfer.
+1. screen-by-screen Light/Dark design and owner approval is the visual workflow;
+2. repeated semantics are promoted into a shared LogMate semantic core; genuine screen-specific roles may remain scoped;
+3. Light/Dark mappings are separately authored rather than inverted;
+4. Material `ColorScheme` is an adapter/projection, not competing product authority;
+5. provider-owned presentation is isolated from LogMate-owned color tokens;
+6. structural refactor is separated from intentional visual retuning;
+7. Welcome and Initial Onboarding remain fixed Standard appearance surfaces;
+8. post-onboarding Dark surfaces support a bounded fine-grained user text-luminance adjustment;
+9. the adjustment operates through semantic-role resolution, never arbitrary per-screen color math;
+10. existing Light regression is preserved; Dark Standard/min/max/state evidence is added;
+11. remaining product surfaces are migrated and approved incrementally.
 
 This is an architecture/project advisory result, not runtime PASS and not a final Color palette decision.
