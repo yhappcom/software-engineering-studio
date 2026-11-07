@@ -1,5 +1,9 @@
 # Research Index
 
+### 2026-11-07 S007 deletion → UID-rebind Sync-state authority trace
+- `research/systems/S007_post_deletion_rebind_sync_state_authority_trace_2026-11-07.md`: exact W013 Draft #46 source path from 29-store terminal wipe through `_initializeFreshDatabase`, `_writeOwnerAccess`, and `createOwnedLedger(B)`; retained Sync metadata is not cleared by these paths. Separate file-backed negative/rebind oracle, source limits, cross-domain handoffs. SOURCE/CONTRADICTION only; no runtime PASS.
+
+
 ### 2026-11-07 PR46 iPhone/iPad Files custody evidence ladder
 - `research/data/D005_ios_safari_file_custody_evidence_ladder_2026-11-07.md`: exact PR46 iOS Simulator in-app B1/staging/review and post-review snapshot invariance versus Safari browser-internal download without user-accessible Files custody; B0–B7 evidence ladder, falsifiable platform gates, S007 cross-check. SOURCE / SYNTHESIS; no new Studio execution.
 
