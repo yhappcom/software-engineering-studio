@@ -1,5 +1,11 @@
 # Research Index
 
+### 2026-11-07 W013 unmerged branch transfer
+- `research/data/D005_logmate_w013_unmerged_branch_backup_restore_transfer_2026-11-07.md`: exact source refs/PR stack #38–45, owner-approved but unmerged Automatic+Manual Sync/fourth Restore onboarding, bounded product B1 isolated staging and iOS Simulator Files save readback, writer bypass negative controls and unresolved Production Activation. No new Studio runtime PASS.
+- `progress/INTEGRATED_ENGINEERING_REVIEW_2026-11-07.md`: branch addendum supersedes the earlier main-only understanding of current product work; do not assume Draft PR policy merged or deployed.
+
+
+
 ## 2026-11-07 current-product synthesis and S007 transfer
 - Coordinator cross-six-track and LogMate engine reconciliation: [`progress/INTEGRATED_ENGINEERING_REVIEW_2026-11-07.md`](../progress/INTEGRATED_ENGINEERING_REVIEW_2026-11-07.md). All six Stage-1 gates remain NOT PASS; older September product observations are retained as historical inputs.
 - Systems source audit: [`research/systems/S007_logmate_deletion_integrity_exact_ref_audit_2026-11-07.md`](systems/S007_logmate_deletion_integrity_exact_ref_audit_2026-11-07.md). Exact LogMate `main@f4bcd2f7...`, declared 1.0.0+1, 2026-11-07, production ref unknown. Current 29-drop/37-store deletion and phase guard contradictions are **SOURCE-level only**; file-backed/populated/old-writer/dual-driver/Auth-independent oracles OPEN. Do not infer release failure or PASS.
