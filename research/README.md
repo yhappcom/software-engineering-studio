@@ -1,3 +1,6 @@
+### 2026-11-07 physical iPad Safari synthetic B1 and review evidence transfer
+- `research/data/D005_physical_ipad_safari_picker_review_evidence_transfer_2026-11-07.md`: PR46 latest documentation head versus frozen tested Web source, user-reported physical Safari B1/staging/reselection/review and disabled Activation; distinct Provider Cancel, external file custody, installed PWA, real Owner/Generation and release gates remain OPEN. SOURCE / bounded user-reported TRANSFER VALIDATION, no Studio runtime test.
+
 # Research Index
 
 ### 2026-11-07 S007 ordinary-open versus B1 owner oracle
