@@ -1,0 +1,42 @@
+# S007 × W013 — PR48 pre-open kernel ownership: bounded correction and deletion transfer
+
+**Evidence date:** 2026-11-08 Asia/Seoul. **Status:** PRODUCT-EXECUTED HOST VALIDATION / SOURCE / SYNTHESIS / TRANSFER VALIDATION OPEN / S007 VALIDATION OPEN. This Studio cycle read product code/evidence; it did not execute Dart/Flutter tests or CI, access user data, or change LogMate.
+
+## Source identity, topology, and competing claims
+
+- Studio: `yhappcom/software-engineering-studio → main@fec70f577b2a5305f6a819940fa5fa13327bdc18 → 2026-11-08` before this note.
+- LogMate main: `yhappcom/logmate → main@f4bcd2f7b7e77039e29653baa1cc93797673885b → declared 1.0.0+1 → 2026-11-08`. Production/release identity **unknown**; main is not presumed deployed.
+- Latest unmerged Draft PR48: `yhappcom/logmate → fix/w013-native-ownership-20261107@afbdbf037b637bb924ffc9bea173e87385dd398f → declared 1.0.0+1 → 2026-11-08`; based on Draft PR47 `feat/w013-supported-writer-20261107@e035d70dc8c51941a135c2f174659f280e3766d1`, itself stacked on #46→#45→#44→#43→#42. #39→#40→#41 remain a separate verification chain. **63 branches and 14 open PRs** in this run's GitHub enumeration. All are distinct from main; no merge or deployment inferred.
+- **Execution source is not submission HEAD:** product report identifies frozen executable/regression/build source `eff2f0f501c2f909d01dc5eee737235d82c94ea3`; subsequent commits are documentation/evidence. PR47's independent Native failure source was `523083120ef8e14027dd3d6906ee21aa25e64dfe`. The reported PR48 host PASS does not retroactively convert PR47's FAIL to PASS.
+- Primary product evidence: [PR48](https://github.com/yhappcom/logmate/pull/48), [integrated raw-evidence index](https://github.com/yhappcom/logmate/blob/afbdbf037b637bb924ffc9bea173e87385dd398f/docs/evidence/w013-native-ownership-2026-11-08.md), and actual `lib/repository/logbook/native_database_ownership_io.dart`. GitHub combined commit status query at PR48 HEAD returned an empty statuses array; **no HEAD CI PASS** is claimed.
+
+## New failure→correction evidence and exact oracle
+
+**CONTRADICTION / prior FAIL:** PR47 let process A retain a cached Sembast IO DB while B independently sealed epoch2. A committed and fresh C observed epoch1/unsealed, with an old record. Process-local transaction guards cannot serialize two independent Sembast caches.
+
+**SOURCE / implemented candidate:** PR48 moves ownership acquisition **before the Sembast DB factory** and retains an OS-backed directory `flock(LOCK_EX|LOCK_NB)` through actual `Database.close()`. One portable Session lifetime core is shared between product wrapper and independent-process harness. A synthetic-only macOS Host FFI adapter refuses unsupported OS/ABI and does not enroll default Legacy, B1 staging or raw paths. It adds no sidecar lock, production namespace mapping, durable lease/receipt or new ledger format. It is **not** an iOS/Android implementation.
+
+**PRODUCT-EXECUTED VALIDATION (reported, not independently Studio-run):** 9 independent Native Host process groups with **41 distinct child PIDs** and 16 Native unit cases; 822 focused PASS/1 SKIP, 1357 full Flutter PASS/1 SKIP, 48 actual Chrome PASS; builds Web Release/Android Debug/iOS Simulator Debug PASS. Formal host ABI `macos_arm64`, macOS 26.4, Dart 3.13.4, Flutter 3.47.5, Sembast 3.8.11. B's attempted Open while A holds/retired-writers-but-not-closed reports **zero DB factory calls** and unchanged DB hash; after A actually closes, B opens/seals and fresh C sees epoch2/sealed=true and exactly one record/pending/history, while A's old supported handle rejects. Controlled SIGKILL before/after commit yields ABSENT/COMMITTED with original IDs and no duplicate on exact retry. Unreturned Open handle, pending/failed Close and partial F1 evidence preserve HOLD/UNKNOWN instead of guessing completion. Original PR47 raw-path failure was independently reproduced in a fresh synthetic namespace before correction.
+
+**LIMITS:** Host cooperative processes only; lock is advisory, not a security barrier against old binaries or raw writers that do not participate. `RandomAccessFile.lock` process-scoped behavior was rejected for independent Isolates; the experimental directory flock has distinct semantics, backed by the reported tests. Directory identity/mode, symlink/hardlink checks narrow aliases but do not establish hostile privileged path tampering protection. A successful Close is not an OS power-loss durability proof. Actual iOS/Android FFI/backend/lifecycle, physical device, managed EFB PWA, restart/power loss and production old-client/namespace compatibility remain unverified. The 16/9 test counts are not added to overlapping suites.
+
+## S007 transfer and residual independent risk
+
+The PR48 repository adapter blob differs from main (`bd49f3d61946439bede4891aad26bc7dcac1d9a1` vs `f2b8b0eb681f5d960532dac5c87b29cf85a459b8`) because the writer facade integration is new; **do not infer the deletion code is unchanged solely from a whole-file blob comparison**. Product PR48 evidence explicitly states existing Owner/Deletion/read authorization, 31 transaction roots and B1 registry are unchanged. The existing S007 static concerns (29 explicit drops vs 37 persisted stores; nonadjacent phase admission; intent not atomically setting LocalOwnerAccess.lock) are therefore **not resolved by PR48**. This run did not execute the S007 coordinator or independent raw-store deletion oracle, so A→B exposure remains a hypothesis, not an observed incident.
+
+**ENGINEERING JUDGMENT:** the correction establishes a useful prerequisite: for participating Native writers, pre-open ownership is stronger than a transaction-local seal over stale caches. It does **not** prove that deletion intent invalidates all writer classes, that an already-open legacy/raw writer is stopped, or that terminal erasure covers all 37 stores. Treat Host ownership Gate **PASS (bounded opt-in)**, Supported Writer Acceptance **OPEN/BLOCKED**, W013 Activation **HOLD**, S007 deletion/owner-B reopening **OPEN**. Do not advance Selector/Candidate/Receipt or call product Release PASS.
+
+**VALIDATION / HANDOFF:** request explicit LogMate/Codex Work authorization before any exact-product 37-store file-backed deletion tests or code change. A meaningful test must seed 37 independently enumerated A canaries; exercise legal/illegal phase edges, intent with pre-open supported **and legacy/raw** writers, interrupted/concurrent drivers, terminal wipe, fresh C raw-store read and B owner reopen; check backup-export/ordinary-open separately. Product W013 team must verify actual iOS/Android ownership API and app lifecycle, namespace/old-client compatibility and adoption before default enrollment. Do not treat Host `flock` as a global fix.
+
+## RELATED DOMAIN CHECK / HANDOFFS
+
+- **Foundations:** process-local cache, open-file-description kernel ownership, crash/Close semantics; F001 bounded Dart/Flutter runtime evidence exists.
+- **Architecture:** Session resource lifetime, factory-before-open authority and unenrolled legacy/raw bypass are the actual boundary.
+- **Mobile:** macOS Host opt-in cannot transfer automatically to iOS/Android or iPad managed PWA.
+- **Data:** B1 37-store completeness, F1 idempotent recovery and D006 authenticated receipt/cursor remain separate.
+- **Quality:** independent third-process state oracle, negative stale writer, source SHA separation and SIGKILL vs power-loss distinctions.
+- **Systems:** S007 terminal erasure/owner authority OPEN; PR48 closes only its synthetic cooperative Host ownership counterexample.
+- **Design Studio / Web Manager / Marketing Manager:** no changed UI/website/marketing requirement or release authority; external claims and EFB/retention transfer remain withheld.
+- **LogMate:** exact unmerged Draft #48 source/evidence read-only. **No product mutation, CI dispatch, test execution or user DB access** in this Studio run.
+
+**CHANGE WATCH / REPLICATION:** verify actual Apple/Dart `flock`/FFI/descriptor semantics and target OS ABI against primary documentation before iOS adoption; source report links [Dart RandomAccessFile.lock](https://api.dart.dev/dart-io/RandomAccessFile/lock.html), [Apple flock](https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/flock.2.html), and [Dart FFI VarArgs](https://api.dart.dev/dart-ffi/VarArgs-class.html). Independent Studio-owned execution is not claimed.
