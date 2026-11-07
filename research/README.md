@@ -1,3 +1,6 @@
+### 2026-11-07 PR47 Native independent-process stale-writer counterexample
+- `research/systems/S007_w013_native_independent_process_stale_writer_counterexample_2026-11-07.md`: exact PR47 source/test provenance and **executed product Native IO two-process negative** (stale commit after external seal, epoch rollback) contrasted with bounded Chrome-tab and regression PASS. Transfers stronger S007 old-writer/deletion independent-process oracle; S007 actual A→B remains OPEN, W013 Activation HOLD. No new Studio-run test.
+
 ### 2026-11-07 iPad Simulator Provider custody and snapshot-oracle boundary
 - `research/data/D005_ipad_simulator_provider_custody_and_snapshot_oracle_2026-11-07.md`: actual iPadOS26.1 Simulator Files selection/B1/staging, review expiry, explicit Cancel and retry; independent original-download↔renamed-Provider bytes and post-flow synthetic B1 hash equivalence. Distinguishes internal Safari cache, user-accessible Provider, memory-source serialization and production persisted ledger; filename/root-cause confounded. PRODUCT-EXECUTED SIMULATOR EVIDENCE / SYNTHESIS, not Studio-run tests or W013 Activation PASS.
 
