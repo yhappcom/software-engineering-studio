@@ -1,5 +1,9 @@
 # Software Engineering Studio Global Status
 
+## 2026-11-07 S007 live-open versus backup owner oracle disparity
+No new LogMate PR/branch since #46 (61 branches/12 open Draft PRs); exact `sembast_logbook_repository.dart` blob remains `f2b8b0e...`. Fresh static comparison shows `_validateSyncState` on ordinary DB open checks only Sync State header, owner and Replica, whereas B1 `_validateLbkSyncEvidence` inspects seven Sync stores' owner references. Retained Sync State prevents `_ensureSyncState` from resetting binding/baseline status after terminal deletion. A→B file-backed full open, B1 rejection and remote data exposure are NOT EXECUTED/NOT PROVEN. S007 new distinct acceptance oracle documented in `research/systems/S007_live_open_vs_backup_owner_oracle_gap_2026-11-07.md`; Stage-1 gates unchanged.
+
+
 ## 2026-11-07 S007 new cross-owner Sync authority trace
 Current LogMate inventory unchanged at 61 branches/12 open PRs, latest Draft #46 `472e3fa...`. At exact repository blob `f2b8b0e...`, deletion's 29-store wipe is followed by initialization that changes only `_syncStateStore.ownerUid`; subsequent new-UID bind likewise relabels owner without clearing prior Sync operational rows. The distinct risk is **retained A Sync metadata under B's owner field**, not merely a retained random Replica ID. This is a static proof obligation, **not an executed A→B flow or proven exploit**. See `research/systems/S007_post_deletion_rebind_sync_state_authority_trace_2026-11-07.md`; file-backed 37-store A-delete→B, phase-edge and stale-writer validation remains OPEN. All Stage-1 gates unchanged.
 
