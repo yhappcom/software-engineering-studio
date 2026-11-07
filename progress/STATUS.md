@@ -1,3 +1,7 @@
+## 2026-11-07 physical iPad Safari B1 and Review evidence transfer
+
+New LogMate Draft PR46 documentation head `0073619667944f760366e37cc3b38774cb44611d` (61 branches/12 open PRs; `1.0.0+1`) records physical iPad9/iPadOS18.6.2 Safari normal-tab **user-reported** synthetic B1/staging success, later re-selection B1, Review acknowledgement and disabled Activation. Frozen tested Web source is older `bd31058569e54f838a667c57865554aed1b3547e`; PR46 documentation-only HEAD is not an executed build. Earlier Safari external download/Files custody uncertainty remains OPEN; selecting an already saved synthetic file is not independent browser-export custody. Provider Cancel, installed/offline PWA, real Owner/Generation, Activation and S007 37-store A→B tests remain OPEN; no Studio tests, no product edits, no Stage-1 PASS. New D005 transfer: `research/data/D005_physical_ipad_safari_picker_review_evidence_transfer_2026-11-07.md`.
+
 # Software Engineering Studio Global Status
 
 ## 2026-11-07 S007 live-open versus backup owner oracle disparity
