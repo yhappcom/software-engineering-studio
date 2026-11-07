@@ -1,3 +1,6 @@
+### 2026-11-08 PR48 bounded pre-open Native Host ownership correction
+- `research/systems/S007_w013_pr48_preopen_native_ownership_host_gate_transfer_2026-11-08.md`: new unmerged Draft PR48 source/test SHA, synthetic macOS Host directory-flock before Sembast Open, 9 independent-process groups/41 PIDs and 16 Native unit cases, source-bound regression, legacy/raw bypass and actual iOS/Android/production transfer limits. Distinguishes Host opt-in Gate PASS from Supported Writer Acceptance OPEN, W013 Activation HOLD and S007 37-store A→B OPEN. No Studio-run test.
+
 ### 2026-11-07 PR47 Native independent-process stale-writer counterexample
 - `research/systems/S007_w013_native_independent_process_stale_writer_counterexample_2026-11-07.md`: exact PR47 source/test provenance and **executed product Native IO two-process negative** (stale commit after external seal, epoch rollback) contrasted with bounded Chrome-tab and regression PASS. Transfers stronger S007 old-writer/deletion independent-process oracle; S007 actual A→B remains OPEN, W013 Activation HOLD. No new Studio-run test.
 
