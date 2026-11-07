@@ -1,5 +1,9 @@
 # Software Engineering Studio Global Status
 
+## 2026-11-07 S007 new cross-owner Sync authority trace
+Current LogMate inventory unchanged at 61 branches/12 open PRs, latest Draft #46 `472e3fa...`. At exact repository blob `f2b8b0e...`, deletion's 29-store wipe is followed by initialization that changes only `_syncStateStore.ownerUid`; subsequent new-UID bind likewise relabels owner without clearing prior Sync operational rows. The distinct risk is **retained A Sync metadata under B's owner field**, not merely a retained random Replica ID. This is a static proof obligation, **not an executed A→B flow or proven exploit**. See `research/systems/S007_post_deletion_rebind_sync_state_authority_trace_2026-11-07.md`; file-backed 37-store A-delete→B, phase-edge and stale-writer validation remains OPEN. All Stage-1 gates unchanged.
+
+
 ## 2026-11-07 new Draft PR46 evidence transfer
 
 LogMate remote inventory now **61 branches / 12 open Draft PRs** (2026-11-07), new #46 `verify/w013-target-file-resume-20261107@472e3fa90c4e5f8c346aadc19d42f9e6ddd7ef24` stacked one commit on #45. **New positive evidence:** iPhone17 Simulator actual human-assisted OS file selection into app, full B1 and isolated staging/review, post-review Files saved-byte readback and current synthetic memory-source snapshot equality. **New unresolved boundary:** iPadOS Safari download-complete and internal SHA-matched bytes but Files user-visible destination empty, so external custody/repick/installed PWA not PASS. No product code or CI change in #46; W013 Activation still HOLD. S007 deletion 29/37-store static contradiction persists (same repository blob). Studio D005 analysis `research/data/D005_ios_safari_file_custody_evidence_ladder_2026-11-07.md`; no new Studio-run tests. Earlier 60/11 count below is historical as of prior audit.
