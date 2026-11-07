@@ -1,5 +1,9 @@
 # Systems Specialist Status
 
+## 2026-11-07 S007 post-deletion UID-rebind authority trace
+New exact-source trace at LogMate Draft #46 `472e3fa...` (repository blob `f2b8b0e...` unchanged): terminal wipe omits local Replica plus seven Sync stores; `_initializeFreshDatabase` rebinds unbound owner through `_writeOwnerAccess`, which updates only Sync `ownerUid`. A subsequent `createOwnedLedger(B)` or `bindOwner(B)` likewise updates only that owner field, leaving retained Sync operation metadata and records un-cleared by those paths. Backup staging has a stricter fresh Sync-state predicate; it is not the deletion gate. **This is SOURCE/CONTRADICTION, not executed A→B, exploit, or release failure.** New full test oracle and cross-track handoff: `research/systems/S007_post_deletion_rebind_sync_state_authority_trace_2026-11-07.md`. Stage 1 NOT PASS.
+
+
 ## 2026-11-07 W-013 Draft branch source-identity recheck
 The latest unmerged LogMate W-013 PR #45 HEAD `docs/w013-target-platform-validation-20261106@55a1ff894fcaa9e66765fcfe690c576dda61df98` retains the identical `sembast_logbook_repository.dart` blob SHA `f2b8b0eb681f5d960532dac5c87b29cf85a459b8` as `main@f4bcd2f7`. The existing S007 29/37 terminal-drop and phase-admission SOURCE contradictions therefore persist in this branch; W-013 Restore Activation remains blocked and PR #41 writer fencing is test-only. No new executable deletion validation or Stage 1 PASS. Exact comparison, boundaries and handoff appended to `research/systems/S007_logmate_deletion_integrity_exact_ref_audit_2026-11-07.md`. Product and deployed identity are separate; no product edits.
 
