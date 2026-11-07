@@ -1,3 +1,7 @@
+## 2026-11-07 physical iPad Safari B1/review transfer — new user-reported evidence
+
+LogMate Draft PR #46 latest documentation head `0073619667944f760366e37cc3b38774cb44611d` (61 branches/12 open PRs; 1.0.0+1, 2026-11-07) records a **physical iPad9 / iPadOS18.6.2 Safari normal-tab** synthetic file flow: user-reported B1 and temporary staging PASS in one trial; later menu dismissal, re-selection B1, screen-only Review acknowledgement and disabled Activation reported PASS. Frozen tested executable source is **`bd31058569e54f838a667c57865554aed1b3547e`**, not latest documentation HEAD. No new Studio-run device tests or product CI; independent external saved-file bytes/hash, explicit Files Provider Cancel, installed/offline PWA, durable product ledger, real Owner/Generation and Activation remain NOT VERIFIED/NOT RUN. Earlier Safari download-custody gap is **not closed** by selecting an already saved file. New canonical bounded transfer: `research/data/D005_physical_ipad_safari_picker_review_evidence_transfer_2026-11-07.md`. D005 bounded file-UX evidence advanced; Stage 1 NOT PASS.
+
 # Data Specialist Status
 
 ## 2026-11-07 PR46 actual iPhone review / Safari custody boundary
