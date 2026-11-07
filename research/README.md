@@ -1,3 +1,6 @@
+### 2026-11-07 iPad Simulator Provider custody and snapshot-oracle boundary
+- `research/data/D005_ipad_simulator_provider_custody_and_snapshot_oracle_2026-11-07.md`: actual iPadOS26.1 Simulator Files selection/B1/staging, review expiry, explicit Cancel and retry; independent original-download↔renamed-Provider bytes and post-flow synthetic B1 hash equivalence. Distinguishes internal Safari cache, user-accessible Provider, memory-source serialization and production persisted ledger; filename/root-cause confounded. PRODUCT-EXECUTED SIMULATOR EVIDENCE / SYNTHESIS, not Studio-run tests or W013 Activation PASS.
+
 ### 2026-11-07 W013 external saved-file integrity and scoped UX closure
 - `research/data/D005_w013_external_file_integrity_and_scoped_ux_closure_2026-11-07.md`: latest PR46 documentation SHA versus frozen executable source; independent host SHA/strict UTF-8/full B1 and isolated staging for user-transferred synthetic file; physical Files Cancel/Retry/Review expiry user report; bounded native Simulator observations and unresolved installed/offline PWA/Activation/S007. PRODUCT-EXECUTED HOST VALIDATION / USER-REPORTED TRANSFER / SYNTHESIS; no Studio-run test.
 
