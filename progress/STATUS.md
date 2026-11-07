@@ -1,5 +1,9 @@
 # Software Engineering Studio Global Status
 
+## 2026-11-07 coordinator synthesis — latest product transfer priority
+Current audited canonical Studio read `main@20aa7c582406c221096196c41f0101b37838fc46`; LogMate read-only `main@f4bcd2f7b7e77039e29653baa1cc93797673885b`, `pubspec 1.0.0+1`, production identity unknown. Product development advanced far beyond the 2026-09-24 snapshot below: Auth/runtime and local Sync v17 present; W-003 O18 local Home scope merged, 7 COMPLETE / 1 IN PROGRESS / 29 NOT STARTED. Manual Delta Sync product contract is approved, **production Sync/Import/Search/release acceptance OPEN**. F001 direct JIT/AOT and bounded Flutter runtime are already validated, so stale prompts must not reopen that blocker. Highest-leverage new **SOURCE-level CONTRADICTION** is S007 terminal deletion completeness/phase authority at current code: 29-drop wipe vs 37-store persisted registry, with old-writer, phase and cross-account file-backed probes **VALIDATION OPEN**; no actual product test run/incident and no Stage 1 PASS. Prior sections retain original historical evidence, not current product implementation claims. See `progress/INTEGRATED_ENGINEERING_REVIEW_2026-11-07.md` and `research/systems/S007_logmate_deletion_integrity_exact_ref_audit_2026-11-07.md`. Balance Loop next: one integrated Systems×Data×Quality deletion-integrity evidence block, then exact-product Manual Sync and backup/PWA custody, not six small studies. LogMate and peer repositories were not modified.
+
+
 Operating state: **ACTIVE — FOUNDATION STUDY UNDERWAY**  
 Governance sync: 2026-09-24
 
