@@ -75,3 +75,7 @@ Systems Stage 1 remains **NOT PASS**. Product documentation now confirms the acc
 
 ## Next work
 The next meaningful rung is **exact LogMate implementation transfer**, not another synthetic auth model. Re-audit after implementation lands, then run Dart/Flutter regressions for startup/onboarding, Welcome reflow/action mapping, durable persistence/process death, Firebase Auth Emulator/backend independent oracles, and native/PWA provider transfer. If implementation is still unavailable, resume the Balance Loop rather than manufacturing runtime evidence.
+
+## 2026-11-08 W013 Android independent Repository PID transfer
+
+New unmerged LogMate verification branch `verify/w013-android-runtime-20261108` reports exact executable Source `ce81418fe5c962b06e5cd42264ec3d2165794d3d` (declared `1.0.0+1`, branch HEAD not independently resolved): isolated Android16/API36 ARM64 emulator real Sembast Repository OS PIDs A/B/C successfully exercise pre-factory exclusion, A Close→B epoch2 Seal, stale A facade rejection and C fresh persisted-state inspection. This materially advances PR49's Android NOT RUN and C↔Dart-only boundary. Product-authored report, **not Studio execution**; raw artifacts not independently verified. iOS independent Repository, physical devices, stable namespace/legacy fork policy and S007 37-store deletion/A→B remain OPEN. W013 overall Writer OPEN/BLOCKED, Restore HOLD. See `research/systems/S007_w013_android_independent_repository_pid_transfer_2026-11-08.md`. Stage 1 NOT PASS.
