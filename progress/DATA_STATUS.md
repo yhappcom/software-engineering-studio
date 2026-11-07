@@ -1,5 +1,11 @@
 # Data Specialist Status
 
+## 2026-11-07 unmerged W-013 product transfer — SOURCE / bounded TRANSFER VALIDATION / OPEN
+
+Product identity: `yhappcom/logmate → main@f4bcd2f7b7e77039e29653baa1cc93797673885b` and separate Draft W013 product head `docs/w013-target-platform-validation-20261106@55a1ff894fcaa9e66765fcfe690c576dda61df98`; declared `1.0.0+1`; evidence date 2026-11-07; production ref unknown. Main is older than unmerged November 4–6 W013 development. W013 PR #38–45 include actual Export File UX, full B1 validation in isolated candidate/staging, review, background-state fix and recorded iPhone 17 iOS 26.1 Simulator Files-save + independent byte/SHA readback (13276 bytes). PR43 exact-source GitHub workflows 42159090172/93747/97089/100287 succeeded. PR41 retains a tested **uncooperative direct Repository writer bypass** in a synthetic restoration-fence candidate, not repaired production code. Activation, iOS in-app Open, Android device, physical iOS/iPad, installed/offline PWA, legacy writer fence and Firebase Owner/Generation remain OPEN. A separate owner-approved **Automatic + Manual Delta Sync**, native conditional automatic Backup and fourth onboarding `Restore from backup file` policy is recorded in Draft PR42 but not merged into main or implemented. Exact full audit: `research/data/D005_logmate_w013_unmerged_branch_backup_restore_transfer_2026-11-07.md`. **No new direct test in Studio; Stage 1 NOT PASS.**
+
+
+
 Track: Data, Persistence & Distributed Systems  
 Prefix: `D###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
