@@ -1,5 +1,9 @@
 # Systems Specialist Status
 
+## 2026-11-07 S007 ordinary-open versus B1 owner-validation boundary
+Exact LogMate #46 Draft `472e3fa...` unchanged repository blob `f2b8b0e...`: ordinary DB `_validateSyncState` validates only Sync State header and Replica/Owner agreement, not auxiliary Binding/Receipt/Applied/Cursor/Head/Hold rows; B1 `_validateLbkSyncEvidence` enumerates all Sync stores and checks owner references. `_ensureSyncState` leaves a surviving state row intact, so terminal wipe+owner relabel does not reinitialize its binding/baseline fields. **New SOURCE-level validation disparity**, not executed A→B or proof full open succeeds. Independent local-open/B1/raw-store/server oracles and 37-store file-backed test remain OPEN. See `research/systems/S007_live_open_vs_backup_owner_oracle_gap_2026-11-07.md`. Stage 1 NOT PASS.
+
+
 ## 2026-11-07 S007 post-deletion UID-rebind authority trace
 New exact-source trace at LogMate Draft #46 `472e3fa...` (repository blob `f2b8b0e...` unchanged): terminal wipe omits local Replica plus seven Sync stores; `_initializeFreshDatabase` rebinds unbound owner through `_writeOwnerAccess`, which updates only Sync `ownerUid`. A subsequent `createOwnedLedger(B)` or `bindOwner(B)` likewise updates only that owner field, leaving retained Sync operation metadata and records un-cleared by those paths. Backup staging has a stricter fresh Sync-state predicate; it is not the deletion gate. **This is SOURCE/CONTRADICTION, not executed A→B, exploit, or release failure.** New full test oracle and cross-track handoff: `research/systems/S007_post_deletion_rebind_sync_state_authority_trace_2026-11-07.md`. Stage 1 NOT PASS.
 
