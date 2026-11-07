@@ -1,5 +1,9 @@
 # Research Index
 
+### 2026-11-07 S007 ordinary-open versus B1 owner oracle
+- `research/systems/S007_live_open_vs_backup_owner_oracle_gap_2026-11-07.md`: exact PR46 source distinction between narrow ordinary DB `_validateSyncState` header checks and stricter B1 owner evidence validation, with independent A→B file-backed test design. SOURCE/CONTRADICTION only, not product execution or release PASS.
+
+
 ### 2026-11-07 S007 deletion → UID-rebind Sync-state authority trace
 - `research/systems/S007_post_deletion_rebind_sync_state_authority_trace_2026-11-07.md`: exact W013 Draft #46 source path from 29-store terminal wipe through `_initializeFreshDatabase`, `_writeOwnerAccess`, and `createOwnedLedger(B)`; retained Sync metadata is not cleared by these paths. Separate file-backed negative/rebind oracle, source limits, cross-domain handoffs. SOURCE/CONTRADICTION only; no runtime PASS.
 
