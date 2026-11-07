@@ -1,5 +1,9 @@
 # Research Index
 
+### 2026-11-07 PR46 iPhone/iPad Files custody evidence ladder
+- `research/data/D005_ios_safari_file_custody_evidence_ladder_2026-11-07.md`: exact PR46 iOS Simulator in-app B1/staging/review and post-review snapshot invariance versus Safari browser-internal download without user-accessible Files custody; B0–B7 evidence ladder, falsifiable platform gates, S007 cross-check. SOURCE / SYNTHESIS; no new Studio execution.
+
+
 ### 2026-11-07 W013 unmerged branch transfer
 - `research/data/D005_logmate_w013_unmerged_branch_backup_restore_transfer_2026-11-07.md`: exact source refs/PR stack #38–45, owner-approved but unmerged Automatic+Manual Sync/fourth Restore onboarding, bounded product B1 isolated staging and iOS Simulator Files save readback, writer bypass negative controls and unresolved Production Activation. No new Studio runtime PASS.
 - `progress/INTEGRATED_ENGINEERING_REVIEW_2026-11-07.md`: branch addendum supersedes the earlier main-only understanding of current product work; do not assume Draft PR policy merged or deployed.
