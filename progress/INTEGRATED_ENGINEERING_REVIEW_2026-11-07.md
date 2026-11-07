@@ -1,5 +1,17 @@
 # Software Engineering Studio — Integrated Evidence and LogMate Engine Advisory Review
 
+## 2026-11-07 branch audit addendum — changes the product-priority interpretation
+
+The initial review above used `main@f4bcd2f7...`; newer **unmerged** code/policy exists. GitHub enumeration on 2026-11-07 found 60 branches, 11 open Draft PRs, W013 #38–45 eight PRs. Two separate W013 stacks: product/docs `#42→#43→#44→#45` (`55a1ff894...`, 11 ahead/0 behind main) and staged synthetic writer/recovery probes `#39→#40→#41` (`cc600792...`, 16 ahead/0 behind main). PR43 selectively reuses PR38 export code. Do not treat them as one merged product.
+
+**Policy correction:** owner-approved and documented in unmerged Draft PR42: Automatic + Manual Delta, normal catch-up for supported native/active PWA, manual-only `lastSyncAt` activity, Native manual+conditional automatic Backup, PWA manual external-file backup, and fourth onboarding `Restore from backup file`. This supersedes the October Manual-only interpretation for future advice but does not mean main is synchronized, Production Sync runs, or Restore Activation exists.
+
+**Implementation and evidence correction:** Draft PR43 has actual user-file review, B1 isolated staging, source preservation and disabled Activation; PR44 fixes background stale-completion review; PR45 adds isolated iPhone17 iOS26.1 Simulator Files saved-byte external reread and separate B1 validation. PR43 exact source `4999af73...` produced four observed GitHub completed/success workflow runs 42159090172, 42159093747, 42159097089, 42159100287. PR44 test source `ceb5c0c...` produced checkpoint success 42171249085. PR41 synthetic runner observed raw-handle writer-fence bypass and test-only repair variants, **not product-wide enforcement**. No new Studio tests or physical/installed EFB/runtime/production PASS claimed. W013 latest branch Work count is 7 COMPLETE/2 IN PROGRESS/28 NOT STARTED, main's 7/1/29 older scope remains separate. Account deletion 29/37-store static contradiction still requires independent P0 validation and was not repaired in observed W013 code.
+
+Prioritize approved W013 handoff and exact new validation evidence when product team requests advice; retain S007 account-delete integrity as separate higher-severity release correctness risk. See `research/data/D005_logmate_w013_unmerged_branch_backup_restore_transfer_2026-11-07.md`. Preserve other Studio and product authority boundaries.
+
+
+
 **Evidence date:** 2026-11-07 (Asia/Seoul). **Authority:** coordinator synthesis; not an amendment of LogMate product policy.
 **Studio input:** `yhappcom/software-engineering-studio → main → 20aa7c582406c221096196c41f0101b37838fc46`, subsequently augmented by `research/systems/S007_logmate_deletion_integrity_exact_ref_audit_2026-11-07.md`.
 **Product input:** `yhappcom/logmate → main → f4bcd2f7b7e77039e29653baa1cc93797673885b → declared 1.0.0+1 → 2026-11-07`. Production/deployed ref unknown. Product repository was read-only; no product writes or new tests occurred.
