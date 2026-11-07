@@ -1,3 +1,6 @@
+### 2026-11-07 W013 external saved-file integrity and scoped UX closure
+- `research/data/D005_w013_external_file_integrity_and_scoped_ux_closure_2026-11-07.md`: latest PR46 documentation SHA versus frozen executable source; independent host SHA/strict UTF-8/full B1 and isolated staging for user-transferred synthetic file; physical Files Cancel/Retry/Review expiry user report; bounded native Simulator observations and unresolved installed/offline PWA/Activation/S007. PRODUCT-EXECUTED HOST VALIDATION / USER-REPORTED TRANSFER / SYNTHESIS; no Studio-run test.
+
 ### 2026-11-07 physical iPad Safari synthetic B1 and review evidence transfer
 - `research/data/D005_physical_ipad_safari_picker_review_evidence_transfer_2026-11-07.md`: PR46 latest documentation head versus frozen tested Web source, user-reported physical Safari B1/staging/reselection/review and disabled Activation; distinct Provider Cancel, external file custody, installed PWA, real Owner/Generation and release gates remain OPEN. SOURCE / bounded user-reported TRANSFER VALIDATION, no Studio runtime test.
 
