@@ -1,3 +1,6 @@
+### 2026-11-08 PR49 bounded iOS Simulator ownership transfer
+- `research/systems/S007_w013_pr49_ios_simulator_ownership_and_repository_pid_gap_2026-11-08.md`: exact Draft PR49/executable source and SDK ABI, product-reported actual iOS Simulator Session/C-PID contention, controlled crash/recovery and Android cross-compile; separates bounded iOS PASS from missing two-Repository PID, Android runtime, physical device, Legacy adoption and S007 deletion/A→B gates. No Studio-run tests.
+
 ### 2026-11-08 PR48 bounded pre-open Native Host ownership correction
 - `research/systems/S007_w013_pr48_preopen_native_ownership_host_gate_transfer_2026-11-08.md`: new unmerged Draft PR48 source/test SHA, synthetic macOS Host directory-flock before Sembast Open, 9 independent-process groups/41 PIDs and 16 Native unit cases, source-bound regression, legacy/raw bypass and actual iOS/Android/production transfer limits. Distinguishes Host opt-in Gate PASS from Supported Writer Acceptance OPEN, W013 Activation HOLD and S007 37-store A→B OPEN. No Studio-run test.
 
