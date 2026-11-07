@@ -98,3 +98,7 @@ Do not regress to the stale F001 prompt blocker; direct Dart JIT/AOT and bounded
 
 ## Evidence rule
 No PASS from reading or workflow-green alone. Preserve exact claim/oracle/environment boundaries, subprocess verdict propagation, lifecycle-valid semantic oracles at every navigation boundary, and run-bound semantic evidence; never infer unexecuted evidence.
+
+## 2026-11-08 — Android W013 independent Repository PID evidence
+
+Unmerged LogMate `verify/w013-android-runtime-20261108` (reported executable `ce81418fe5c962b06e5cd42264ec3d2165794d3d`, declared `1.0.0+1`; branch HEAD not independently resolved) advances PR49's Android runtime gap: product reports API36 ARM64 synthetic emulator actual Repository A/B/C OS PIDs, pre-factory contention refusal, epoch2 Seal, stale facade rejection, fresh third-process persisted-state read. Product-reported bounded PASS, not Studio-run replication, CI or release. iOS independent Repository, physical, namespace/legacy fork and S007 all-store deletion remain OPEN; Supported Writer OPEN/BLOCKED and Restore HOLD. Systems canonical: `research/systems/S007_w013_android_independent_repository_pid_transfer_2026-11-08.md`. No Stage 1 PASS or product write.
