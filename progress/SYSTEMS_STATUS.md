@@ -1,3 +1,7 @@
+## 2026-11-07 PR47 independent Native stale-writer negative gate
+
+New LogMate Draft #47 `feat/w013-supported-writer-20261107@e035d70...` (62 branches/13 open Draft PRs, declared `1.0.0+1`) contains an **executed Native two-process FAIL** at test source `5230831...`: independently sealed epoch2 was overwritten by stale process A's committed write; fresh inspection found `epoch1/sealed=false`, one record and one pending. Supported facade/31 protected roots and 1341 Flutter PASS at separate source `dc7c596...` do not establish independent-process safety. This materially strengthens S007's required old-writer-after-deletion oracle but **does not execute S007 or prove cross-account exposure**. See `research/systems/S007_w013_native_independent_process_stale_writer_counterexample_2026-11-07.md`. W013 Writer acceptance mandatory Native Gate FAIL; Activation HOLD; S007 37-store/A→B OPEN; no Stage-1 PASS.
+
 # Systems Specialist Status
 
 ## 2026-11-07 S007 ordinary-open versus B1 owner-validation boundary
