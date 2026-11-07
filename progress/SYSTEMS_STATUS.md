@@ -1,5 +1,9 @@
 # Systems Specialist Status
 
+## 2026-11-07 current-product delta (SOURCE / CONTRADICTION / VALIDATION OPEN)
+Latest **read-only** LogMate source audit: `yhappcom/logmate → main → f4bcd2f7b7e77039e29653baa1cc93797673885b → pubspec 1.0.0+1 → 2026-11-07`; production identity unknown. Existing September S007 status above is a historical baseline, **not** current product implementation truth. Current source includes account-required Auth and local Sync v17. High-priority static mismatch: deletion-step admission uses forward-index rather than adjacent transitions; explicit terminal wipe drops 29 stores versus a 37-store Sync-aware registry (replica + seven Sync stores omitted); deletion intent does not directly update `LocalOwnerAccess.lock`. Normal coordinator remains sequential; no executable demonstration of unauthorized access, retained readable data, incident or release defect is claimed. Three current in-memory deletion tests are narrower. File-backed populated-store A-delete→B, stale-writer, dual-driver, retry/restart and Auth Emulator/backend validation remain OPEN. Full analysis, scope limits, RELATED DOMAIN CHECK and HANDOFFS: `research/systems/S007_logmate_deletion_integrity_exact_ref_audit_2026-11-07.md`. Cross-track summary: `progress/INTEGRATED_ENGINEERING_REVIEW_2026-11-07.md`. Stage 1 **NOT PASS**; no new runtime PASS.
+
+
 Track: Systems, Security, Performance & Delivery  
 Prefix: `S###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
