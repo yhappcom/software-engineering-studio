@@ -1,5 +1,10 @@
 # Research Index
 
+## 2026-11-07 current-product synthesis and S007 transfer
+- Coordinator cross-six-track and LogMate engine reconciliation: [`progress/INTEGRATED_ENGINEERING_REVIEW_2026-11-07.md`](../progress/INTEGRATED_ENGINEERING_REVIEW_2026-11-07.md). All six Stage-1 gates remain NOT PASS; older September product observations are retained as historical inputs.
+- Systems source audit: [`research/systems/S007_logmate_deletion_integrity_exact_ref_audit_2026-11-07.md`](systems/S007_logmate_deletion_integrity_exact_ref_audit_2026-11-07.md). Exact LogMate `main@f4bcd2f7...`, declared 1.0.0+1, 2026-11-07, production ref unknown. Current 29-drop/37-store deletion and phase guard contradictions are **SOURCE-level only**; file-backed/populated/old-writer/dual-driver/Auth-independent oracles OPEN. Do not infer release failure or PASS.
+
+
 Canonical reusable research is organized by specialist ownership: `research/foundations/`, `research/architecture/`, `research/mobile/`, `research/data/`, `research/quality/`, and `research/systems/`.
 
 ## Current studies
