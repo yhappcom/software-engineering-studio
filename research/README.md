@@ -123,3 +123,5 @@ A substantial note should contain, as applicable: problem/scope, authoritative s
 When a study inspects a real product, record `repository → exact ref/tag/branch/commit → declared version if available → evidence date`. Default branch is never assumed production without evidence.
 
 - **S007 × W013 Android Repository PID transfer (2026-11-08):** `research/systems/S007_w013_android_independent_repository_pid_transfer_2026-11-08.md` — new unmerged verification branch reports real Android API36 ARM64 A/B/C Sembast PID ownership/Seal/third-process read; bounded product-reported PASS, iOS Repository/physical/production adoption and S007 deletion remain OPEN.
+
+- **D006 split-read/ABA negative oracle (2026-11-09):** `research/data/D006_split_read_cutover_aba_negative_oracle_2026-11-09.md`; executable fixture `research/data/fixtures/D006_split_read_cutover_canary.py`. Eight bounded synthetic assertions, no product PASS.
