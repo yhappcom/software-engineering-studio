@@ -1,3 +1,6 @@
+### 2026-11-08 D006 retention-floor stale cursor
+- `research/data/D006_retention_floor_stale_cursor_recovery_gate_2026-11-08.md`: 11/11 local file-backed SQLite synthetic controls; retained low-water ahead of durable cursor requires RECOVERY_REQUIRED, never silent cursor jump. Boolean proof is not authenticated; forged true, GC race, product transfer and hosted exact-script rerun OPEN.
+
 ### 2026-11-08 D006 late-commit sequence visibility negative
 - `research/data/D006_late_commit_visibility_cursor_counterexample_2026-11-08.md`: independent SQLite WAL 10/10, sequence reservation vs durable event visibility counterexample. Keyset+high-water can silently lose late-committed lower seq; bounded dense-prefix and single-DB atomic allocation alternatives. Local exact source hash preserved; hosted/product transfer OPEN.
 
