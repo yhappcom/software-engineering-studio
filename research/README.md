@@ -1,3 +1,6 @@
+### 2026-11-08 D006 contiguous cursor / owner-generation independent negative
+- `research/data/D006_contiguous_cursor_owner_generation_failure_first_2026-11-08.md`: independent file-backed SQLite 9/9 with missing-sequence refusal, owner/generation fencing, crash/reopen and forged historical replay defect/fix; sparse global server sequence requires an explicit protocol-specific skip proof. Source script local-only, exact SHA preserved; no product transfer.
+
 ### 2026-11-08 D006 file-backed receipt and cursor failure-first execution
 - `research/data/D006_sqlite_receipt_cursor_atomicity_failure_first_2026-11-08.md`: independent local Python 3.13.5 SQLite WAL 6/6 synthetic controls, including ACK-loss idempotent retry, digest collision, atomic apply+cursor rollback and a deliberately unsafe cursor-first data-loss counterexample; no private product execution, Dart/Sembast or Firebase transfer.
 
