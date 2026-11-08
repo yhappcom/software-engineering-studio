@@ -1,5 +1,10 @@
 # Quality Specialist Status
 
+## 2026-11-08 Q005 scheduled research run evidence and observability
+
+**BOUNDARY ADVANCED — scheduling, actual execution, result binding, publication and delivery must be independent oracles.** A recorded completed hourly study ran after the most recent then-existing Studio commit and correctly produced no commit for no material delta; notification delivery remained UNKNOWN. Absence of a Git commit is not absence of execution; one observed completed run is not proof of every hourly trigger. Eight synthetic V8 status-classifier controls matched expected outcomes (**8/8**, bounded; committed Node-compatible script NOT YET HOST-RUN). Canonical: `research/quality/Q005_scheduled_research_run_evidence_and_nonpublication_2026-11-08.md`; `research/quality/fixtures/Q005_scheduled_run_evidence_gate.js`. Existing hourly prompt updated for deeper independent research on unchanged product refs; no schedule change, duplicate automation or private-product writes. **No Stage 1 PASS, no production/runtime claim.**
+
+
 Track: Quality, Testing & Reliability  
 Prefix: `Q###`  
 State: **Stage 1 — IN STUDY / NOT YET PASSED**  
