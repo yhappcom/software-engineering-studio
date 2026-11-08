@@ -1,3 +1,7 @@
+## 2026-11-08 D006 snapshot-bound retention witness negative oracle
+
+**VERIFIED EXECUTION — independent Node.js v22.16.0, 10/10 synthetic controls:** forged Boolean/MAC and wrong Owner/Generation rejected, stale witness after simulated GC view change requires retry, and authenticated cursor behind retention floor requires recovery. Exact local fixture SHA256 `f1bb90a4635c1e1e8689b8033988cb922bddb7b2faf223a112238fbdf07a68cb`, fixture and integrated study now in Studio. This is a pure model, **not** concurrent database GC, server snapshot proof or Firebase/LogMate PASS. Product read-only 69 branches/20 Draft PRs, new PR54 W013 writer stack separate from D006 Sync. Stage 1 remains NOT PASS. Canonical `research/data/D006_snapshot_bound_retention_witness_negative_oracle_2026-11-08.md`.
+
 ## 2026-11-08 D006 stale-cursor retention floor
 
 New independent local SQLite WAL failure-first evidence (11/11 synthetic controls): a replica cursor behind the server retention floor cannot safely advance to the first surviving page; explicit durable RECOVERY_REQUIRED and separate authenticated recovery are needed. Boolean completeness input is **not** a real proof. Executed script local-only SHA-256 `6032adee8b547c8b224502d17d538976f0a9c0d246bbf85e2e5f883412e5ee85`; hosted/byte-identical replay, forged-proof and concurrent GC remain OPEN. No LogMate write, product defect claim or Stage 1 PASS. Canonical `research/data/D006_retention_floor_stale_cursor_recovery_gate_2026-11-08.md`.
