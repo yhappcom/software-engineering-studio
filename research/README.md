@@ -1,4 +1,8 @@
 ### 2026-11-08 PR49 bounded iOS Simulator ownership transfer
+
+### 2026-11-08 Q005 scheduled study execution observability
+- `research/quality/Q005_scheduled_research_run_evidence_and_nonpublication_2026-11-08.md`: distinct scheduler/actual run/result binding/Git publication/user notification oracles; real latest-run/commit nonpublication observation, eight bounded synthetic V8 negative controls, Node fixture hosted execution OPEN, privacy-preserving and no duplicated scheduler. Used to refine `methods/BALANCE_LOOP.md`.
+
 - `research/systems/S007_w013_pr49_ios_simulator_ownership_and_repository_pid_gap_2026-11-08.md`: exact Draft PR49/executable source and SDK ABI, product-reported actual iOS Simulator Session/C-PID contention, controlled crash/recovery and Android cross-compile; separates bounded iOS PASS from missing two-Repository PID, Android runtime, physical device, Legacy adoption and S007 deletion/A→B gates. No Studio-run tests.
 
 ### 2026-11-08 PR48 bounded pre-open Native Host ownership correction
