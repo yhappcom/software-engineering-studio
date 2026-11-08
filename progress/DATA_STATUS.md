@@ -1,3 +1,7 @@
+## 2026-11-08 D006 contiguous sequence and context negatives
+
+**INDEPENDENT EXECUTABLE EVIDENCE:** Python3.13.5 file-backed SQLite WAL synthetic 9/9 after failure-first refinement. Sequence gap 1→3 is rejected until 2 arrives; owner/generation mismatch is fenced; crash before cursor commit rolls back; unsafe high-watermark advance loses records; forged historical replay (seq1 when cursor4) was initially accepted by a flawed synthetic checker, then fixed and regression verified. Canonical `research/data/D006_contiguous_cursor_owner_generation_failure_first_2026-11-08.md`. Local experiment SHA256 `224c274360ca379cb66e00c80c6585630701cdcaf8d6e4f87ebc25ebc0995097`, **not yet committed script/host rerun**. Sparse global sequences may need authenticated skip proofs; no product PASS. D006 Stage 1 NOT PASS.
+
 ## 2026-11-08 D006 independent file-backed receipt/cursor negative oracle
 
 **INDEPENDENT EXECUTABLE MODEL — 6/6 bounded SQLite controls PASS** in local Python 3.13.5: lost-ACK retry preserves one server event, duplicate receipt identity, digest-collision rejection, record+cursor rollback under injected failure, reopen/replay convergence and **cursor-first silent-loss counterexample**. Three synthetic WAL SQLite DBs plus unsafe control, no private product source. Canonical `research/data/D006_sqlite_receipt_cursor_atomicity_failure_first_2026-11-08.md`. This proves a generic transaction-order mechanism only; no Dart/Sembast, Firebase, cross-process or release PASS. Product W013 #51 unchanged and unmerged; D006 Stage 1 NOT PASS.
