@@ -1,3 +1,6 @@
+### 2026-11-08 D006 snapshot-bound retention witness model
+- `research/data/D006_snapshot_bound_retention_witness_negative_oracle_2026-11-08.md`: 10/10 Node.js synthetic authenticated metadata/GC-version mismatch negatives; committed executable fixture `research/data/fixtures/D006_snapshot_retention_witness_canary.js`; actual concurrent GC, server authorization and page-content consistency OPEN.
+
 ### 2026-11-08 D006 retention-floor stale cursor
 - `research/data/D006_retention_floor_stale_cursor_recovery_gate_2026-11-08.md`: 11/11 local file-backed SQLite synthetic controls; retained low-water ahead of durable cursor requires RECOVERY_REQUIRED, never silent cursor jump. Boolean proof is not authenticated; forged true, GC race, product transfer and hosted exact-script rerun OPEN.
 
