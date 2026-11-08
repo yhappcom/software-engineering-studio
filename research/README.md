@@ -1,3 +1,6 @@
+### 2026-11-08 D006 concurrent GC/page snapshot and late sequence admission
+- `research/data/D006_gc_snapshot_two_connection_race_and_late_admission_2026-11-08.md`: 9/9 independent Python/SQLite WAL two-connection controlled GC and rollback/reopen negatives; pinned snapshot retains old page+metadata, stale witness/split view rejected; lower seq late-admission remains a distinct cursor-loss counterexample. Cleaned synthetic fixture `research/data/fixtures/D006_gc_snapshot_two_connection_canary.py` committed, not byte-identical to local executed file/host-rerun; Firebase/product transfer OPEN.
+
 ### 2026-11-08 D006 snapshot-bound retention witness model
 - `research/data/D006_snapshot_bound_retention_witness_negative_oracle_2026-11-08.md`: 10/10 Node.js synthetic authenticated metadata/GC-version mismatch negatives; committed executable fixture `research/data/fixtures/D006_snapshot_retention_witness_canary.js`; actual concurrent GC, server authorization and page-content consistency OPEN.
 
