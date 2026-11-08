@@ -121,3 +121,7 @@ Data Stage 1 remains **NOT PASS**. D001-D006 cover planned Foundation mechanisms
 
 ## Next work
 Return to Balance Loop. Do not repeat equivalent Linux candidate-before-publication process-kill variants. Prefer a materially stronger evidence class: physical/mobile filesystem transfer, hard-power-loss/publication durability, exact product persistence/backup runtime, or another track's stronger Stage-1 gap.
+
+## 2026-11-09 D006 split-read cutover ABA negative oracle
+
+Independent file-backed Python/SQLite WAL canary 8/8: stale READY authority read can be mixed with new event rows; epoch equality alone falsely accepts altered same-epoch bytes; double-read detects epoch transition but misses 1→2→1 rollback. A separate two-connection WAL reader sees stable transaction snapshot until commit. Executed local SHA-256 `b1b88afad28f4a96236ce780d48c876eba83df1bded33734907c94055bec335b`; source fixture retained, hosted replay not performed. See `research/data/D006_split_read_cutover_aba_negative_oracle_2026-11-09.md`. D006 Stage 1 OPEN; LogMate/Firebase not tested.
