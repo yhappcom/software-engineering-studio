@@ -1,3 +1,6 @@
+### 2026-11-08 D006 restored-metadata ABA witness replay
+- `research/data/D006_restore_metadata_aba_witness_rollback_negative_2026-11-08.md`: 9/9 independent synthetic file-backed SQLite WAL controls; metadata version/HMAC reuse across changed rows, signed incarnation success and rollback-to-old-incarnation replay counterexample. Synthetic fixture `research/data/fixtures/D006_metadata_aba_restore_canary.py` committed; exact byte/hosted replay and server authority/product transfer OPEN. D006 Stage 1 NOT PASS.
+
 ### 2026-11-08 D006 concurrent GC/page snapshot and late sequence admission
 - `research/data/D006_gc_snapshot_two_connection_race_and_late_admission_2026-11-08.md`: 9/9 independent Python/SQLite WAL two-connection controlled GC and rollback/reopen negatives; pinned snapshot retains old page+metadata, stale witness/split view rejected; lower seq late-admission remains a distinct cursor-loss counterexample. Cleaned synthetic fixture `research/data/fixtures/D006_gc_snapshot_two_connection_canary.py` committed, not byte-identical to local executed file/host-rerun; Firebase/product transfer OPEN.
 
