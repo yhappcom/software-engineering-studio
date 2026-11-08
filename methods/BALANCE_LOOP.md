@@ -69,3 +69,10 @@ Before changing to a materially different topic:
 - index canonical research when needed;
 - preserve OPEN/VALIDATION/CHANGE WATCH and handoffs;
 - commit evidence.
+
+## Run provenance, materiality and visibility
+
+Scheduled executions must keep **five independent evidence gates**: enabled schedule; actual run/status; correctly bound latest result (same run ID and attempt time); independently verified new execution/source/commit evidence; user notification or delivery acknowledgement when available. A Git commit is **not** mandatory proof of a successful no-delta run, and an enabled schedule is **not** evidence of actual execution. A published chat result does not prove a user saw a notification. Do not infer delivery from an unknown delivery status or claim continuous hourly liveness from a single latest run. See `research/quality/Q005_scheduled_research_run_evidence_and_nonpublication_2026-11-08.md`.
+
+If product refs and previously studied OPEN risks have not changed, do **not** end a substantive study cycle with repeated inventory alone. After a bounded fresh-state check, advance a genuinely independent prerequisite using executable tests/negative controls when safe; otherwise perform a nonduplicative official-source/alternative/root-cause investigation or state the precise blocking dependency. Preserve real evidence and avoid fabricated PASS or filler commits. For public Studio, **never copy private product source, user ledger, credentials or private test artifacts** into public Actions or research files. Do not silently trigger private product CI. The hourly cadence can continue even if one cycle legitimately has no publishable delta.
+
