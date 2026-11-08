@@ -1,3 +1,5 @@
+> **2026-11-08 D006 distinct cutover evidence:** independent two-file SQLite WAL 9/9 sequential PREPARING/READY crash/reopen controls; rolling back both authority and event files still re-admits old epoch. `research/data/D006_two_file_authority_cutover_crash_gate_2026-11-08.md`. Local script SHA256 recorded, not hosted/committed. Product unchanged/read-only; no D006 Stage 1 PASS.
+
 > **2026-11-08 D006 new independent evidence:** synthetic file-backed two-database 6/6 canary demonstrates external epoch rejects old signed witness after event-store restore, but authority rollback or unbound event content defeats epoch-only witness. `research/data/D006_external_authority_rollback_and_page_binding_2026-11-08.md`. No Firebase/product PASS; six-track Stage 1 unchanged.
 
 ## 2026-11-08 D006 restored-metadata ABA and signed-witness replay
