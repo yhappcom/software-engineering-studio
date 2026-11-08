@@ -1,3 +1,6 @@
+### 2026-11-08 PR51 iOS same-PID boundary and fresh-only adoption proposal
+- `research/systems/S007_w013_pr51_ios_pid_observation_and_fresh_only_adoption_review_2026-11-08.md`: new Draft PR51 product-reported iOS Simulator same-PID double launch (no independent Repository), exact executable/artifact/source distinction, unapproved fresh-only Native namespace package, legacy/downgrade fork limitation and falsifiable iOS two-PID test oracle. No Studio-run test, production approval or gate closure.
+
 ### 2026-11-08 PR49 bounded iOS Simulator ownership transfer
 
 ### 2026-11-08 Q005 scheduled study execution observability
