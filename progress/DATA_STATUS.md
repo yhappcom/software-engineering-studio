@@ -1,3 +1,7 @@
+## 2026-11-08 D006 two-file authority cutover crash gate
+
+**VERIFIED EXECUTION — independent Python 3.13.5/SQLite 3.46.1 WAL, 9/9:** PREPARING/READY fail-closed across simulated interruption and reopen, event-only rollback refused, but both-file rollback re-admits stale epoch. Local executed script SHA256 `f9f9ef50ba442ac6e33e5ec5e8c2383981ce81fc06be1878412d6b8173390f74`; script not committed/hosted-replayed. Canonical `research/data/D006_two_file_authority_cutover_crash_gate_2026-11-08.md`. No LogMate/Firebase PASS; D006 Stage 1 OPEN.
+
 ## 2026-11-08 D006 independent stream authority rollback and content binding
 
 **VERIFIED EXECUTION (synthetic Python 3.13.5/SQLite 3.46.1, 6/6):** restoring event DB alone while retaining external epoch8 rejects old epoch7 signed witness; rolling back the external authority to7 re-admits the old token, and mutating page contents without epoch change leaves the signed epoch8 metadata token valid. Public synthetic fixture + canonical `research/data/D006_external_authority_rollback_and_page_binding_2026-11-08.md`; local source SHA256 `265796257e741d310ab98cfbba05ffbc6d53551402c489d0244c50618f2ec4e7`. Committed fixture byte identity/hosted replay OPEN; Firebase/LogMate Stage 1 NOT PASS. Product read-only.
