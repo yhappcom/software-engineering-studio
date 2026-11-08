@@ -1,3 +1,6 @@
+### 2026-11-08 D006 sparse global-sequence authenticated completeness
+- `research/data/D006_sparse_global_sequence_authenticated_skip_oracle_2026-11-08.md`: independent SQLite 12/12, owner-local dense vs sparse-global cursor semantics, unproven gap/owner mismatch/crash/reopen negative, no product PASS; exact local script hash retained.
+
 ### 2026-11-08 D006 contiguous cursor / owner-generation independent negative
 - `research/data/D006_contiguous_cursor_owner_generation_failure_first_2026-11-08.md`: independent file-backed SQLite 9/9 with missing-sequence refusal, owner/generation fencing, crash/reopen and forged historical replay defect/fix; sparse global server sequence requires an explicit protocol-specific skip proof. Source script local-only, exact SHA preserved; no product transfer.
 
