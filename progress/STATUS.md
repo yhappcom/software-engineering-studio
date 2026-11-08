@@ -1,3 +1,7 @@
+## 2026-11-08 D006 contiguous cursor / historical replay negative evidence
+
+Independent Python3.13.5 SQLite WAL synthetic canary 9/9: seq1→3 gap refused, later seq2→3 replay recovered; wrong Owner/Generation rejected; post-record/pre-cursor crash rolled back after reopen; unsafe high-watermark jump skipped records. A synthetic model flaw that checked only the current cursor allowed forged older seq1 after cursor4; corrected to verify all historical seq identities and reran 9/9. Canonical `research/data/D006_contiguous_cursor_owner_generation_failure_first_2026-11-08.md`. Local script SHA256 `224c274360ca379cb66e00c80c6585630701cdcaf8d6e4f87ebc25ebc0995097` not yet published as a fixture. Sparse global server sequence/filtered events need authenticated skip proof; D006 product Dart/Sembast/Firebase and Stage1 PASS remain OPEN. LogMate read only, 66 branches/17 Draft PRs; no product CI.
+
 ## 2026-11-08 D006 independent SQLite failure-first evidence
 
 A new **Studio-owned independent execution** (local Python3.13.5 SQLite WAL, 6/6 synthetic controls) discriminated safe atomic local record+applied-cursor commit from **cursor-first silent data loss** under interruption, and verified same-OpID/digest ACK-loss retry versus digest collision. This is a generic prerequisite, not product Sync PASS; exact LogMate W013 #51 remains unmerged and S007 deletion OPEN. Canonical `research/data/D006_sqlite_receipt_cursor_atomicity_failure_first_2026-11-08.md`; no private LogMate code/tests or CI invoked. Data Stage 1 NOT PASS.
