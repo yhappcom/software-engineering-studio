@@ -5,7 +5,7 @@
 ## Source identity and limits
 - Studio source before this work: `yhappcom/software-engineering-studio → main@8a5b56d5d663ca6667ba7f61f641eb7f054d799a`.
 - LogMate read-only: `yhappcom/logmate → main@f4bcd2f7b7e77039e29653baa1cc93797673885b → pubspec 1.0.0+1 → 2026-11-08`; main **not** assumed production. Enumerated 66 branches and 17 open Draft PRs. W013 PR51 `docs/w013-ios-boundary-adoption-20261108@62d7295da6b447ba45dd3f0196c81ec449f2cdf9` is stacked on PR50 `verify/w013-android-runtime-20261108@c08feb25517c32a6104f4cc1ef49e7a4a9f33ddd`. Product sync policy PR42 remains unmerged. No product implementation evidence promoted to PASS.
-- Independent experiment: Python stdlib sqlite3, **SQLite 3.46.1**, local file-backed SQLite with explicit commits between page reads, seven deterministic synthetic controls. Source SHA256 `84ef180b65b5ea6006ec8b11990340d36e02678792908c389c0aacfc57b51b7d`. Exact source is committed separately as `research/data/fixtures/D006_mutable_page_canary.py`. These are model checks, not product or hosted CI evidence.
+- Independent experiment: Python stdlib sqlite3, **SQLite 3.46.1**, local file-backed SQLite with explicit commits between page reads, seven deterministic synthetic controls. Source SHA256 `84ef180b65b5ea6006ec8b11990340d36e02678792908c389c0aacfc57b51b7d`. The executed local source hash identifies the initial experiment; a **functionally equivalent but not byte-identical** clean fixture was committed as `research/data/fixtures/D006_mutable_page_canary.py`. The committed fixture has **not** been independently rerun in a hosted environment. These are model checks, not product or hosted CI evidence.
 
 ## Failure-first mechanism and observed oracles
 
