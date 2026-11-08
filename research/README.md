@@ -1,3 +1,6 @@
+### 2026-11-08 D006 mutable pagination/retention negative oracle
+- `research/data/D006_mutable_pagination_retention_failure_first_2026-11-08.md`: independent SQLite 7/7, OFFSET mutation omissions/duplicates, bounded keyset partial mitigation, retained-history proof OPEN; clean synthetic fixture under `research/data/fixtures/D006_mutable_page_canary.py`, not hosted-rerun. No product PASS.
+
 ### 2026-11-08 D006 sparse global-sequence authenticated completeness
 - `research/data/D006_sparse_global_sequence_authenticated_skip_oracle_2026-11-08.md`: independent SQLite 12/12, owner-local dense vs sparse-global cursor semantics, unproven gap/owner mismatch/crash/reopen negative, no product PASS; exact local script hash retained.
 
