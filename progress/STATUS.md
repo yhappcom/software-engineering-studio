@@ -1,3 +1,7 @@
+## 2026-11-08 D006 independent SQLite failure-first evidence
+
+A new **Studio-owned independent execution** (local Python3.13.5 SQLite WAL, 6/6 synthetic controls) discriminated safe atomic local record+applied-cursor commit from **cursor-first silent data loss** under interruption, and verified same-OpID/digest ACK-loss retry versus digest collision. This is a generic prerequisite, not product Sync PASS; exact LogMate W013 #51 remains unmerged and S007 deletion OPEN. Canonical `research/data/D006_sqlite_receipt_cursor_atomicity_failure_first_2026-11-08.md`; no private LogMate code/tests or CI invoked. Data Stage 1 NOT PASS.
+
 ## 2026-11-08 PR51 iOS same-PID observation / adoption approval still pending
 
 New unmerged Draft PR51 `62d7295da6b447ba45dd3f0196c81ec449f2cdf9` atop PR50 reports a **bounded iOS Simulator same-PID ordinary double launch** (PID76822, factory0, 172 installed artifact files matched), not a two-Repository lock/Seal test. It proposes, but does **not** approve or implement, fresh-only Native application-private namespace integration with release enrollment OFF, legacy-only untouched and both-path/downgrade HOLD; old binary cross-path fork remains a limitation. Exact executable is older `ce81418fe5c962b06e5cd42264ec3d2165794d3d`; PR51 is evidence/proposal, not new runtime. iOS independent Repository PID and physical gates, S007 deletion and W013 Activation remain OPEN. Systems canonical: `research/systems/S007_w013_pr51_ios_pid_observation_and_fresh_only_adoption_review_2026-11-08.md`. No Studio-run product tests or new Stage 1 PASS.
